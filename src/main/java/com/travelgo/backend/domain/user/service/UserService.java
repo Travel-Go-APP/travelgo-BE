@@ -55,6 +55,19 @@ public class UserService {
         return userRepository.findByNickname(request.getNickname()).isPresent();
     }
 
+    @Transactional
+    public UserResponse.Update updateUser(UserRequest.updateNickname request){
+        User user = userRepository.findByEmail(request.getEmail());
+        if(user == null){
+            throw new UserNotFoundException(request.getEmail());
+        }
+        if(request.getNewNickname() != null && !request.getNewNickname().isEmpty()){
+            user.setNickname(request.getNewNickname());
+        }
+        userRepository.save(user);
+        return new UserResponse.Update(user.getEmail(), user.getNickname());
+    }
+
     private UserResponse createResponse(String email){
         User user = userRepository.findByEmail(email);
         if (user == null){

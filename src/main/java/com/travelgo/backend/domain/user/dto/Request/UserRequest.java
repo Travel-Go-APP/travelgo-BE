@@ -33,4 +33,12 @@ public class UserRequest {
         @NotNull
         private String email;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class updateNickname{
+        private String email;
+        private String newNickname;
+    }
 }

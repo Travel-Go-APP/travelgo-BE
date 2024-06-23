@@ -37,6 +37,13 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "닉네임 변경", description = "닉네임 변경")
+    @PutMapping("/update-nickname/{email}")
+    public ResponseEntity<UserResponse.Update> updateUser(@RequestBody UserRequest.updateNickname request) {
+        return ResponseEntity.ok(userService.updateUser(request));
+    }
+
+
     @Operation(summary = "로그인", description = "이메일로 로그인 시도")
     @PostMapping("/login/{email}")
     public ResponseEntity<UserResponse> login(@Valid @RequestBody UserRequest.login request){

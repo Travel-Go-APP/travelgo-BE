@@ -1,10 +1,7 @@
 package com.travelgo.backend.domain.user.dto.Response;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +19,12 @@ public class UserResponse {
     private int level;
     private int quest;
     private int tg;
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Update{
+        private String email;
+        private String nickname;
+    }
 }
