@@ -54,7 +54,7 @@ public class QAttractionImage extends EntityPathBase<AttractionImage> {
 
     public QAttractionImage(Class<? extends AttractionImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.attraction = inits.isInitialized("attraction") ? new QAttraction(forProperty("attraction")) : null;
+        this.attraction = inits.isInitialized("attraction") ? new QAttraction(forProperty("attraction"), inits.get("attraction")) : null;
     }
 
 }

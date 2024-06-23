@@ -54,7 +54,7 @@ public class QAttractionAchievement extends EntityPathBase<AttractionAchievement
 
     public QAttractionAchievement(Class<? extends AttractionAchievement> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.attraction = inits.isInitialized("attraction") ? new com.travelgo.backend.domain.attraction.entity.QAttraction(forProperty("attraction")) : null;
+        this.attraction = inits.isInitialized("attraction") ? new com.travelgo.backend.domain.attraction.entity.QAttraction(forProperty("attraction"), inits.get("attraction")) : null;
         this.user = inits.isInitialized("user") ? new com.travelgo.backend.domain.user.entity.QUser(forProperty("user")) : null;
     }
 

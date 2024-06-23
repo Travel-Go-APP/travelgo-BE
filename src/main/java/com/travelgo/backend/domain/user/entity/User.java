@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.user.entity;
 
+import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -60,6 +61,25 @@ public class User extends BaseTimeEntity {
         this.level = level;
         this.quest = quest;
         this.tg = tg;
+    }
+
+    public static User createUser(UserRequest.SignUp request){
+        User user = new User();
+        user.signupUser(request);
+        return user;
+    }
+
+    public void signupUser(UserRequest.SignUp request){
+        this.email = request.getEmail();
+        this.nickname = request.getNickname();
+        this.username = "";
+        this.phoneNumber = "";
+        this.detectionRange = 0;
+        this.experience = 0;
+        this.workCount = 0;
+        this.level = 1;
+        this.quest = 0;
+        this.tg = 0;
     }
 }
 
