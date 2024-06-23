@@ -1,7 +1,7 @@
 package com.travelgo.backend.domain.mission.entity;
 
 import com.travelgo.backend.domain.item.entity.Item;
-import com.travelgo.backend.domain.itemachievement.model.MissionType;
+import com.travelgo.backend.domain.mission.model.MissionType;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
