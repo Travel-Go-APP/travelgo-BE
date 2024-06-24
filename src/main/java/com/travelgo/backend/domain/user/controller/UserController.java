@@ -52,14 +52,15 @@ public class UserController {
 
 
     @Operation(summary = "로그인", description = "이메일로 로그인 시도")
-    @PostMapping("/login/{email}")
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody UserRequest.Login request){
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse.Login> login(@Valid @RequestBody UserRequest.Login request){
         try{
-            UserResponse response = userService.login(request);
+            UserResponse.Login response = userService.login(request);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }catch(UserNotFoundException e){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 }

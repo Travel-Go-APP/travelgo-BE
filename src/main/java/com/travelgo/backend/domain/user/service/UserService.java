@@ -9,7 +9,8 @@ import com.travelgo.backend.domain.user.exception.UserNotFoundException;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
+    private final GeoCodingService geoCodingService;
 
     @Transactional
     public UserResponse signUp(UserRequest.SignUp request){
@@ -37,14 +40,30 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse login(UserRequest.Login request){
+    public UserResponse.Login login(UserRequest.Login request){
         User user = userRepository.findByEmail(request.getEmail());
 
-        if(user != null){
-            return getUser(user.getEmail());
-        }else{
+        if(user == null){
             throw new UserNotFoundException(request.getEmail()+"유저가 존재하지 않습니다.");
         }
+
+        logger.info("Received login request with latitude: {}, longitude: {}", request.getLatitude(), request.getLongitude());
+
+        String region;
+
+        try{
+            region = geoCodingService.reverseGeocode(request.getLatitude(), request.getLongitude());
+
+            if(region == null){
+                throw new IllegalArgumentException("유효한 지역 정보를 찾을 수 없습니다");
+            }
+        } catch (Exception e){
+            logger.error("GeoCodingService error: ", e);
+            throw new IllegalArgumentException("유효한 지역 정보를 찾을 수 없습니다.", e);
+        }
+
+
+        return new UserResponse.Login(user.getEmail(), region);
     }
 
     public UserResponse getUser(String email){

@@ -1,8 +1,11 @@
 package com.travelgo.backend.domain.user.dto.Response;
 
 
+import com.travelgo.backend.domain.area.entity.Area;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +23,19 @@ public class UserResponse {
     private int level;
     private int quest;
     private int tg;
+    private List<Attraction> attractions;
+
+    @Getter
+    @AllArgsConstructor
+    public static class Attraction{
+        Area area;
+        boolean hiddenFlag;
+        String locationName;
+        String locationImage;
+        Double latitude;
+        Double longitude;
+        String description;
+    }
 
     @Getter
     @NoArgsConstructor
@@ -43,6 +59,6 @@ public class UserResponse {
         @NotNull
         private String email;
         @NotNull
-        private Enum Area;
+        private String area;
     }
 }

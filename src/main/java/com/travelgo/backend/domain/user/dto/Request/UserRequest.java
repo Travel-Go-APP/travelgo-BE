@@ -41,9 +41,9 @@ public class UserRequest {
         @NotNull
         private String email;
         @NotNull
-        private Double latitude;
+        private double latitude;
         @NotNull
-        private Double longitude;
+        private double longitude;
     }
 
     @Getter
