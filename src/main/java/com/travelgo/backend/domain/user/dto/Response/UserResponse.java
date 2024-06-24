@@ -1,6 +1,7 @@
 package com.travelgo.backend.domain.user.dto.Response;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data
@@ -23,8 +24,25 @@ public class UserResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Update{
+    public static class UpdateNickname {
         private String email;
         private String nickname;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteUser {
+        private String email;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Login {
+        @NotNull
+        private String email;
+        @NotNull
+        private Enum Area;
     }
 }

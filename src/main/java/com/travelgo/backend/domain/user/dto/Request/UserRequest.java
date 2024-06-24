@@ -10,6 +10,14 @@ public class UserRequest {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class DeleteUser {
+        @NotNull
+        private String email;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class SignUp{
         @NotNull
         private String email;
@@ -29,15 +37,19 @@ public class UserRequest {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class login {
+    public static class Login {
         @NotNull
         private String email;
+        @NotNull
+        private Double latitude;
+        @NotNull
+        private Double longitude;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class updateNickname{
+    public static class UpdateNickname {
         private String email;
         private String newNickname;
     }

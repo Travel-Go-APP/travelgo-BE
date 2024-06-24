@@ -26,6 +26,13 @@ public class UserController {
         return new ResponseEntity<>(userService.signUp(request), HttpStatusCode.valueOf(200));
     }
 
+    @Operation(summary = "유저삭제", description = "유저 삭제")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserResponse.DeleteUser> deleteUser(@Valid @RequestBody UserRequest.DeleteUser request){
+        UserResponse.DeleteUser response = userService.deleteUser(request);
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "닉네임 중복 체크", description = "DB 대조를 통한 닉네임 가능 여부 체크")
     @PostMapping("/check-nickname/{nickname}")
     public ResponseEntity<Void> checkNickname(@Valid @RequestBody UserRequest.CheckNickname request){
@@ -39,14 +46,14 @@ public class UserController {
 
     @Operation(summary = "닉네임 변경", description = "닉네임 변경")
     @PutMapping("/update-nickname/{email}")
-    public ResponseEntity<UserResponse.Update> updateUser(@RequestBody UserRequest.updateNickname request) {
+    public ResponseEntity<UserResponse.UpdateNickname> updateUser(@RequestBody UserRequest.UpdateNickname request) {
         return ResponseEntity.ok(userService.updateUser(request));
     }
 
 
     @Operation(summary = "로그인", description = "이메일로 로그인 시도")
     @PostMapping("/login/{email}")
-    public ResponseEntity<UserResponse> login(@Valid @RequestBody UserRequest.login request){
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody UserRequest.Login request){
         try{
             UserResponse response = userService.login(request);
             return new ResponseEntity<>(response, HttpStatus.OK);

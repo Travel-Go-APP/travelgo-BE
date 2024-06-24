@@ -37,7 +37,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse login(UserRequest.login request){
+    public UserResponse login(UserRequest.Login request){
         User user = userRepository.findByEmail(request.getEmail());
 
         if(user != null){
@@ -56,7 +56,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse.Update updateUser(UserRequest.updateNickname request){
+    public UserResponse.UpdateNickname updateUser(UserRequest.UpdateNickname request){
         User user = userRepository.findByEmail(request.getEmail());
         if(user == null){
             throw new UserNotFoundException(request.getEmail());
@@ -65,7 +65,17 @@ public class UserService {
             user.setNickname(request.getNewNickname());
         }
         userRepository.save(user);
-        return new UserResponse.Update(user.getEmail(), user.getNickname());
+        return new UserResponse.UpdateNickname(user.getEmail(), user.getNickname());
+    }
+
+    @Transactional
+    public UserResponse.DeleteUser deleteUser(UserRequest.DeleteUser request){
+        User user = userRepository.findByEmail(request.getEmail());
+        if(user == null){
+            throw new UserNotFoundException(request.getEmail());
+        }
+        userRepository.delete(user);
+        return new UserResponse.DeleteUser(request.getEmail()+"유저가 삭제 되었습니다.");
     }
 
     private UserResponse createResponse(String email){
