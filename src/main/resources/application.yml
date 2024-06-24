@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: aws, s3햣
+    include: aws, s3
   jpa:
     hibernate:
       ddl-auto: update
