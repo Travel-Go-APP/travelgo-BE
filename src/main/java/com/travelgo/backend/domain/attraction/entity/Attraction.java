@@ -24,14 +24,18 @@ public class Attraction extends BaseTimeEntity {
 
     private boolean hiddenFlag; //히든 스테이지 설정
 
-    private String locationName; //위치 이름
+    @Column(name = "attraction_name", unique = true)
+    private String attractionName; //이름
 
-    private String locationImage; //장소 사진
+    private String homepage; // 홈페이지 주소
+
+    private String address; // 주소
 
     private Double latitude; //위도
 
     private Double longitude; //경도
 
+    @Column(length = 50000)
     private String description; //설명
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,11 +43,12 @@ public class Attraction extends BaseTimeEntity {
     private Path path;
 
     @Builder
-    public Attraction(Area area, boolean hiddenFlag, String locationName, String locationImage, Double latitude, Double longitude, String description) {
+    public Attraction(Area area, boolean hiddenFlag, String attractionName, String homepage, String address, Double latitude, Double longitude, String description) {
         this.area = area;
         this.hiddenFlag = hiddenFlag;
-        this.locationName = locationName;
-        this.locationImage = locationImage;
+        this.attractionName = attractionName;
+        this.homepage = homepage;
+        this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.description = description;
