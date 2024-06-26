@@ -1,4 +1,4 @@
-package com.travelgo.backend.domain.attraction.entity;
+package com.travelgo.backend.domain.attractionImage.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QAttractionImage extends EntityPathBase<AttractionImage> {
 
-    private static final long serialVersionUID = 1841311L;
+    private static final long serialVersionUID = -1008022476L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -24,7 +24,7 @@ public class QAttractionImage extends EntityPathBase<AttractionImage> {
 
     public final com.travelgo.backend.util.QBaseTimeEntity _super = new com.travelgo.backend.util.QBaseTimeEntity(this);
 
-    public final QAttraction attraction;
+    public final com.travelgo.backend.domain.attraction.entity.QAttraction attraction;
 
     public final NumberPath<Long> attractionImageId = createNumber("attractionImageId", Long.class);
 
@@ -54,7 +54,7 @@ public class QAttractionImage extends EntityPathBase<AttractionImage> {
 
     public QAttractionImage(Class<? extends AttractionImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.attraction = inits.isInitialized("attraction") ? new QAttraction(forProperty("attraction")) : null;
+        this.attraction = inits.isInitialized("attraction") ? new com.travelgo.backend.domain.attraction.entity.QAttraction(forProperty("attraction"), inits.get("attraction")) : null;
     }
 
 }

@@ -31,7 +31,7 @@ public class QMission extends EntityPathBase<Mission> {
 
     public final NumberPath<Long> missionId = createNumber("missionId", Long.class);
 
-    public final EnumPath<com.travelgo.backend.domain.itemachievement.model.MissionType> missionType = createEnum("missionType", com.travelgo.backend.domain.itemachievement.model.MissionType.class);
+    public final EnumPath<com.travelgo.backend.domain.mission.model.MissionType> missionType = createEnum("missionType", com.travelgo.backend.domain.mission.model.MissionType.class);
 
     //inherited
     public final StringPath modifiedAt = _super.modifiedAt;
