@@ -21,6 +21,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final com.travelgo.backend.util.QBaseTimeEntity _super = new com.travelgo.backend.util.QBaseTimeEntity(this);
 
+    public final EnumPath<com.travelgo.backend.domain.user.model.Bag> bag = createEnum("bag", com.travelgo.backend.domain.user.model.Bag.class);
+
     //inherited
     public final StringPath createdAt = _super.createdAt;
 
@@ -40,6 +42,8 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath phoneNumber = createString("phoneNumber");
 
     public final NumberPath<Integer> quest = createNumber("quest", Integer.class);
+
+    public final EnumPath<com.travelgo.backend.domain.user.model.Shoes> shoes = createEnum("shoes", com.travelgo.backend.domain.user.model.Shoes.class);
 
     public final NumberPath<Integer> tg = createNumber("tg", Integer.class);
 
