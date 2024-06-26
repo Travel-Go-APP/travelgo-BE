@@ -1,5 +1,6 @@
-package com.travelgo.backend.domain.attraction.entity;
+package com.travelgo.backend.domain.attractionImage.entity;
 
+import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

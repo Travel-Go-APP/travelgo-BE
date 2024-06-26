@@ -23,9 +23,13 @@ public class QAttraction extends EntityPathBase<Attraction> {
 
     public final com.travelgo.backend.util.QBaseTimeEntity _super = new com.travelgo.backend.util.QBaseTimeEntity(this);
 
+    public final StringPath address = createString("address");
+
     public final EnumPath<com.travelgo.backend.domain.area.entity.Area> area = createEnum("area", com.travelgo.backend.domain.area.entity.Area.class);
 
     public final NumberPath<Long> attractionId = createNumber("attractionId", Long.class);
+
+    public final StringPath attractionName = createString("attractionName");
 
     //inherited
     public final StringPath createdAt = _super.createdAt;
@@ -34,11 +38,9 @@ public class QAttraction extends EntityPathBase<Attraction> {
 
     public final BooleanPath hiddenFlag = createBoolean("hiddenFlag");
 
+    public final StringPath homepage = createString("homepage");
+
     public final NumberPath<Double> latitude = createNumber("latitude", Double.class);
-
-    public final StringPath locationImage = createString("locationImage");
-
-    public final StringPath locationName = createString("locationName");
 
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
 
