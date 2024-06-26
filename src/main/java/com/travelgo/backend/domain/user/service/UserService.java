@@ -63,7 +63,7 @@ public class UserService {
         }
 
 
-        return new UserResponse.Login(user.getEmail(), region);
+        return new UserResponse.Login(user.getUsername(), user.getLevel(), user.getQuest(), region, user.getEmail(), user.getDetectionRange());
     }
 
     public UserResponse getUser(String email){
