@@ -1,9 +1,10 @@
 package com.travelgo.backend.domain.user.service;
 
 import com.travelgo.backend.domain.user.dto.Response.KakaoGeoResponse;
+import com.travelgo.backend.global.exception.CustomException;
+import com.travelgo.backend.global.exception.constant.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -46,17 +47,14 @@ public class GeoCodingService {
                         String area = extractRegion(fullAddress);
                         return area;
                     } else {
-                        logger.warn("No address found in the document for latitude: {}, longitude: {}", latitude, longitude);
+                        throw new CustomException(ErrorCode.NOT_FOUND_GEO);
                     }
-                } else {
-                    logger.warn("No regions found for latitude: {}, longitude: {}", latitude, longitude);
                 }
             } else {
-                logger.error("Failed to get a valid response from Kakao API. Status code: {}, Response body: {}",
-                        response.getStatusCode(), response.getBody());
+                throw new CustomException(ErrorCode.NOT_FOUND_KAKAO);
             }
         } catch (Exception e) {
-            logger.error("Error occurred while calling Kakao API", e);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_KAKAO);
         }
 
         return null;
