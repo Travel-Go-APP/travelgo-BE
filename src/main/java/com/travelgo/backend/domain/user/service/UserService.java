@@ -63,8 +63,25 @@ public class UserService {
             throw new IllegalArgumentException("유효한 지역 정보를 찾을 수 없습니다.", e);
         }
 
+        int[] expTable = UserExp.getExpTable();
+        int currentLevel = user.getLevel();
+        int currentExperience = user.getExperience();
+        int nextLevelExp = expTable[currentLevel];
+        double percentage = (double) currentExperience / nextLevelExp * 100;
 
-        return new UserResponse.Login(user.getUsername(), user.getLevel(), user.getExperience(), user.getNextLevelExp(), user.getPercentage(), user.getQuest(), region, user.getEmail(), user.getDetectionRange(), user.getShoes(), user.getBag());
+
+        return new UserResponse.Login(
+                user.getUsername(),
+                user.getLevel(),
+                user.getExperience(),
+                nextLevelExp,
+                percentage,
+                user.getQuest(),
+                region,
+                user.getEmail(),
+                user.getDetectionRange(),
+                user.getShoes(),
+                user.getBag());
     }
 
     public UserResponse getUser(String email){

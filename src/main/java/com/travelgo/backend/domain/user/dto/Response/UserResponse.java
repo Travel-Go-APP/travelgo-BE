@@ -27,6 +27,8 @@ public class UserResponse {
     private int tg;
     private Shoes shoes;
     private Bag bag;
+    private int nextLevelExp;
+    private double percentage;
     private List<Attraction> attractions;
 
     @Getter
