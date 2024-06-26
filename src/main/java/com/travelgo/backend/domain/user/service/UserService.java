@@ -6,8 +6,9 @@ import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.exception.UserAlreadyExistsException;
-import com.travelgo.backend.domain.user.exception.UserNotFoundException;
 import com.travelgo.backend.domain.user.repository.UserRepository;
+import com.travelgo.backend.global.exception.CustomException;
+import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -37,18 +38,12 @@ public class UserService {
         user = User.createUser(request);
 
         userRepository.save(user);
-        return getUser(user.getEmail());
+        return createResponse(getUser(user.getEmail()));
     }
 
     @Transactional
     public UserResponse.Login login(UserRequest.Login request){
-        User user = userRepository.findByEmail(request.getEmail());
-
-        if(user == null){
-            throw new UserNotFoundException(request.getEmail()+"유저가 존재하지 않습니다.");
-        }
-
-        logger.info("Received login request with latitude: {}, longitude: {}", request.getLatitude(), request.getLongitude());
+        User user = getUser(request.getEmail());
 
         String region;
 
@@ -84,34 +79,23 @@ public class UserService {
                 user.getBag());
     }
 
-    public UserResponse getUser(String email){
-        return createResponse(email);
-    }
-
     public boolean CheckNicknameExists(UserRequest.CheckNickname request){
         return userRepository.findByNickname(request.getNickname()).isPresent();
     }
 
     @Transactional
-    public UserResponse.UpdateNickname updateUser(UserRequest.UpdateNickname request){
-        User user = userRepository.findByEmail(request.getEmail());
-        if(user == null){
-            throw new UserNotFoundException(request.getEmail());
-        }
-        if(request.getNewNickname() != null && !request.getNewNickname().isEmpty()){
-            user.setNickname(request.getNewNickname());
-        }
+    public UserResponse.UpdateNickname updateUser(String email, String nickName){
+        User user = getUser(email);
+        user.changeNickname(nickName);
+
         userRepository.save(user);
+
         return new UserResponse.UpdateNickname(user.getEmail(), user.getNickname());
     }
 
     @Transactional
     public UserResponse.UpdateExp updateExp(UserRequest.UpdateExp request){
-        User user = userRepository.findByEmail(request.getEmail());
-
-        if(user == null){
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
+        User user = getUser(request.getEmail());
 
         user.addExperience(request.getExperience());
 
@@ -134,20 +118,21 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse.DeleteUser deleteUser(UserRequest.DeleteUser request){
-        User user = userRepository.findByEmail(request.getEmail());
-        if(user == null){
-            throw new UserNotFoundException(request.getEmail());
-        }
+    public UserResponse.DeleteUser deleteUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         userRepository.delete(user);
-        return new UserResponse.DeleteUser(request.getEmail()+"유저가 삭제 되었습니다.");
+
+        return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
     }
 
-    private UserResponse createResponse(String email){
-        User user = userRepository.findByEmail(email);
-        if (user == null){
-            throw new UserNotFoundException(email+"을 가진 유저를 찾을 수 없습니다.");
-        }
+    private User getUser(String email) {
+        if (userRepository.findByEmail(email) == null)
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
+        else
+            return userRepository.findByEmail(email);
+    }
+
+    private UserResponse createResponse(User user){
         return UserResponse.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())

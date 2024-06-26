@@ -24,7 +24,6 @@ public class User extends BaseTimeEntity {
     @NotNull
     private String username;
 
-    @Setter
     @Column(unique = true)
     @NotNull
     private String nickname;
@@ -111,5 +110,8 @@ public class User extends BaseTimeEntity {
         this.experience -= exp;
     }
 
+    public void changeNickname(String nickname){
+        this.nickname = nickname;
+    }
 }
 
