@@ -57,8 +57,16 @@ public class UserResponse {
     @AllArgsConstructor
     public static class Login {
         @NotNull
-        private String email;
+        private String username;
+        @NotNull
+        private int level;
+        @NotNull
+        private int quest;
         @NotNull
         private String area;
+        @NotNull
+        private String email;
+        @NotNull
+        private double detectionRange;
     }
 }

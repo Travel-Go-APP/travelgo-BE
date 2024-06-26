@@ -26,6 +26,7 @@ public class UserController {
         return new ResponseEntity<>(userService.signUp(request), HttpStatusCode.valueOf(200));
     }
 
+    //1개짜리 이메일만 있으면 됨
     @Operation(summary = "유저삭제", description = "유저 삭제")
     @DeleteMapping("/{id}")
     public ResponseEntity<UserResponse.DeleteUser> deleteUser(@Valid @RequestBody UserRequest.DeleteUser request){
@@ -33,6 +34,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    //1개짜리 이메일만 있으면 됨
     @Operation(summary = "닉네임 중복 체크", description = "DB 대조를 통한 닉네임 가능 여부 체크")
     @PostMapping("/check-nickname/{nickname}")
     public ResponseEntity<Void> checkNickname(@Valid @RequestBody UserRequest.CheckNickname request){
