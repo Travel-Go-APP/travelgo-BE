@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "DROPS")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "DROPS")
 public class Drop extends BaseTimeEntity {
 
     @Id
