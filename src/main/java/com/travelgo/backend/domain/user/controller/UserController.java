@@ -65,4 +65,15 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Operation(summary = "경험치 업데이트", description = "유저 경험치 업데이트")
+    @PostMapping("/exp")
+    public ResponseEntity<?> updateExperience(@RequestBody UserRequest.UpdateExp request){
+        try{
+            UserResponse.UpdateExp response = userService.updateExp(request);
+            return ResponseEntity.ok(response);
+        } catch(UserNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }

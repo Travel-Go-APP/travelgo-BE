@@ -2,6 +2,8 @@ package com.travelgo.backend.domain.user.dto.Response;
 
 
 import com.travelgo.backend.domain.area.entity.Area;
+import com.travelgo.backend.domain.user.model.Bag;
+import com.travelgo.backend.domain.user.model.Shoes;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -23,6 +25,8 @@ public class UserResponse {
     private int level;
     private int quest;
     private int tg;
+    private Shoes shoes;
+    private Bag bag;
     private List<Attraction> attractions;
 
     @Getter
@@ -55,6 +59,17 @@ public class UserResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class UpdateExp{
+        private String email;
+        private int experience;
+        private int nextLevelExp;
+        private double percentage;
+        private boolean levelUp;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Login {
         @NotNull
         private String username;
@@ -68,5 +83,9 @@ public class UserResponse {
         private String email;
         @NotNull
         private double detectionRange;
+        @NotNull
+        private Shoes shoes;
+        @NotNull
+        private Bag bag;
     }
 }

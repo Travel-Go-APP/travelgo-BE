@@ -3,6 +3,7 @@ package com.travelgo.backend.domain.user.service;
 import com.travelgo.backend.domain.user.dto.Response.KakaoGeoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

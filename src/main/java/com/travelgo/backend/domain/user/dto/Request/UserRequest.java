@@ -29,6 +29,17 @@ public class UserRequest {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class UpdateExp{
+        @NotNull
+        private String email;
+
+        @NotNull
+        private String experience;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CheckNickname{
         @NotNull
         private String nickname;

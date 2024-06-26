@@ -4,6 +4,7 @@ package com.travelgo.backend.domain.user.service;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.exception.UserAlreadyExistsException;
 import com.travelgo.backend.domain.user.exception.UserNotFoundException;
 import com.travelgo.backend.domain.user.repository.UserRepository;
@@ -63,7 +64,7 @@ public class UserService {
         }
 
 
-        return new UserResponse.Login(user.getUsername(), user.getLevel(), user.getQuest(), region, user.getEmail(), user.getDetectionRange());
+        return new UserResponse.Login(user.getUsername(), user.getLevel(), user.getQuest(), region, user.getEmail(), user.getDetectionRange(), user.getShoes(), user.getBag());
     }
 
     public UserResponse getUser(String email){
@@ -85,6 +86,34 @@ public class UserService {
         }
         userRepository.save(user);
         return new UserResponse.UpdateNickname(user.getEmail(), user.getNickname());
+    }
+
+    @Transactional
+    public UserResponse.UpdateExp updateExp(UserRequest.UpdateExp request){
+        User user = userRepository.findByEmail(request.getEmail());
+
+        if(user == null){
+            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
+        }
+
+        user.addExperience(Integer.parseInt(request.getExperience()));
+
+        boolean levelUp = false;
+        int[] expTable = UserExp.getExpTable();
+
+        while(user.getExperience() >= expTable[user.getLevel()]){
+            user.reduceExperience(expTable[user.getLevel()]);
+            user.levelUp();
+            levelUp = true;
+        }
+
+        userRepository.save(user);
+
+        int currentExperience = user.getExperience();
+        int nextLevelExp = expTable[user.getLevel()];
+        double percentage = (double) currentExperience / nextLevelExp * 100;
+
+        return new UserResponse.UpdateExp(user.getEmail(), currentExperience, nextLevelExp, percentage, levelUp);
     }
 
     @Transactional
@@ -114,6 +143,8 @@ public class UserService {
                 .level(user.getLevel())
                 .quest(user.getQuest())
                 .tg(user.getTg())
+                .shoes(user.getShoes())
+                .bag(user.getBag())
                 .build();
     }
 }

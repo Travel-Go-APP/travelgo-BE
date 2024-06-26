@@ -1,6 +1,9 @@
 package com.travelgo.backend.domain.user.entity;
 
+import com.fasterxml.jackson.databind.BeanProperty;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
+import com.travelgo.backend.domain.user.model.Bag;
+import com.travelgo.backend.domain.user.model.Shoes;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -47,8 +50,14 @@ public class User extends BaseTimeEntity {
 
     private int tg;
 
+    @Enumerated(EnumType.STRING)
+    private Shoes shoes;
+
+    @Enumerated(EnumType.STRING)
+    private Bag bag;
+
     @Builder
-    public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int workCount, int level, int quest, int tg) {
+    public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int workCount, int level, int quest, int tg, Shoes shoes, Bag bag) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
@@ -59,6 +68,8 @@ public class User extends BaseTimeEntity {
         this.level = level;
         this.quest = quest;
         this.tg = tg;
+        this.shoes = shoes;
+        this.bag = bag;
     }
 
     public static User createUser(UserRequest.SignUp request){
@@ -78,6 +89,20 @@ public class User extends BaseTimeEntity {
         this.level = 1;
         this.quest = 0;
         this.tg = 0;
+        this.shoes = Shoes.맨발;
+        this.bag = Bag.초급;
+    }
+
+    public void addExperience(int exp){
+        this.experience += exp;
+    }
+
+    public void levelUp(){
+        this.level++;
+    }
+
+    public void reduceExperience(int exp){
+        this.experience -= exp;
     }
 
 }
