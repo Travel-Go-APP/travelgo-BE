@@ -64,7 +64,7 @@ public class UserService {
         }
 
 
-        return new UserResponse.Login(user.getUsername(), user.getLevel(), user.getQuest(), region, user.getEmail(), user.getDetectionRange(), user.getShoes(), user.getBag());
+        return new UserResponse.Login(user.getUsername(), user.getLevel(), user.getExperience(), user.getNextLevelExp(), user.getPercentage(), user.getQuest(), region, user.getEmail(), user.getDetectionRange(), user.getShoes(), user.getBag());
     }
 
     public UserResponse getUser(String email){
@@ -96,7 +96,7 @@ public class UserService {
             throw new UserNotFoundException("유저를 찾을 수 없습니다.");
         }
 
-        user.addExperience(Integer.parseInt(request.getExperience()));
+        user.addExperience(request.getExperience());
 
         boolean levelUp = false;
         int[] expTable = UserExp.getExpTable();

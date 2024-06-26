@@ -42,6 +42,10 @@ public class User extends BaseTimeEntity {
 
     private int experience;
 
+    private int nextLevelExp;
+
+    private double percentage;
+
     private int workCount;
 
     private int level;
@@ -57,13 +61,15 @@ public class User extends BaseTimeEntity {
     private Bag bag;
 
     @Builder
-    public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int workCount, int level, int quest, int tg, Shoes shoes, Bag bag) {
+    public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int nextLevelExp, double percentage, int workCount, int level, int quest, int tg, Shoes shoes, Bag bag) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.detectionRange = detectionRange;
         this.experience = experience;
+        this.nextLevelExp = nextLevelExp;
+        this.percentage = percentage;
         this.workCount = workCount;
         this.level = level;
         this.quest = quest;

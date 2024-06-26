@@ -71,21 +71,16 @@ public class UserResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Login {
-        @NotNull
         private String username;
-        @NotNull
         private int level;
-        @NotNull
+        private int experience;
+        private int nextLevelExp;
+        private double percentage;
         private int quest;
-        @NotNull
         private String area;
-        @NotNull
         private String email;
-        @NotNull
         private double detectionRange;
-        @NotNull
         private Shoes shoes;
-        @NotNull
         private Bag bag;
     }
 }

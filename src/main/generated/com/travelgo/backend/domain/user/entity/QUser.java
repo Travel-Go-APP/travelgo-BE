@@ -37,7 +37,11 @@ public class QUser extends EntityPathBase<User> {
     //inherited
     public final StringPath modifiedAt = _super.modifiedAt;
 
+    public final NumberPath<Integer> nextLevelExp = createNumber("nextLevelExp", Integer.class);
+
     public final StringPath nickname = createString("nickname");
+
+    public final NumberPath<Double> percentage = createNumber("percentage", Double.class);
 
     public final StringPath phoneNumber = createString("phoneNumber");
 
