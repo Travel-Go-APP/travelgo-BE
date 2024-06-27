@@ -5,10 +5,10 @@ import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
-import com.travelgo.backend.domain.user.exception.UserAlreadyExistsException;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -29,10 +29,10 @@ public class UserService {
 
     @Transactional
     public UserResponse signUp(UserRequest.SignUp request){
-        User user = userRepository.findByEmail(request.getEmail());
+        User user = getUser(request.getEmail());
 
         if(user != null){
-            throw new UserAlreadyExistsException(request.getEmail()+"을 가진 유저가 이미 존재합니다.");
+            throw new CustomException(ErrorCode.DUPLICATED_USER);
         }
 
         user = User.createUser(request);
@@ -41,7 +41,7 @@ public class UserService {
         return createResponse(getUser(user.getEmail()));
     }
 
-    @Transactional
+    /*@Transactional
     public UserResponse.Login login(UserRequest.Login request){
         User user = getUser(request.getEmail());
 
@@ -51,11 +51,10 @@ public class UserService {
             region = geoCodingService.reverseGeocode(request.getLatitude(), request.getLongitude());
 
             if(region == null){
-                throw new IllegalArgumentException("유효한 지역 정보를 찾을 수 없습니다");
+                throw new CustomException(ErrorCode.NOT_FOUND_AREA);
             }
         } catch (Exception e){
-            logger.error("GeoCodingService error: ", e);
-            throw new IllegalArgumentException("유효한 지역 정보를 찾을 수 없습니다.", e);
+            throw new CustomException(ErrorCode.NOT_FOUND_AREA);
         }
 
         int[] expTable = UserExp.getExpTable();
@@ -77,10 +76,19 @@ public class UserService {
                 user.getDetectionRange(),
                 user.getShoes(),
                 user.getBag());
+    }*/
+
+    //수정된 로그인 서비스
+    @Transactional
+    public void login(String email) {
+        User user = getUser(email);
+
+        // 로그인 성공 시 아무 작업도 하지 않음
     }
 
-    public boolean CheckNicknameExists(UserRequest.CheckNickname request){
-        return userRepository.findByNickname(request.getNickname()).isPresent();
+
+    public boolean CheckNicknameExists(@Valid String nickName){
+        return userRepository.findByNickname(nickName).isPresent();
     }
 
     @Transactional
@@ -127,7 +135,7 @@ public class UserService {
 
     private User getUser(String email) {
         if (userRepository.findByEmail(email) == null)
-            throw new CustomException(ErrorCode.NOT_FOUND_USER);
+            throw new CustomException(ErrorCode.BAD_REQUEST);
         else
             return userRepository.findByEmail(email);
     }
