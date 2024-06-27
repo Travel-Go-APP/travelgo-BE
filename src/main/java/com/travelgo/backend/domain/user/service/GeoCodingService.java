@@ -63,7 +63,9 @@ public class GeoCodingService {
         // 주소 문자열에서 첫 번째 단어를 추출
         if (fullAddress != null && !fullAddress.isEmpty()) {
             String[] parts = fullAddress.split(" ");
-            if (parts.length > 0) {
+            if (parts.length > 1) {
+                return parts[0] + " " + parts[1];
+            }else if(parts.length == 1){
                 return parts[0];
             }
         }

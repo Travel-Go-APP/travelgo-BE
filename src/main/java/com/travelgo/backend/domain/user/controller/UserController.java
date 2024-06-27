@@ -1,9 +1,12 @@
 package com.travelgo.backend.domain.user.controller;
 
+import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
+import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.exception.UserNotFoundException;
+import com.travelgo.backend.domain.user.service.GeoCodingService;
 import com.travelgo.backend.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -73,4 +76,12 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @Operation(summary = "메인 페이지 정보 가져오기", description = "유저 메인 페이지 정보 조회")
+    @PostMapping("/getMain")
+    public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request){
+        MainPageResponse response = userService.getMainPageResponse(request);
+        return ResponseEntity.ok(response);
+    }
+
 }
