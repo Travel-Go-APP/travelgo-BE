@@ -24,7 +24,8 @@ public class UserController {
     @Operation(summary = "회원가입", description = "회원가입 후 닉네임과 기본 값들 설정")
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> signupUser(@Valid @RequestBody UserRequest.SignUp request){
-        return new ResponseEntity<>(userService.signUp(request), HttpStatusCode.valueOf(200));
+        userService.signUp(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //1개짜리 이메일만 있으면 됨

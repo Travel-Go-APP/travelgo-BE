@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -28,17 +30,16 @@ public class UserService {
     private final GeoCodingService geoCodingService;
 
     @Transactional
-    public UserResponse signUp(UserRequest.SignUp request){
-        User user = getUser(request.getEmail());
+    public void signUp(UserRequest.SignUp request){
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
 
-        if(user != null){
-            throw new CustomException(ErrorCode.DUPLICATED_USER);
+        if(existingUser.isPresent()){
+            throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
-        user = User.createUser(request);
+        User newUser = User.createUser(request);
 
-        userRepository.save(user);
-        return createResponse(getUser(user.getEmail()));
+        userRepository.save(newUser);
     }
 
     /*@Transactional
@@ -127,17 +128,15 @@ public class UserService {
 
     @Transactional
     public UserResponse.DeleteUser deleteUser(Long userId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
         userRepository.delete(user);
 
         return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
     }
 
     private User getUser(String email) {
-        if (userRepository.findByEmail(email) == null)
-            throw new CustomException(ErrorCode.BAD_REQUEST);
-        else
-            return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
     private UserResponse createResponse(User user){
