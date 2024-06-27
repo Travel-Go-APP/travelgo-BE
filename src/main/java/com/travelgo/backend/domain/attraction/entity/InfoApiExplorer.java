@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets;
  * </locationBase>
  */
 
-public class ApiExplorer {
+public class InfoApiExplorer {
 
     public static HttpURLConnection getLocationDetail(int numOfRows, int pageNo, int contentId) throws IOException {
         StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/KorService1/detailCommon1"); /*URL*/
@@ -107,9 +107,9 @@ public class ApiExplorer {
     public static String getInfo(int numOfRows, int pageNo, double longitude, double latitude, int radius) {
         StringBuilder sb = new StringBuilder();
         try {
-            HttpURLConnection conn = ApiExplorer.getLocationBased(numOfRows, pageNo, longitude, latitude, radius);
+            HttpURLConnection conn = InfoApiExplorer.getLocationBased(numOfRows, pageNo, longitude, latitude, radius);
 
-            BufferedReader br = ApiExplorer.getResponseCode(conn); // 상태코드 반환
+            BufferedReader br = InfoApiExplorer.getResponseCode(conn); // 상태코드 반환
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -127,9 +127,9 @@ public class ApiExplorer {
     public static String getInfo(int numOfRows, int pageNo, int contentId) {
         StringBuilder sb = new StringBuilder();
         try {
-            HttpURLConnection conn = ApiExplorer.getLocationDetail(numOfRows, pageNo, contentId);
+            HttpURLConnection conn = InfoApiExplorer.getLocationDetail(numOfRows, pageNo, contentId);
 
-            BufferedReader br = ApiExplorer.getResponseCode(conn); // 상태코드 반환
+            BufferedReader br = InfoApiExplorer.getResponseCode(conn); // 상태코드 반환
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -147,9 +147,9 @@ public class ApiExplorer {
     public static String getInfo(int numOfRows, int pageNo, String keyword) {
         StringBuilder sb = new StringBuilder();
         try {
-            HttpURLConnection conn = ApiExplorer.getLocationKeyword(numOfRows, pageNo, keyword);
+            HttpURLConnection conn = InfoApiExplorer.getLocationKeyword(numOfRows, pageNo, keyword);
 
-            BufferedReader br = ApiExplorer.getResponseCode(conn); // 상태코드 반환
+            BufferedReader br = InfoApiExplorer.getResponseCode(conn); // 상태코드 반환
 
             String line;
             while ((line = br.readLine()) != null) {

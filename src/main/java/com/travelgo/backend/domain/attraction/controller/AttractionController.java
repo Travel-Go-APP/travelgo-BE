@@ -2,7 +2,8 @@ package com.travelgo.backend.domain.attraction.controller;
 
 import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
 import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
-import com.travelgo.backend.domain.attraction.entity.ApiExplorer;
+import com.travelgo.backend.domain.attraction.entity.DataApiExplorer;
+import com.travelgo.backend.domain.attraction.entity.InfoApiExplorer;
 import com.travelgo.backend.domain.attraction.service.AttractionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,8 +27,8 @@ public class AttractionController {
 
     @Operation(summary = "명소 저장", description = "정보를 받아 명소를 저장한다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> saveAttraction(@Valid @RequestPart(value = "attractionRequest")AttractionRequest attractionRequest,
-                                            @RequestPart(value = "image", required = false)List<MultipartFile> image) throws IOException {
+    public ResponseEntity<?> saveAttraction(@Valid @RequestPart(value = "attractionRequest") AttractionRequest attractionRequest,
+                                            @RequestPart(value = "image", required = false) List<MultipartFile> image) throws IOException {
 
         return new ResponseEntity<>(attractionService.saveAttraction(attractionRequest, image), HttpStatusCode.valueOf(200));
     }
@@ -53,67 +54,77 @@ public class AttractionController {
     }
 
     @Operation(summary = "DB에 저장된 전체 명소 검색", description = "DB에 저장된 전체 명소를 가져옵니다.")
-    @GetMapping("/findAll")
+    @GetMapping("/find-all")
     public ResponseEntity<List<AttractionResponse>> findAll() {
         return new ResponseEntity<>(attractionService.getList(), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 위치기반 api 실행", description = "현재 위치에서 반경 radius 안에 있는 관광지의 정보를 불러온다.")
-    @GetMapping("/load/locationBase")
+    @GetMapping("/load/location-base")
     public ResponseEntity<String> loadApi(@RequestParam(name = "numOfRows") int numOfRows,
                                           @RequestParam(name = "pageNo") int pageNo,
                                           @RequestParam(name = "longitude") double longitude,
                                           @RequestParam(name = "latitude") double latitude,
                                           @RequestParam(name = "radius") int radius) {
-        String result = ApiExplorer.getInfo(numOfRows, pageNo, longitude, latitude, radius);
+        String result = InfoApiExplorer.getInfo(numOfRows, pageNo, longitude, latitude, radius);
         return new ResponseEntity<>(result, HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 상세 정보 api 실행", description = "타입별 공통 관광 정보를 불러온다.")
-    @GetMapping("/load/locationDetail")
+    @GetMapping("/load/location-detail")
     public ResponseEntity<String> loadApi(@RequestParam(name = "numOfRows") int numOfRows,
                                           @RequestParam(name = "pageNo") int pageNo,
                                           @RequestParam(name = "contentId") int contentId) {
-        String result = ApiExplorer.getInfo(numOfRows, pageNo, contentId);
+        String result = InfoApiExplorer.getInfo(numOfRows, pageNo, contentId);
         return new ResponseEntity<>(result, HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 키워드 api 실행", description = "지역 키워드로 공통 관광 정보를 불러온다.")
-    @GetMapping("/load/locationKeyword")
+    @GetMapping("/load/location-keyword")
     public ResponseEntity<String> loadApi(@RequestParam(name = "numOfRows") int numOfRows,
                                           @RequestParam(name = "pageNo") int pageNo,
                                           @RequestParam(name = "keyword") String keyword) {
-        String result = ApiExplorer.getInfo(numOfRows, pageNo, keyword);
+        String result = InfoApiExplorer.getInfo(numOfRows, pageNo, keyword);
         return new ResponseEntity<>(result, HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 위치기반 api 정보 저장", description = "현재 위치에서 반경 radius 안에 있는 관광지를 db에 저장한다.")
-    @PostMapping("/load/locationBase")
+    @PostMapping("/load/location-base")
     public ResponseEntity<List<AttractionResponse>> saveApi(@RequestParam(name = "numOfRows") int numOfRows,
                                                             @RequestParam(name = "pageNo") int pageNo,
                                                             @RequestParam(name = "longitude") double longitude,
                                                             @RequestParam(name = "latitude") double latitude,
                                                             @RequestParam(name = "radius") int radius) {
-        String result = ApiExplorer.getInfo(numOfRows, pageNo, longitude, latitude, radius);
+        String result = InfoApiExplorer.getInfo(numOfRows, pageNo, longitude, latitude, radius);
         return new ResponseEntity<>(attractionService.locationBaseInit(result), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 공통 정보 api 정보 저장", description = "공통 정보에 있는 관광지를 db에 저장한다.")
-    @PostMapping("/load/locationDetail")
+    @PostMapping("/load/location-detail")
     public ResponseEntity<List<AttractionResponse>> saveApi(@RequestParam(name = "numOfRows") int numOfRows,
                                                             @RequestParam(name = "pageNo") int pageNo,
                                                             @RequestParam(name = "contentId") int contentId) {
-        String result = ApiExplorer.getInfo(numOfRows, pageNo, contentId);
+        String result = InfoApiExplorer.getInfo(numOfRows, pageNo, contentId);
         return new ResponseEntity<>(attractionService.locationDetailInit(result), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 키워드 api 정보 저장", description = "키워드로 검색된 관광지를 db에 저장한다.")
-    @PostMapping("/load/locationKeyword")
+    @PostMapping("/load/location-keyword")
     public ResponseEntity<List<AttractionResponse>> saveLocationDetail(@RequestParam(name = "numOfRows") int numOfRows,
                                                                        @RequestParam(name = "pageNo") int pageNo,
                                                                        @RequestParam(name = "keyword") String keyword) {
-        String result = ApiExplorer.getInfo(numOfRows, pageNo, keyword);
+        String result = InfoApiExplorer.getInfo(numOfRows, pageNo, keyword);
         return new ResponseEntity<>(attractionService.locationKeywordInit(result), HttpStatusCode.valueOf(200));
+    }
+
+    @Operation(summary = "공공 데이터 포털 방문자 수 api 실행", description = "지자체별 방문자 수를 받는 api를 실행한다.")
+    @GetMapping("/load/location-data")
+    public ResponseEntity<String> loadApi(@RequestParam(name = "numOfRows") int numOfRows,
+                                          @RequestParam(name = "pageNo") int pageNo,
+                                          @RequestParam(name = "startDate") int startDate,
+                                          @RequestParam(name = "endDate") int endDate) {
+        String result = DataApiExplorer.getInfo(numOfRows, pageNo, startDate, endDate);
+        return new ResponseEntity<>(result, HttpStatusCode.valueOf(200));
     }
 
 }
