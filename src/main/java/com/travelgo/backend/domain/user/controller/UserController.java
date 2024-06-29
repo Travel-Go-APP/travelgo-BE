@@ -84,7 +84,7 @@ public class UserController {
     }
 
     @Operation(summary = "메인 페이지 정보 가져오기", description = "유저 메인 페이지 정보 조회")
-    @PostMapping("/getMain")
+    @PostMapping("/get-main")
     public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request){
         MainPageResponse response = userService.getMainPageResponse(request);
         return ResponseEntity.ok(response);
