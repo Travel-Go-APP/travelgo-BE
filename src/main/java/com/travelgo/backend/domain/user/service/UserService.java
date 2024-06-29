@@ -13,8 +13,6 @@ import com.travelgo.backend.global.exception.constant.ErrorCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +26,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final GeoCodingService geoCodingService;
+
+    BadWordFiltering badWordFiltering = new BadWordFiltering();
 
     @Transactional
     public void signUp(UserRequest.SignUp request){
@@ -52,15 +52,20 @@ public class UserService {
     }
 
 
-    public boolean CheckNicknameExists(@Valid String nickName){
-        return userRepository.findByNickname(nickName).isPresent();
+    public void checkNicknameValidity(@Valid String nickName){
+        if(userRepository.findByNickname(nickName).isPresent()){
+            throw new CustomException(ErrorCode.ALREADY_EXIST_USER);
+        }else if(badWordFiltering.check(nickName)){
+            throw new CustomException(ErrorCode.INCLUDE_SLANG);
+        }
     }
 
     @Transactional
     public UserResponse.UpdateNickname updateUser(String email, String nickName){
         User user = getUser(email);
-        user.changeNickname(nickName);
+        checkNicknameValidity(nickName);
 
+        user.changeNickname(nickName);
         userRepository.save(user);
 
         return new UserResponse.UpdateNickname(user.getEmail(), user.getNickname());

@@ -4,10 +4,10 @@ import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
-import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.exception.UserNotFoundException;
-import com.travelgo.backend.domain.user.service.GeoCodingService;
 import com.travelgo.backend.domain.user.service.UserService;
+import com.travelgo.backend.global.exception.CustomException;
+import com.travelgo.backend.global.exception.constant.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -40,14 +40,20 @@ public class UserController {
     }
 
     //1개짜리 이메일만 있으면 됨
-    @Operation(summary = "닉네임 중복 체크", description = "DB 대조를 통한 닉네임 가능 여부 체크")
+    @Operation(summary = "닉네임 체크", description = "DB 대조를 통한 닉네임 가능 여부 체크(중복, 욕설)")
     @PostMapping("/check-nickname")
     public ResponseEntity<Void> checkNickname(@Valid @RequestParam(name = "nickName") String nickname){
-        boolean exists = userService.CheckNicknameExists(nickname);
-        if(exists){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }else {
+        try{
+            userService.checkNicknameValidity(nickname);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (CustomException e){
+            if(e.getErrorCode() == ErrorCode.ALREADY_EXIST_USER){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }else if(e.getErrorCode() == ErrorCode.INCLUDE_SLANG){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }else{
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 

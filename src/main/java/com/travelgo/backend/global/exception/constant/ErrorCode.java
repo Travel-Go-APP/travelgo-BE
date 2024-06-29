@@ -20,6 +20,7 @@ public enum ErrorCode {
     NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."),
     NOT_FOUND_GEO(HttpStatus.NOT_FOUND, "위경도로 지역을 찾을 수 없습니다."),
     NOT_FOUND_KAKAO(HttpStatus.NOT_FOUND, "카카오 API에서 올바른 응답을 가져오지 못했습니다."),
+    ALREADY_EXIST_USER(HttpStatus.NOT_FOUND, "이미 사용 중인 닉네임입니다."),
 
     DUPLICATED_USER(HttpStatus.CREATED, "이미 존재하는 회원입니다."),
     DUPLICATED_ITEM(HttpStatus.CREATED, "이미 존재하는 아이템입니다."),
