@@ -1,6 +1,6 @@
 package com.travelgo.backend.domain.attraction.entity;
 
-import com.travelgo.backend.domain.area.entity.Area;
+import com.travelgo.backend.domain.area.entity.AreaCode;
 import com.travelgo.backend.domain.path.entity.Path;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -20,7 +20,7 @@ public class Attraction extends BaseTimeEntity {
     private Long attractionId;
 
     @Enumerated(EnumType.STRING)
-    private Area area;
+    private AreaCode area;
 
     private boolean hiddenFlag; //히든 스테이지 설정
 
@@ -35,7 +35,9 @@ public class Attraction extends BaseTimeEntity {
 
     private Double longitude; //경도
 
-    @Column(length = 50000)
+    private String attractionImageUrl; // 사진 URL
+
+    @Column(columnDefinition = "TEXT")
     private String description; //설명
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +45,7 @@ public class Attraction extends BaseTimeEntity {
     private Path path;
 
     @Builder
-    public Attraction(Area area, boolean hiddenFlag, String attractionName, String homepage, String address, Double latitude, Double longitude, String description) {
+    public Attraction(AreaCode area, boolean hiddenFlag, String attractionName, String homepage, String address, Double latitude, Double longitude, String attractionImageUrl, String description) {
         this.area = area;
         this.hiddenFlag = hiddenFlag;
         this.attractionName = attractionName;
@@ -51,6 +53,7 @@ public class Attraction extends BaseTimeEntity {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.attractionImageUrl = attractionImageUrl;
         this.description = description;
     }
 }
