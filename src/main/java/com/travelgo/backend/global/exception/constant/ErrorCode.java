@@ -17,6 +17,7 @@ public enum ErrorCode {
     NOT_FOUND_ATTRACTION(HttpStatus.NOT_FOUND, "업체를 찾을 수 없습니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."),
+    NOT_FOUND_AREA(HttpStatus.NOT_FOUND, "지역 코드를 찾을 수 없습니다."),
 
     DUPLICATED_USER(HttpStatus.CREATED, "이미 존재하는 회원입니다."),
     DUPLICATED_ITEM(HttpStatus.CREATED, "이미 존재하는 아이템입니다."),
