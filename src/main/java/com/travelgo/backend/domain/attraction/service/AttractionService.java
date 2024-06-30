@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.attraction.service;
 
+import com.travelgo.backend.domain.area.entity.AreaCode;
 import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
 import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
@@ -58,20 +59,24 @@ public class AttractionService {
                         .address((String) getObject.get("addr1"))
                         .longitude(Double.parseDouble((String) getObject.get("mapx")))
                         .latitude(Double.parseDouble((String) getObject.get("mapy")))
+                        .attractionImageUrl((String) getObject.get("firstimage"))
+                        .area(AreaCode.getAreaCode((String) getObject.get("areacode")))
                         .description(null)
                         .homepage(null)
                         .hiddenFlag(false)
-                        .area(null)
                         .build();
 
-                if (!validateDuplicateAttraction(attractionInfo)) { // 명소 이름으로 중복 체크
+                if (!isAttractionDuplicated(attractionInfo)) { // 명소 이름으로 중복 체크
                     attractionList.add(attractionInfo);
-                    Attraction saveAttraction = save(attractionInfo);
-                    attractionImageService.save((String) getObject.get("firstimage"), saveAttraction);
-                }
+                    save(attractionInfo);
+//                    attractionImageService.save((String) getObject.get("firstimage"), saveAttraction);
+                } else
+                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
             }
             log.info(String.valueOf(attractionInfo));
 
+        } catch (CustomException e) {
+            throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,20 +108,25 @@ public class AttractionService {
                         .address((String) getObject.get("addr1"))
                         .longitude(Double.parseDouble((String) getObject.get("mapx")))
                         .latitude(Double.parseDouble((String) getObject.get("mapy")))
+                        .attractionImageUrl((String) getObject.get("firstimage"))
                         .description((String) getObject.get("overview"))
                         .homepage((String) getObject.get("homepage"))
+                        .area(AreaCode.getAreaCode((String) getObject.get("areacode")))
                         .hiddenFlag(false)
-                        .area(null)
                         .build();
 
-                if (!validateDuplicateAttraction(attractionInfo)) { // 명소 이름으로 중복 체크
+
+                if (!isAttractionDuplicated(attractionInfo)) { // 명소 이름으로 중복 체크
                     attractionList.add(attractionInfo);
-                    Attraction saveAttraction = save(attractionInfo);
-                    attractionImageService.save((String) getObject.get("firstimage"), saveAttraction);
-                }
+                    save(attractionInfo);
+//                    attractionImageService.save((String) getObject.get("firstimage"), saveAttraction); // 다중 이미지 저장
+                } else
+                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
             }
             log.info(String.valueOf(attractionInfo));
 
+        } catch (CustomException e) {
+            throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,20 +158,24 @@ public class AttractionService {
                         .address((String) getObject.get("addr1"))
                         .longitude(Double.parseDouble((String) getObject.get("mapx")))
                         .latitude(Double.parseDouble((String) getObject.get("mapy")))
+                        .attractionImageUrl((String) getObject.get("firstimage"))
+                        .area(AreaCode.getAreaCode((String) getObject.get("areacode")))
                         .description(null)
                         .homepage(null)
                         .hiddenFlag(false)
-                        .area(null)
                         .build();
 
-                if (!validateDuplicateAttraction(attractionInfo)) { // 명소 이름으로 중복 체크
+                if (!isAttractionDuplicated(attractionInfo)) { // 명소 이름으로 중복 체크
                     attractionList.add(attractionInfo);
-                    Attraction saveAttraction = save(attractionInfo);
-                    attractionImageService.save((String) getObject.get("firstimage"), saveAttraction);
-                }
+                    save(attractionInfo);
+//                    attractionImageService.save((String) getObject.get("firstimage"), saveAttraction);
+                } else
+                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
             }
             log.info(String.valueOf(attractionInfo));
 
+        } catch (CustomException e) {
+            throw new CustomException(e.getErrorCode());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,14 +185,15 @@ public class AttractionService {
     }
 
     @Transactional
-    public AttractionResponse saveAttraction(AttractionRequest attractionRequest, List<MultipartFile> image) throws IOException {
+    public AttractionResponse saveAttraction(AttractionRequest attractionRequest, MultipartFile image) throws IOException {
         Attraction attraction = createAttraction(attractionRequest);
         Attraction savedAttraction = attractionRepository.save(attraction);
 
-        if(!image.isEmpty()){
-            for (MultipartFile multipartFile : image)
-                attractionImageService.save(multipartFile, attraction);
-        }
+//        if(!image.isEmpty()){ // 다중 이미지 업로드
+//            for (MultipartFile multipartFile : image)
+//                attractionImageService.save(multipartFile, attraction);
+//        }
+        attractionImageService.save(image, attraction); //단일 이미지 업로드
 
         return getDetail(savedAttraction.getAttractionId());
     }
@@ -190,29 +205,34 @@ public class AttractionService {
 
     @Transactional
     public void delete(Long attractionId) {
-        attractionRepository.deleteById(attractionId);
-        List<AttractionImage> images = attractionImageService.getImages(attractionId);
+//        List<AttractionImage> images = attractionImageService.getImages(attractionId);
+//
+//        if (!images.isEmpty()) {
+//            for (AttractionImage image : images)
+//                s3UploadService.fileDelete(image.getAttractionImageUrl());
+//        }
 
-        if(!images.isEmpty()){
-            for (AttractionImage image : images)
-                s3UploadService.fileDelete(image.getAttractionImageUrl());
-        }
-
-        attractionImageService.deleteAllById(attractionId);
-        attractionRepository.deleteById(attractionId);
+//        attractionImageService.deleteAllById(attractionId); // s3 다중 이미지
+        Attraction attraction = getAttraction(attractionId);
+        attractionRepository.delete(attraction);
     }
 
     @Transactional
     public void deleteAll() {
-        attractionImageService.deleteAll();
+//        attractionImageService.deleteAll(); // s3 다중 이미지
         attractionRepository.deleteAll();
     }
 
-    public List<AttractionResponse> getList(){
+    public List<AttractionResponse> getList() {
         return attractionRepository.findAll().stream()
                 .map(Attraction::getAttractionId)
                 .map(this::getDetail)
                 .toList();
+    }
+
+    public AreaCode getArea(String code) {
+        AreaCode area = AreaCode.valueOf(code);
+        return area;
     }
 
     public AttractionResponse getDetail(Long attractionId) {
@@ -236,14 +256,14 @@ public class AttractionService {
 
     private Attraction getAttraction(Long attractionId) {
         return attractionRepository.findById(attractionId)
-                .orElseThrow(() -> new CustomException(ErrorCode.DUPLICATED_ATTRACTION));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
     }
 
     private static AttractionResponse createAttractionResponse(Attraction attraction) {
         return new AttractionResponse(attraction);
     }
 
-    private boolean validateDuplicateAttraction(Attraction attraction) {
+    private boolean isAttractionDuplicated(Attraction attraction) {
         return attractionRepository.findByAttractionName(attraction.getAttractionName()) != null;
     }
 

@@ -1,8 +1,7 @@
 package com.travelgo.backend.domain.attraction.dto;
 
-import com.travelgo.backend.domain.area.entity.Area;
+import com.travelgo.backend.domain.area.entity.AreaCode;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
-import jakarta.persistence.Lob;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,9 +17,11 @@ public class AttractionResponse {
 
     private Double longitude; //경도
 
+    private String attractionImageUrl; // 이미지
+
     private String description; //설명
 
-    private Area area;
+    private AreaCode area;
 
     @Builder
     public AttractionResponse(Attraction attraction) {
@@ -29,6 +30,7 @@ public class AttractionResponse {
         this.homepage = attraction.getHomepage();
         this.latitude = attraction.getLatitude();
         this.longitude = attraction.getLongitude();
+        this.attractionImageUrl = attraction.getAttractionImageUrl();
         this.description = attraction.getDescription();
         this.area = attraction.getArea();
     }

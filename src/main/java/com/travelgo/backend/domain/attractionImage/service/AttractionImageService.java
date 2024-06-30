@@ -27,12 +27,6 @@ public class AttractionImageService {
     }
 
     @Transactional
-    public void save(String imageUrl, Attraction attraction) {
-        AttractionImage attractionImage = new AttractionImage(imageUrl, attraction);
-        attractionImageRepository.save(attractionImage);
-    }
-
-    @Transactional
     public void delete(Long attractionImageId) {
         attractionImageRepository.deleteById(attractionImageId);
     }
