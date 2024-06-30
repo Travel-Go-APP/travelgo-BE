@@ -25,9 +25,11 @@ public class QAttraction extends EntityPathBase<Attraction> {
 
     public final StringPath address = createString("address");
 
-    public final EnumPath<com.travelgo.backend.domain.area.entity.Area> area = createEnum("area", com.travelgo.backend.domain.area.entity.Area.class);
+    public final EnumPath<com.travelgo.backend.domain.area.entity.AreaCode> area = createEnum("area", com.travelgo.backend.domain.area.entity.AreaCode.class);
 
     public final NumberPath<Long> attractionId = createNumber("attractionId", Long.class);
+
+    public final StringPath attractionImageUrl = createString("attractionImageUrl");
 
     public final StringPath attractionName = createString("attractionName");
 
