@@ -25,13 +25,15 @@ public class QAttraction extends EntityPathBase<Attraction> {
 
     public final StringPath address = createString("address");
 
-    public final EnumPath<com.travelgo.backend.domain.area.entity.AreaCode> area = createEnum("area", com.travelgo.backend.domain.area.entity.AreaCode.class);
+    public final EnumPath<com.travelgo.backend.domain.attraction.model.AreaCode> area = createEnum("area", com.travelgo.backend.domain.attraction.model.AreaCode.class);
 
     public final NumberPath<Long> attractionId = createNumber("attractionId", Long.class);
 
     public final StringPath attractionImageUrl = createString("attractionImageUrl");
 
     public final StringPath attractionName = createString("attractionName");
+
+    public final EnumPath<com.travelgo.backend.domain.attraction.model.BigCategory> bigCategory = createEnum("bigCategory", com.travelgo.backend.domain.attraction.model.BigCategory.class);
 
     //inherited
     public final StringPath createdAt = _super.createdAt;
@@ -40,16 +42,18 @@ public class QAttraction extends EntityPathBase<Attraction> {
 
     public final BooleanPath hiddenFlag = createBoolean("hiddenFlag");
 
-    public final StringPath homepage = createString("homepage");
-
     public final NumberPath<Double> latitude = createNumber("latitude", Double.class);
 
     public final NumberPath<Double> longitude = createNumber("longitude", Double.class);
+
+    public final EnumPath<com.travelgo.backend.domain.attraction.model.MiddleCategory> middleCategory = createEnum("middleCategory", com.travelgo.backend.domain.attraction.model.MiddleCategory.class);
 
     //inherited
     public final StringPath modifiedAt = _super.modifiedAt;
 
     public final com.travelgo.backend.domain.path.entity.QPath path;
+
+    public final EnumPath<com.travelgo.backend.domain.attraction.model.SmallCategory> smallCategory = createEnum("smallCategory", com.travelgo.backend.domain.attraction.model.SmallCategory.class);
 
     public QAttraction(String variable) {
         this(Attraction.class, forVariable(variable), INITS);
