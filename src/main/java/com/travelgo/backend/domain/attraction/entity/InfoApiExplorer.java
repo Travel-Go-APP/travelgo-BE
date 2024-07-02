@@ -1,5 +1,7 @@
 package com.travelgo.backend.domain.attraction.entity;
 
+import com.travelgo.backend.domain.attraction.model.AreaCode;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,16 +39,37 @@ import java.nio.charset.StandardCharsets;
 
 public class InfoApiExplorer {
 
-    public static HttpURLConnection getLocationDetail(int numOfRows, int pageNo, int contentId) throws IOException {
-        StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/KorService1/detailCommon1"); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + "=qQGmrHZLWFbuo8cT4CGtZpuYOKZDJBHtoMygLD6eC4F8erExrBQEUWda/Z3kNQXSeLNd/Nc1nM6/AYiNTJD47w==");
+    public static final String SERVICE_KEY = "=qQGmrHZLWFbuo8cT4CGtZpuYOKZDJBHtoMygLD6eC4F8erExrBQEUWda/Z3kNQXSeLNd/Nc1nM6/AYiNTJD47w==";
+
+    public static HttpURLConnection getArea(int numOfRows, int pageNo, AreaCode areaCode) throws IOException {
+        StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/KorService1/areaBasedList1"); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + SERVICE_KEY);
         urlBuilder.append("&" + URLEncoder.encode("numOfRows", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(numOfRows), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("pageNo", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(pageNo), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("MobileOS", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("ETC", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("MobileApp", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("TravelGo", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("_type", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("json", StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("listYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("arrange", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("A", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("contentTypeId", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(12), StandardCharsets.UTF_8));
-        urlBuilder.append("&" + URLEncoder.encode("contentId", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(contentId), StandardCharsets.UTF_8));
+
+        urlBuilder.append("&" + URLEncoder.encode("areaCode", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(areaCode.getCode()), StandardCharsets.UTF_8));
+
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        return conn;
+    }
+
+    public static HttpURLConnection getDetail(int numOfRows, int pageNo, Long contentId) throws IOException {
+        StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/KorService1/detailCommon1"); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + SERVICE_KEY);
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(numOfRows), StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("pageNo", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(pageNo), StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("MobileOS", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("ETC", StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("MobileApp", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("TravelGo", StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("_type", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("json", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("defaultYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("firstImageYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("areacodeYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
@@ -54,6 +77,9 @@ public class InfoApiExplorer {
         urlBuilder.append("&" + URLEncoder.encode("addrinfoYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("mapinfoYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("overviewYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("contentTypeId", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(12), StandardCharsets.UTF_8));
+
+        urlBuilder.append("&" + URLEncoder.encode("contentId", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(contentId), StandardCharsets.UTF_8));
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -62,9 +88,9 @@ public class InfoApiExplorer {
         return conn;
     }
 
-    public static HttpURLConnection getLocationBased(int numOfRows, int pageNo, double longitude, double latitude, int radius) throws IOException {
+    public static HttpURLConnection getRange(int numOfRows, int pageNo, double longitude, double latitude, int radius) throws IOException {
         StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/KorService1/locationBasedList1"); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + "=qQGmrHZLWFbuo8cT4CGtZpuYOKZDJBHtoMygLD6eC4F8erExrBQEUWda/Z3kNQXSeLNd/Nc1nM6/AYiNTJD47w==");
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + SERVICE_KEY);
         urlBuilder.append("&" + URLEncoder.encode("numOfRows", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(numOfRows), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("pageNo", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(pageNo), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("MobileOS", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("ETC", StandardCharsets.UTF_8));
@@ -72,10 +98,11 @@ public class InfoApiExplorer {
         urlBuilder.append("&" + URLEncoder.encode("_type", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("json", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("listYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("arrange", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("A", StandardCharsets.UTF_8));
+        urlBuilder.append("&" + URLEncoder.encode("contentTypeId", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(12), StandardCharsets.UTF_8));
+
         urlBuilder.append("&" + URLEncoder.encode("mapX", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(longitude), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("mapY", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(latitude), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("radius", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(radius), StandardCharsets.UTF_8));
-        urlBuilder.append("&" + URLEncoder.encode("contentTypeId", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(12), StandardCharsets.UTF_8));
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -84,9 +111,9 @@ public class InfoApiExplorer {
         return conn;
     }
 
-    public static HttpURLConnection getLocationKeyword(int numOfRows, int pageNo, String keyword) throws IOException {
+    public static HttpURLConnection getKeyword(int numOfRows, int pageNo, String keyword) throws IOException {
         StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/KorService1/searchKeyword1"); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + "=qQGmrHZLWFbuo8cT4CGtZpuYOKZDJBHtoMygLD6eC4F8erExrBQEUWda/Z3kNQXSeLNd/Nc1nM6/AYiNTJD47w==");
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + SERVICE_KEY);
         urlBuilder.append("&" + URLEncoder.encode("numOfRows", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(numOfRows), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("pageNo", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(pageNo), StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("MobileOS", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("ETC", StandardCharsets.UTF_8));
@@ -94,8 +121,9 @@ public class InfoApiExplorer {
         urlBuilder.append("&" + URLEncoder.encode("_type", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("json", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("listYN", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("Y", StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("arrange", StandardCharsets.UTF_8) + "=" + URLEncoder.encode("A", StandardCharsets.UTF_8));
-        urlBuilder.append("&" + URLEncoder.encode("keyword", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8));
         urlBuilder.append("&" + URLEncoder.encode("contentTypeId", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(12), StandardCharsets.UTF_8));
+
+        urlBuilder.append("&" + URLEncoder.encode("keyword", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8));
 
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -104,10 +132,12 @@ public class InfoApiExplorer {
         return conn;
     }
 
-    public static String getInfo(int numOfRows, int pageNo, double longitude, double latitude, int radius) {
+
+    // 지역 기반
+    public static String getAreaInfo(int numOfRows, int pageNo, AreaCode areaCode) {
         StringBuilder sb = new StringBuilder();
         try {
-            HttpURLConnection conn = InfoApiExplorer.getLocationBased(numOfRows, pageNo, longitude, latitude, radius);
+            HttpURLConnection conn = InfoApiExplorer.getArea(numOfRows, pageNo, areaCode);
 
             BufferedReader br = InfoApiExplorer.getResponseCode(conn); // 상태코드 반환
 
@@ -124,10 +154,11 @@ public class InfoApiExplorer {
         return sb.toString();
     }
 
-    public static String getInfo(int numOfRows, int pageNo, int contentId) {
+    // 세부 정보
+    public static String getDetailInfo(int numOfRows, int pageNo, Long contentId) {
         StringBuilder sb = new StringBuilder();
         try {
-            HttpURLConnection conn = InfoApiExplorer.getLocationDetail(numOfRows, pageNo, contentId);
+            HttpURLConnection conn = InfoApiExplorer.getDetail(numOfRows, pageNo, contentId);
 
             BufferedReader br = InfoApiExplorer.getResponseCode(conn); // 상태코드 반환
 
@@ -144,10 +175,34 @@ public class InfoApiExplorer {
         return sb.toString();
     }
 
-    public static String getInfo(int numOfRows, int pageNo, String keyword) {
+
+    // 현재 위치 기반
+    public static String getRangeInfo(int numOfRows, int pageNo, double longitude, double latitude, int radius) {
         StringBuilder sb = new StringBuilder();
         try {
-            HttpURLConnection conn = InfoApiExplorer.getLocationKeyword(numOfRows, pageNo, keyword);
+            HttpURLConnection conn = InfoApiExplorer.getRange(numOfRows, pageNo, longitude, latitude, radius);
+
+            BufferedReader br = InfoApiExplorer.getResponseCode(conn); // 상태코드 반환
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            br.close();
+            conn.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
+
+
+    // 키워드 기반
+    public static String getKeywordInfo(int numOfRows, int pageNo, String keyword) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            HttpURLConnection conn = InfoApiExplorer.getKeyword(numOfRows, pageNo, keyword);
 
             BufferedReader br = InfoApiExplorer.getResponseCode(conn); // 상태코드 반환
 

@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 
 public class DataApiExplorer {
 
-    public static HttpURLConnection getCountData(int numOfRows, int pageNo, int start, int end) throws IOException {
+    public static HttpURLConnection getCount(int numOfRows, int pageNo, int start, int end) throws IOException {
         StringBuilder urlBuilder = new StringBuilder("https://apis.data.go.kr/B551011/DataLabService/metcoRegnVisitrDDList"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey", StandardCharsets.UTF_8) + "=qQGmrHZLWFbuo8cT4CGtZpuYOKZDJBHtoMygLD6eC4F8erExrBQEUWda/Z3kNQXSeLNd/Nc1nM6/AYiNTJD47w==");
         urlBuilder.append("&" + URLEncoder.encode("numOfRows", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(String.valueOf(numOfRows), StandardCharsets.UTF_8));
@@ -40,11 +40,11 @@ public class DataApiExplorer {
         return conn;
     }
 
-
-    public static String getInfo(int numOfRows, int pageNo, int start, int end) {
+    // 방문자 수
+    public static String getCountInfo(int numOfRows, int pageNo, int start, int end) {
         StringBuilder sb = new StringBuilder();
         try {
-            HttpURLConnection conn = DataApiExplorer.getCountData(numOfRows, pageNo, start, end);
+            HttpURLConnection conn = DataApiExplorer.getCount(numOfRows, pageNo, start, end);
 
             BufferedReader br = DataApiExplorer.getResponseCode(conn); // 상태코드 반환
 
