@@ -1,4 +1,4 @@
-package com.travelgo.backend.domain.area.entity;
+package com.travelgo.backend.domain.attraction.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.travelgo.backend.global.exception.CustomException;
@@ -37,20 +37,20 @@ public enum AreaCode {
     광주("5", "광주"),
     부산("6", "부산"),
     울산("7", "울산"),
-    세종("8", "세종특별자치시"),
-    경기("31", "경기도"),
-    강원도("32", "강원특별자치도"),
-    충북("33", "충청북도"),
-    충남("34", "충청남도"),
-    경북("35", "경상북도"),
-    경남("36", "경상남도"),
-    전북("37", "전북특별자치도"),
-    전남("38", "전라남도"),
+    세종특별자치시("8", "세종특별자치시"),
+    경기도("31", "경기도"),
+    강원특별자치도("32", "강원특별자치도"),
+    충청북도("33", "충청북도"),
+    충청남도("34", "충청남도"),
+    경상북도("35", "경상북도"),
+    경상남도("36", "경상남도"),
+    전북특별자치도("37", "전북특별자치도"),
+    전라남도("38", "전라남도"),
     제주도("39", "제주도");
 
     private final String code;
     @JsonValue // enum 타입을 선택 가능하도록 설정
-    private final String name;
+    private final String title;
 
     public static AreaCode getAreaCode(String code) {
         for (AreaCode areaCode : AreaCode.values()) {

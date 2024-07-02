@@ -1,15 +1,18 @@
 package com.travelgo.backend.domain.attraction.dto;
 
-import com.travelgo.backend.domain.area.entity.AreaCode;
+import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
+import com.travelgo.backend.domain.attraction.model.BigCategory;
+import com.travelgo.backend.domain.attraction.model.MiddleCategory;
+import com.travelgo.backend.domain.attraction.model.SmallCategory;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 public class AttractionResponse {
-    private String attractionName; //위치 이름
+    private Long attractionId;
 
-    private String homepage; // 홈페이지 주소
+    private String attractionName; //위치 이름
 
     private String address; // 주소
 
@@ -23,15 +26,24 @@ public class AttractionResponse {
 
     private AreaCode area;
 
+    private BigCategory bigCategory; //대분류
+
+    private MiddleCategory middleCategory; //중분류
+
+    private SmallCategory smallCategory; //소분류
+
     @Builder
     public AttractionResponse(Attraction attraction) {
+        this.attractionId = attraction.getAttractionId();
         this.attractionName = attraction.getAttractionName();
         this.address = attraction.getAddress();
-        this.homepage = attraction.getHomepage();
         this.latitude = attraction.getLatitude();
         this.longitude = attraction.getLongitude();
         this.attractionImageUrl = attraction.getAttractionImageUrl();
         this.description = attraction.getDescription();
         this.area = attraction.getArea();
+        this.bigCategory = attraction.getBigCategory();
+        this.middleCategory = attraction.getMiddleCategory();
+        this.smallCategory = attraction.getSmallCategory();
     }
 }
