@@ -4,7 +4,6 @@ package com.travelgo.backend.domain.user.dto.Response;
 import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.user.model.Bag;
 import com.travelgo.backend.domain.user.model.Shoes;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -27,11 +26,13 @@ public class UserResponse {
     private int tg;
     private Shoes shoes;
     private Bag bag;
+    private int nextLevelExp;
+    private double percentage;
     private List<Attraction> attractions;
 
     @Getter
     @AllArgsConstructor
-    public static class Attraction{
+    public static class Attraction {
         Area area;
         boolean hiddenFlag;
         String locationName;
@@ -59,7 +60,7 @@ public class UserResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UpdateExp{
+    public static class UpdateExp {
         private String email;
         private int experience;
         private int nextLevelExp;
@@ -71,21 +72,16 @@ public class UserResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Login {
-        @NotNull
         private String username;
-        @NotNull
         private int level;
-        @NotNull
+        private int experience;
+        private int nextLevelExp;
+        private double percentage;
         private int quest;
-        @NotNull
         private String area;
-        @NotNull
         private String email;
-        @NotNull
         private double detectionRange;
-        @NotNull
         private Shoes shoes;
-        @NotNull
         private Bag bag;
     }
 }
