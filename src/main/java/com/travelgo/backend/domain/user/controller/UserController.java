@@ -42,7 +42,7 @@ public class UserController {
     //1개짜리 이메일만 있으면 됨
     @Operation(summary = "닉네임 체크", description = "DB 대조를 통한 닉네임 가능 여부 체크(중복, 욕설)")
     @PostMapping("/check-nickname")
-    public ResponseEntity<Void> checkNickname(@Valid @RequestParam(name = "nickName") String nickname){
+    public ResponseEntity<Void> checkNickname(@RequestParam(name = "nickName") String nickname){
         try{
             userService.checkNicknameValidity(nickname);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -55,7 +55,7 @@ public class UserController {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-    }
+    } // nickname @Valid 굳이 없어도 됨
 
     @Operation(summary = "닉네임 변경", description = "닉네임 변경")
     @PatchMapping("/update-nickname")
