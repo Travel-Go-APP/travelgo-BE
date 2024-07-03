@@ -15,15 +15,11 @@ public class SignUpRequest {
 
     @NotNull
     private String nickname;
-    @NotNull
-    private String shoes;
 
     @Builder
-
-    public SignUpRequest(String email, String nickname, String shoes) {
+    public SignUpRequest(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
-        this.shoes = shoes;
     }
 
     @Getter

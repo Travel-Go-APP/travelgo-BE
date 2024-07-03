@@ -32,20 +32,32 @@ public class QUser extends EntityPathBase<User> {
 
     public final NumberPath<Integer> experience = createNumber("experience", Integer.class);
 
+    public final NumberPath<Double> experienceX = createNumber("experienceX", Double.class);
+
     public final NumberPath<Integer> level = createNumber("level", Integer.class);
+
+    public final NumberPath<Integer> maxSearch = createNumber("maxSearch", Integer.class);
 
     //inherited
     public final StringPath modifiedAt = _super.modifiedAt;
 
+    public final NumberPath<Integer> nextLevelExp = createNumber("nextLevelExp", Integer.class);
+
     public final StringPath nickname = createString("nickname");
 
+    public final NumberPath<Double> percentage = createNumber("percentage", Double.class);
+
     public final StringPath phoneNumber = createString("phoneNumber");
+
+    public final NumberPath<Integer> possibleSearch = createNumber("possibleSearch", Integer.class);
 
     public final NumberPath<Integer> quest = createNumber("quest", Integer.class);
 
     public final EnumPath<com.travelgo.backend.domain.user.model.Shoes> shoes = createEnum("shoes", com.travelgo.backend.domain.user.model.Shoes.class);
 
     public final NumberPath<Integer> tg = createNumber("tg", Integer.class);
+
+    public final NumberPath<Double> tgX = createNumber("tgX", Double.class);
 
     public final NumberPath<Long> userId = createNumber("userId", Long.class);
 

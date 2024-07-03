@@ -1,19 +1,22 @@
 package com.travelgo.backend.domain.user.service;
 
 
+import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
+import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
-import com.travelgo.backend.domain.user.exception.UserAlreadyExistsException;
-import com.travelgo.backend.domain.user.exception.UserNotFoundException;
 import com.travelgo.backend.domain.user.repository.UserRepository;
+import com.travelgo.backend.global.exception.CustomException;
+import com.travelgo.backend.global.exception.constant.ErrorCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -21,82 +24,58 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-
     private final UserRepository userRepository;
     private final GeoCodingService geoCodingService;
 
-    @Transactional
-    public UserResponse signUp(UserRequest.SignUp request){
-        User user = userRepository.findByEmail(request.getEmail());
+    BadWordFiltering badWordFiltering = new BadWordFiltering();
 
-        if(user != null){
-            throw new UserAlreadyExistsException(request.getEmail()+"을 가진 유저가 이미 존재합니다.");
+    @Transactional
+    public void signUp(UserRequest.SignUp request){
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+
+        if(existingUser.isPresent()){
+            throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
-        user = User.createUser(request);
+        User newUser = User.createUser(request);
 
+        userRepository.save(newUser);
+    }
+
+
+    //수정된 로그인 서비스
+    @Transactional
+    public void login(String email) {
+        User user = getUser(email);
+
+        // 로그인 성공 시 아무 작업도 하지 않음
+    }
+
+
+    public void checkNicknameValidity(@Valid String nickName){
+        if(userRepository.findByNickname(nickName).isPresent()){
+            throw new CustomException(ErrorCode.ALREADY_EXIST_USER);
+        }else if(badWordFiltering.check(nickName)){
+            throw new CustomException(ErrorCode.INCLUDE_SLANG);
+        }
+    }
+
+    @Transactional
+    public UserResponse.UpdateNickname updateUser(String email, String nickName){
+        User user = getUser(email);
+        checkNicknameValidity(nickName);
+
+        user.changeNickname(nickName);
         userRepository.save(user);
-        return getUser(user.getEmail());
-    }
 
-    @Transactional
-    public UserResponse.Login login(UserRequest.Login request){
-        User user = userRepository.findByEmail(request.getEmail());
-
-        if(user == null){
-            throw new UserNotFoundException(request.getEmail()+"유저가 존재하지 않습니다.");
-        }
-
-        logger.info("Received login request with latitude: {}, longitude: {}", request.getLatitude(), request.getLongitude());
-
-        String region;
-
-        try{
-            region = geoCodingService.reverseGeocode(request.getLatitude(), request.getLongitude());
-
-            if(region == null){
-                throw new IllegalArgumentException("유효한 지역 정보를 찾을 수 없습니다");
-            }
-        } catch (Exception e){
-            logger.error("GeoCodingService error: ", e);
-            throw new IllegalArgumentException("유효한 지역 정보를 찾을 수 없습니다.", e);
-        }
-
-
-        return new UserResponse.Login(user.getUsername(), user.getLevel(), user.getQuest(), region, user.getEmail(), user.getDetectionRange(), user.getShoes(), user.getBag());
-    }
-
-    public UserResponse getUser(String email){
-        return createResponse(email);
-    }
-
-    public boolean CheckNicknameExists(UserRequest.CheckNickname request){
-        return userRepository.findByNickname(request.getNickname()).isPresent();
-    }
-
-    @Transactional
-    public UserResponse.UpdateNickname updateUser(UserRequest.UpdateNickname request){
-        User user = userRepository.findByEmail(request.getEmail());
-        if(user == null){
-            throw new UserNotFoundException(request.getEmail());
-        }
-        if(request.getNewNickname() != null && !request.getNewNickname().isEmpty()){
-            user.setNickname(request.getNewNickname());
-        }
-        userRepository.save(user);
         return new UserResponse.UpdateNickname(user.getEmail(), user.getNickname());
     }
 
     @Transactional
     public UserResponse.UpdateExp updateExp(UserRequest.UpdateExp request){
-        User user = userRepository.findByEmail(request.getEmail());
+        User user = getUser(request.getEmail());
 
-        if(user == null){
-            throw new UserNotFoundException("유저를 찾을 수 없습니다.");
-        }
-
-        user.addExperience(Integer.parseInt(request.getExperience()));
+        user.addExperience(request.getExperience());
 
         boolean levelUp = false;
         int[] expTable = UserExp.getExpTable();
@@ -117,20 +96,62 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse.DeleteUser deleteUser(UserRequest.DeleteUser request){
-        User user = userRepository.findByEmail(request.getEmail());
-        if(user == null){
-            throw new UserNotFoundException(request.getEmail());
-        }
+    public UserResponse.DeleteUser deleteUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
         userRepository.delete(user);
-        return new UserResponse.DeleteUser(request.getEmail()+"유저가 삭제 되었습니다.");
+
+        return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
     }
 
-    private UserResponse createResponse(String email){
-        User user = userRepository.findByEmail(email);
-        if (user == null){
-            throw new UserNotFoundException(email+"을 가진 유저를 찾을 수 없습니다.");
+    private User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    }
+
+    public MainPageResponse getMainPageResponse(MainPageRequest request){
+        User user = getUser(request.getEmail());
+
+        String area;
+
+        try{
+            area = geoCodingService.reverseGeocode(request.getLatitude(), request.getLongitude());
+
+            if(area == null){
+                throw new CustomException(ErrorCode.NOT_FOUND_AREA);
+            }
+        } catch (Exception e){
+            throw new CustomException(ErrorCode.NOT_FOUND_AREA);
         }
+
+        int[] expTable = UserExp.getExpTable();
+        int currentLevel = user.getLevel();
+        int currentExperience = user.getExperience();
+        int nextLevelExp = expTable[currentLevel];
+        double percentage = (double) currentExperience / nextLevelExp * 100;
+        String visitingBenefit = "경험치 2배";
+        int maxSearch = 10;
+
+        return new MainPageResponse(
+                user.getNickname(),
+                user.getLevel(),
+                user.getExperience(),
+                nextLevelExp,
+                percentage,
+                area,
+                visitingBenefit,
+                user.getShoes(),
+                user.getMaxSearch(),
+                user.getPossibleSearch(),
+                user.getQuest(),
+                user.getDetectionRange(),
+                user.getExperienceX(),
+                user.getTgX(),
+                user.getTg(),
+                user.getWorkCount()
+        );
+    }
+
+    private UserResponse createResponse(User user){
         return UserResponse.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())

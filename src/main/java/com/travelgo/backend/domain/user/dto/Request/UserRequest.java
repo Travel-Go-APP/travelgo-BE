@@ -34,7 +34,7 @@ public class UserRequest {
         private String email;
 
         @NotNull
-        private String experience;
+        private int experience;
     }
 
     @Getter
