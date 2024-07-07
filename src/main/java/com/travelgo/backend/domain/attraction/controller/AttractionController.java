@@ -1,8 +1,7 @@
 package com.travelgo.backend.domain.attraction.controller;
 
-import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
-import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
+import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
 import com.travelgo.backend.domain.attraction.entity.DataApiExplorer;
 import com.travelgo.backend.domain.attraction.entity.InfoApiExplorer;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
@@ -37,14 +36,14 @@ public class AttractionController {
     public ResponseEntity<?> deleteAttraction(@PathVariable("attractionId") Long attractionId) {
 
         attractionService.delete(attractionId);
-        return new ResponseEntity<>(null, HttpStatusCode.valueOf(200));
+        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "전체 명소 삭제", description = "전체 명소를 삭제합니다.")
     @DeleteMapping("/deleteAll")
     public ResponseEntity<?> deleteAll() {
         attractionService.deleteAll();
-        return new ResponseEntity<>(null, HttpStatusCode.valueOf(200));
+        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
     }
 
     /**
@@ -61,21 +60,21 @@ public class AttractionController {
 
     @Operation(summary = "공공 데이터 포털 세부 정보 api 정보 저장", description = "세부 관광지 정보를 db에 저장한다.")
     @PostMapping("/save/detail")
-    public ResponseEntity<List<AttractionResponse>> saveDetailApi(@RequestParam(name = "numOfRows") int numOfRows,
-                                                                  @RequestParam(name = "pageNo") int pageNo,
-                                                                  @RequestParam(name = "attractionId") Long attractionId) {
+    public ResponseEntity<?> saveDetailApi(@RequestParam(name = "numOfRows") int numOfRows,
+                                        @RequestParam(name = "pageNo") int pageNo,
+                                        @RequestParam(name = "attractionId") Long attractionId) {
         String result = InfoApiExplorer.getDetailInfo(numOfRows, pageNo, attractionId);
-        List<AttractionResponse> responseList = attractionService.detailInit(result);
+        attractionService.detailInit(result);
 
-        return new ResponseEntity<>(responseList, HttpStatusCode.valueOf(200));
+        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
 
     }
 
     @Operation(summary = "공공 데이터 포털 지역별 api 정보 저장", description = "지역별 관광지 정보를 db에 저장한다.")
     @PostMapping("/save/area")
     public ResponseEntity<?> saveAreaApi(@RequestParam(name = "numOfRows") int numOfRows,
-                                         @RequestParam(name = "pageNo") int pageNo,
-                                         @RequestParam(name = "areaCode") AreaCode areaCode) {
+                                      @RequestParam(name = "pageNo") int pageNo,
+                                      @RequestParam(name = "areaCode") AreaCode areaCode) {
         String result = InfoApiExplorer.getAreaInfo(numOfRows, pageNo, areaCode);
         List<Long> contentIdList = attractionService.areaInit(result);
 
@@ -89,10 +88,10 @@ public class AttractionController {
     @Operation(summary = "공공 데이터 포털 위치기반 api 정보 저장", description = "현재 위치에서 반경 radius 안에 있는 관광지를 db에 저장한다.")
     @PostMapping("/save/range")
     public ResponseEntity<?> saveRangeApi(@RequestParam(name = "numOfRows") int numOfRows,
-                                          @RequestParam(name = "pageNo") int pageNo,
-                                          @RequestParam(name = "longitude") double longitude,
-                                          @RequestParam(name = "latitude") double latitude,
-                                          @RequestParam(name = "radius") int radius) {
+                                       @RequestParam(name = "pageNo") int pageNo,
+                                       @RequestParam(name = "longitude") double longitude,
+                                       @RequestParam(name = "latitude") double latitude,
+                                       @RequestParam(name = "radius") int radius) {
         String result = InfoApiExplorer.getRangeInfo(numOfRows, pageNo, longitude, latitude, radius);
         List<Long> contentIdList = attractionService.rangeInit(result);
 
@@ -105,8 +104,8 @@ public class AttractionController {
     @Operation(summary = "공공 데이터 포털 키워드 api 정보 저장", description = "키워드로 검색된 관광지를 db에 저장한다.")
     @PostMapping("/save/keyword")
     public ResponseEntity<?> saveKeywordApi(@RequestParam(name = "numOfRows") int numOfRows,
-                                            @RequestParam(name = "pageNo") int pageNo,
-                                            @RequestParam(name = "keyword") String keyword) {
+                                         @RequestParam(name = "pageNo") int pageNo,
+                                         @RequestParam(name = "keyword") String keyword) {
         String result = InfoApiExplorer.getKeywordInfo(numOfRows, pageNo, keyword);
         List<Long> contentIdList = attractionService.keywordInit(result);
 
@@ -117,27 +116,27 @@ public class AttractionController {
     }
 
     /**
-     * 검색 메서드
+     * 조회 메서드
      */
 
     @Operation(summary = "DB에 저장된 단일 명소 검색", description = "DB에 저장된 단일 명소를 가져옵니다.")
     @GetMapping("/{attractionId}")
-    public ResponseEntity<AttractionResponse> findAttractionById(@PathVariable(name = "attractionId") Long attractionId) {
+    public ResponseEntity<AttractionDetailResponse> findAttractionById(@PathVariable(name = "attractionId") Long attractionId) {
         return new ResponseEntity<>(attractionService.getDetail(attractionId), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "DB에 저장된 전체 명소 검색", description = "DB에 저장된 전체 명소를 가져옵니다.")
     @GetMapping("/find-all")
-    public ResponseEntity<Result<List<AttractionResponse>>> findAll() {
-        List<AttractionResponse> responseList = attractionService.getList();
+    public ResponseEntity<Result<List<AttractionDetailResponse>>> findAll() {
+        List<AttractionDetailResponse> responseList = attractionService.getList();
 
         return new ResponseEntity<>(new Result<>(responseList.size(), responseList), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "지역별 DB에 저장된 전체 명소 검색", description = "지역별 DB에 저장된 전체 명소를 가져옵니다.")
     @GetMapping("/find-area")
-    public ResponseEntity<Result<List<AttractionResponse>>> findAllByArea(@RequestParam(name = "AreaCode") AreaCode areaCode) {
-        List<AttractionResponse> responseList = attractionService.getListByArea(areaCode);
+    public ResponseEntity<Result<List<AttractionDetailResponse>>> findAllByArea(@RequestParam(name = "AreaCode") AreaCode areaCode) {
+        List<AttractionDetailResponse> responseList = attractionService.getListByArea(areaCode);
 
         return new ResponseEntity<>(new Result<>(responseList.size(), responseList), HttpStatusCode.valueOf(200));
     }

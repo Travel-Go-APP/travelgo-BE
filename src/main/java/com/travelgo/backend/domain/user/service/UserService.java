@@ -103,7 +103,7 @@ public class UserService {
         return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
     }
 
-    private User getUser(String email) {
+    public  User getUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
