@@ -2,6 +2,9 @@ package com.travelgo.backend.domain.attraction.dto;
 
 import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
+import com.travelgo.backend.domain.attraction.model.BigCategory;
+import com.travelgo.backend.domain.attraction.model.MiddleCategory;
+import com.travelgo.backend.domain.attraction.model.SmallCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttractionResponse {
+public class AttractionDetailResponse {
     private Long attractionId;
 
     private String attractionName; //위치 이름
@@ -27,14 +30,14 @@ public class AttractionResponse {
 
     private AreaCode area;
 
-//    private BigCategory bigCategory; //대분류
-//
-//    private MiddleCategory middleCategory; //중분류
-//
-//    private SmallCategory smallCategory; //소분류
+    private BigCategory bigCategory; //대분류
+
+    private MiddleCategory middleCategory; //중분류
+
+    private SmallCategory smallCategory; //소분류
 
     @Builder
-    public AttractionResponse(Attraction attraction) {
+    public AttractionDetailResponse(Attraction attraction) {
         this.attractionId = attraction.getAttractionId();
         this.attractionName = attraction.getAttractionName();
         this.address = attraction.getAddress();
@@ -43,13 +46,13 @@ public class AttractionResponse {
         this.attractionImageUrl = attraction.getAttractionImageUrl();
         this.description = attraction.getDescription();
         this.area = attraction.getArea();
-//        this.bigCategory = attraction.getBigCategory();
-//        this.middleCategory = attraction.getMiddleCategory();
-//        this.smallCategory = attraction.getSmallCategory();
+        this.bigCategory = attraction.getBigCategory();
+        this.middleCategory = attraction.getMiddleCategory();
+        this.smallCategory = attraction.getSmallCategory();
     }
 
-    public static AttractionResponse of(Attraction attraction) {
-        return new AttractionResponse(
+    public static AttractionDetailResponse of(Attraction attraction) {
+        return new AttractionDetailResponse(
                 attraction.getAttractionId(),
                 attraction.getAttractionName(),
                 attraction.getAddress(),
@@ -57,10 +60,10 @@ public class AttractionResponse {
                 attraction.getLongitude(),
                 attraction.getAttractionImageUrl(),
                 attraction.getDescription(),
-                attraction.getArea()
+                attraction.getArea(),
+                attraction.getBigCategory(),
+                attraction.getMiddleCategory(),
+                attraction.getSmallCategory()
         );
-//        attraction.getBigCategory();
-//        attraction.getMiddleCategory();
-//        attraction.getSmallCategory();
     }
 }
