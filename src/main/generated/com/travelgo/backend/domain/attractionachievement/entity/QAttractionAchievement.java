@@ -36,6 +36,8 @@ public class QAttractionAchievement extends EntityPathBase<AttractionAchievement
 
     public final com.travelgo.backend.domain.user.entity.QUser user;
 
+    public final EnumPath<com.travelgo.backend.domain.attractionachievement.model.VisitStatus> visitStatus = createEnum("visitStatus", com.travelgo.backend.domain.attractionachievement.model.VisitStatus.class);
+
     public QAttractionAchievement(String variable) {
         this(AttractionAchievement.class, forVariable(variable), INITS);
     }
