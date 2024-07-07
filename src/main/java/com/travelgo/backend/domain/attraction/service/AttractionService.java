@@ -1,7 +1,7 @@
 package com.travelgo.backend.domain.attraction.service;
 
 import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
-import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
+import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.model.BigCategory;
@@ -40,7 +40,7 @@ public class AttractionService {
      */
     // 세부 관광정보로 명소 저장
     @Transactional
-    public List<AttractionResponse> detailInit(String jsonData) {
+    public List<AttractionDetailResponse> detailInit(String jsonData) {
         Attraction attractionInfo = null;
         List<Attraction> attractionList = new ArrayList<>();
 
@@ -82,7 +82,7 @@ public class AttractionService {
             e.printStackTrace();
         }
         return attractionList.stream()
-                .map(AttractionResponse::new)
+                .map(AttractionDetailResponse::new)
                 .toList();
     }
 
@@ -177,7 +177,7 @@ public class AttractionService {
 
 
     @Transactional
-    public AttractionResponse saveAttraction(AttractionRequest attractionRequest, MultipartFile image) throws IOException {
+    public AttractionDetailResponse saveAttraction(AttractionRequest attractionRequest, MultipartFile image) throws IOException {
         Attraction attraction = createAttraction(attractionRequest);
         Attraction savedAttraction = attractionRepository.save(attraction);
 
@@ -238,23 +238,28 @@ public class AttractionService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
     }
 
-    public AttractionResponse getDetail(Long attractionId) {
+    public Attraction getAttractionByLocation(Double latitude, Double longitude){
+        return attractionRepository.findByLatitudeAndLongitude(latitude, longitude)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
+    }
+
+    public AttractionDetailResponse getDetail(Long attractionId) {
         Attraction attraction = getAttraction(attractionId);
         return createAttractionResponse(attraction);
     }
 
-    private static AttractionResponse createAttractionResponse(Attraction attraction) {
-        return new AttractionResponse(attraction);
+    private static AttractionDetailResponse createAttractionResponse(Attraction attraction) {
+        return AttractionDetailResponse.of(attraction);
     }
 
-    public List<AttractionResponse> getList() {
+    public List<AttractionDetailResponse> getList() {
         return attractionRepository.findAll().stream()
                 .map(Attraction::getAttractionId)
                 .map(this::getDetail)
                 .toList();
     }
 
-    public List<AttractionResponse> getListByArea(AreaCode areaCode) {
+    public List<AttractionDetailResponse> getListByArea(AreaCode areaCode) {
         return attractionRepository.findAllByArea(areaCode).stream()
                 .map(Attraction::getAttractionId)
                 .map(this::getDetail)
