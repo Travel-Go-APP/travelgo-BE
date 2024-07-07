@@ -1,7 +1,7 @@
 package com.travelgo.backend.domain.attractionachievement.entity;
 
-import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
+import com.travelgo.backend.domain.attractionachievement.model.VisitStatus;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -28,12 +28,13 @@ public class AttractionAchievement extends BaseTimeEntity {
     @JoinColumn(name = "attraction_id")
     private Attraction attraction;
 
-//    @Enumerated(EnumType.STRING)
-//    private Area area;
+    @Enumerated(EnumType.STRING)
+    private VisitStatus visitStatus;
 
     @Builder
-    public AttractionAchievement(User user, Attraction attraction) {
+    public AttractionAchievement(User user, Attraction attraction, VisitStatus visitStatus) {
         this.user = user;
         this.attraction = attraction;
+        this.visitStatus = visitStatus;
     }
 }
