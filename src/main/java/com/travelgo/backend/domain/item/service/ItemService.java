@@ -2,8 +2,11 @@ package com.travelgo.backend.domain.item.service;
 
 import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.item.dto.request.ItemRequest;
+import com.travelgo.backend.domain.item.dto.response.ItemResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
+import com.travelgo.backend.domain.user.dto.Response.UserResponse;
+import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +35,13 @@ public class ItemService {
         Item newItem = Item.createItem(itemId, itemName, imageUrl, itemRank, area, summary, description);
 
         itemRepository.save(newItem);
+    }
+
+    @Transactional
+    public ItemResponse.DeleteItem deleteItem(Long itemId){
+        Item item = itemRepository.findByItemId(itemId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+        itemRepository.delete(item);
+
+        return new ItemResponse.DeleteItem(itemId, "아이템이 삭제 되었습니다.");
     }
 }
