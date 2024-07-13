@@ -26,22 +26,20 @@ public class QItem extends EntityPathBase<Item> {
     //inherited
     public final StringPath createdAt = _super.createdAt;
 
-    public final EnumPath<com.travelgo.backend.domain.item.model.Grade> grade = createEnum("grade", com.travelgo.backend.domain.item.model.Grade.class);
+    public final StringPath description = createString("description");
 
-    public final StringPath itemDescription = createString("itemDescription");
+    public final StringPath imageUrl = createString("imageUrl");
 
     public final NumberPath<Long> itemId = createNumber("itemId", Long.class);
 
-    public final StringPath itemImageUrl = createString("itemImageUrl");
-
     public final StringPath itemName = createString("itemName");
 
-    public final StringPath itemType = createString("itemType");
+    public final StringPath itemRank = createString("itemRank");
 
     //inherited
     public final StringPath modifiedAt = _super.modifiedAt;
 
-    public final NumberPath<Integer> price = createNumber("price", Integer.class);
+    public final StringPath summary = createString("summary");
 
     public QItem(String variable) {
         super(Item.class, forVariable(variable));
