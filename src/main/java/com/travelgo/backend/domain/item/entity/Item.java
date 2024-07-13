@@ -22,32 +22,29 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_name")
     private String itemName;
 
-    private int price;
+    @Column(name = "image_url")
+    private String ImageUrl;
 
-    @Column(name = "item_type")
-    private String itemType;
-
-    @Column(name = "item_image_url")
-    private String itemImageUrl;
-
-    @Column(name = "item_description")
-    private String itemDescription;
-
-    @Enumerated(EnumType.STRING)
-    private Grade grade;
+    @Column(name = "item_Rank")
+    private String itemRank;
 
     @Enumerated(EnumType.STRING)
     private Area area;
 
+    @Column(name = "summary")
+    private String summary;
+
+    @Column(name = "description")
+    private String description;
+
     @Builder
-    public Item(String itemName, int price, String itemType, String itemImageUrl, String itemDescription, Grade grade, Area area) {
+    public Item(String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
         this.itemName = itemName;
-        this.price = price;
-        this.itemType = itemType;
-        this.itemImageUrl = itemImageUrl;
-        this.itemDescription = itemDescription;
-        this.grade = grade;
+        ImageUrl = imageUrl;
+        this.itemRank = itemRank;
         this.area = area;
+        this.summary = summary;
+        this.description = description;
     }
 
     /**
@@ -55,6 +52,6 @@ public class Item extends BaseTimeEntity {
      */
 
     public void changeItemImage(String imageUrl) {
-        this.itemImageUrl = imageUrl;
+        this.ImageUrl = imageUrl;
     }
 }
