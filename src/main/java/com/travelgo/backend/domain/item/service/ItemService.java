@@ -46,6 +46,17 @@ public class ItemService {
     }
 
     @Transactional
+    public void updateItem(Long itemId, String itemName, int itemRank){
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+
+        item.updateItemName(itemName);
+        item.updateItemRank(itemRank);
+
+        itemRepository.save(item);
+    }
+
+    @Transactional
     public ItemResponse.DeleteItem deleteItem(Long itemId){
         Item item = itemRepository.findByItemId(itemId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
         itemRepository.delete(item);

@@ -23,7 +23,7 @@ public class ItemRequest {
     private String imageUrl;
 
     @NotNull
-    private String itemRank;
+    private int itemRank;
 
     @Enumerated(EnumType.STRING)
     @NotNull

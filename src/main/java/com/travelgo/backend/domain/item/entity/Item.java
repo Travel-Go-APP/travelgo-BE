@@ -26,7 +26,7 @@ public class Item extends BaseTimeEntity {
     private String imageUrl;
 
     @Column(name = "item_rank")
-    private String itemRank;
+    private int itemRank;
 
     @Enumerated(EnumType.STRING)
     private Area area;
@@ -38,7 +38,7 @@ public class Item extends BaseTimeEntity {
     private String description;
 
     @Builder
-    public Item(String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
+    public Item(String itemName, String imageUrl, int itemRank, Area area, String summary, String description) {
         this.itemName = itemName;
         this.imageUrl = imageUrl;
         this.itemRank = itemRank;
@@ -51,7 +51,7 @@ public class Item extends BaseTimeEntity {
      * 메서드
      */
 
-    public static Item createItem(String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
+    public static Item createItem(String itemName, String imageUrl, int itemRank, Area area, String summary, String description) {
         return Item.builder()
                 .itemName(itemName)
                 .imageUrl(imageUrl)
@@ -62,30 +62,15 @@ public class Item extends BaseTimeEntity {
                 .build();
     }
 
-    public void updateItem(ItemRequest request){
-        this.itemName = request.getItemName();
-        this.imageUrl = request.getImageUrl();
-        this.itemRank = request.getItemRank();
-        this.area = request.getArea();
-        this.summary = request.getSummary();
-        this.description = request.getDescription();
-    }
-
-//    public void addItem(ItemRequest request){
-//        this.itemId = itemId;
-//        this.itemName = itemName;
-//        this.imageUrl = imageUrl;
-//        this.itemRank = itemRank;
-//        this.area = area;
-//        this.summary = summary;
-//        this.description = description;
-//    }
-
-    public void setItemId(Long itemId){
-        this.itemId = itemId;
-    }
-
     public void changeItemImage(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void updateItemName(String itemName){
+        this.itemName = itemName;
+    }
+
+    public void updateItemRank(int itemRank){
+        this.itemRank = itemRank;
     }
 }

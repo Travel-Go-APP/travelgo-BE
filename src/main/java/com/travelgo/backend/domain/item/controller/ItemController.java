@@ -39,4 +39,13 @@ public class ItemController {
         ItemResponse.DeleteItem response = itemService.deleteItem(itemId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(200));
     }
+
+    @Operation(summary = "아이템 업데이트", description = "아이템 이름, 랭크 업데이트")
+    @PutMapping("/update")
+    public ResponseEntity<Void> updateItem(@RequestParam(name = "item_id") Long itemId,
+                                           @RequestParam(name = "item_name") String itemName,
+                                           @RequestParam(name = "item_rank") int itemRank){
+        itemService.updateItem(itemId, itemName, itemRank);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
