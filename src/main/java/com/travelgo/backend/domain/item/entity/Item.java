@@ -38,8 +38,7 @@ public class Item extends BaseTimeEntity {
     private String description;
 
     @Builder
-    public Item(Long itemId, String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
-        this.itemId = itemId;
+    public Item(String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
         this.itemName = itemName;
         this.imageUrl = imageUrl;
         this.itemRank = itemRank;
@@ -52,7 +51,7 @@ public class Item extends BaseTimeEntity {
      * 메서드
      */
 
-    public static Item createItem(Long itemId, String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
+    public static Item createItem(String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
         return Item.builder()
                 .itemName(itemName)
                 .imageUrl(imageUrl)
@@ -63,15 +62,24 @@ public class Item extends BaseTimeEntity {
                 .build();
     }
 
-    public void addItem(ItemRequest request){
-        this.itemId = itemId;
-        this.itemName = itemName;
-        this.imageUrl = imageUrl;
-        this.itemRank = itemRank;
-        this.area = area;
-        this.summary = summary;
-        this.description = description;
+    public void updateItem(ItemRequest request){
+        this.itemName = request.getItemName();
+        this.imageUrl = request.getImageUrl();
+        this.itemRank = request.getItemRank();
+        this.area = request.getArea();
+        this.summary = request.getSummary();
+        this.description = request.getDescription();
     }
+
+//    public void addItem(ItemRequest request){
+//        this.itemId = itemId;
+//        this.itemName = itemName;
+//        this.imageUrl = imageUrl;
+//        this.itemRank = itemRank;
+//        this.area = area;
+//        this.summary = summary;
+//        this.description = description;
+//    }
 
     public void setItemId(Long itemId){
         this.itemId = itemId;

@@ -1,19 +1,19 @@
 package com.travelgo.backend.domain.item.service;
 
-import com.travelgo.backend.domain.area.entity.Area;
+import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
 import com.travelgo.backend.domain.item.dto.request.ItemRequest;
 import com.travelgo.backend.domain.item.dto.response.ItemResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
-import com.travelgo.backend.domain.user.dto.Response.UserResponse;
-import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
@@ -23,18 +23,26 @@ import java.util.Optional;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final S3UploadService s3UploadService;
 
     @Transactional
-    public void addItem(Long itemId, String itemName, String imageUrl, String itemRank, Area area, String summary, String description) {
-        Optional<Item> existingItem = itemRepository.findByItemId(itemId);
+    public void addItem(ItemRequest request, MultipartFile imageFile) throws IOException {
+        Optional<Item> existingItem = itemRepository.findByItemId(request.getItemId());
 
         if(existingItem.isPresent()){
             throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
-        Item newItem = Item.createItem(itemId, itemName, imageUrl, itemRank, area, summary, description);
+        String imageUrl = null;
+        if(imageFile != null && !imageFile.isEmpty()){
+            imageUrl = s3UploadService.upload(imageFile, "items");
+
+        }
+        Item newItem = Item.createItem(request.getItemName(), imageUrl, request.getItemRank(),
+                request.getArea(), request.getSummary(), request.getDescription());
 
         itemRepository.save(newItem);
+
     }
 
     @Transactional
