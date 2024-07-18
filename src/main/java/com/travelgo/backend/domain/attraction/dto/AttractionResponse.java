@@ -16,6 +16,8 @@ public class AttractionResponse {
 
     private String address; // 주소
 
+    private String city;
+
     private String attractionImageUrl; // 이미지
 
 
@@ -24,6 +26,7 @@ public class AttractionResponse {
         this.attractionId = attraction.getAttractionId();
         this.attractionName = attraction.getAttractionName();
         this.address = attraction.getAddress();
+        this.city = attraction.getCity();
         this.attractionImageUrl = attraction.getAttractionImageUrl();
     }
 
@@ -32,6 +35,7 @@ public class AttractionResponse {
                 attraction.getAttractionId(),
                 attraction.getAttractionName(),
                 attraction.getAddress(),
+                attraction.getCity(),
                 attraction.getAttractionImageUrl()
         );
     }

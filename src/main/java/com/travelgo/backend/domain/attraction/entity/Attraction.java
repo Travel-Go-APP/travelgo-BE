@@ -40,6 +40,8 @@ public class Attraction extends BaseTimeEntity {
 
     private String address; // 주소
 
+    private String city; // 시
+
     private Double latitude; //위도
 
     private Double longitude; //경도
@@ -54,8 +56,7 @@ public class Attraction extends BaseTimeEntity {
     private Path path;
 
     @Builder
-
-    public Attraction(Long attractionId, AreaCode area, BigCategory bigCategory, MiddleCategory middleCategory, SmallCategory smallCategory, boolean hiddenFlag, String attractionName, String address, Double latitude, Double longitude, String attractionImageUrl, String description, Path path) {
+    public Attraction(Long attractionId, AreaCode area, BigCategory bigCategory, MiddleCategory middleCategory, SmallCategory smallCategory, boolean hiddenFlag, String attractionName, String address, String city, Double latitude, Double longitude, String attractionImageUrl, String description, Path path) {
         this.attractionId = attractionId;
         this.area = area;
         this.bigCategory = bigCategory;
@@ -64,6 +65,7 @@ public class Attraction extends BaseTimeEntity {
         this.hiddenFlag = hiddenFlag;
         this.attractionName = attractionName;
         this.address = address;
+        this.city = city;
         this.latitude = latitude;
         this.longitude = longitude;
         this.attractionImageUrl = attractionImageUrl;

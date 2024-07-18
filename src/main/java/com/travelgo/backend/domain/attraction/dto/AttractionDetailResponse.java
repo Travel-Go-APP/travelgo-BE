@@ -20,6 +20,8 @@ public class AttractionDetailResponse {
 
     private String address; // 주소
 
+    private String city;
+
     private Double latitude; //위도
 
     private Double longitude; //경도
@@ -41,6 +43,7 @@ public class AttractionDetailResponse {
         this.attractionId = attraction.getAttractionId();
         this.attractionName = attraction.getAttractionName();
         this.address = attraction.getAddress();
+        this.city = attraction.getCity();
         this.latitude = attraction.getLatitude();
         this.longitude = attraction.getLongitude();
         this.attractionImageUrl = attraction.getAttractionImageUrl();
@@ -56,6 +59,7 @@ public class AttractionDetailResponse {
                 attraction.getAttractionId(),
                 attraction.getAttractionName(),
                 attraction.getAddress(),
+                attraction.getCity(),
                 attraction.getLatitude(),
                 attraction.getLongitude(),
                 attraction.getAttractionImageUrl(),
