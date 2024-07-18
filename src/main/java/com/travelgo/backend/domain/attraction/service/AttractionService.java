@@ -51,11 +51,14 @@ public class AttractionService {
             for (Object object : array) {
                 getObject = (JSONObject) object;
 
+                String[] addr = ((String) getObject.get("addr1")).split(" ");
+
                 if (categoryFiltering(getObject)) continue;
 
                 attractionInfo = Attraction.builder()
                         .attractionName((String) getObject.get("title"))
                         .address((String) getObject.get("addr1"))
+                        .city(addr[1])
                         .attractionId(Long.parseLong((String) getObject.get("contentid")))
                         .longitude(Double.parseDouble((String) getObject.get("mapx")))
                         .latitude(Double.parseDouble((String) getObject.get("mapy")))
@@ -238,7 +241,7 @@ public class AttractionService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
     }
 
-    public Attraction getAttractionByLocation(Double latitude, Double longitude){
+    public Attraction getAttractionByLocation(Double latitude, Double longitude) {
         return attractionRepository.findByLatitudeAndLongitude(latitude, longitude)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
     }
