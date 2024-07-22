@@ -1,9 +1,7 @@
 package com.travelgo.backend.domain.attractionachievement.dto;
 
-import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
 import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
 import com.travelgo.backend.domain.attractionachievement.entity.AttractionAchievement;
-import com.travelgo.backend.domain.attractionachievement.model.VisitStatus;
 import lombok.*;
 
 @Getter
@@ -13,11 +11,17 @@ public class AttractionAchievementResponse {
 
     private AttractionResponse attractionResponse;
 
-    private VisitStatus visitStatus;
+    private String visitTime;
 
     @Builder
     public AttractionAchievementResponse(AttractionAchievement attractionAchievement) {
         this.attractionResponse = AttractionResponse.of(attractionAchievement.getAttraction());
-        this.visitStatus = attractionAchievement.getVisitStatus();
+        this.visitTime = attractionAchievement.getVisitTime();
+    }
+
+    public static AttractionAchievementResponse of(AttractionAchievement attractionAchievement) {
+        return new AttractionAchievementResponse(
+                AttractionResponse.of(attractionAchievement.getAttraction()),
+                attractionAchievement.getVisitTime());
     }
 }

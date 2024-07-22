@@ -5,7 +5,6 @@ import com.travelgo.backend.domain.attraction.service.AttractionService;
 import com.travelgo.backend.domain.attractionachievement.dto.AttractionAchievementRequest;
 import com.travelgo.backend.domain.attractionachievement.dto.AttractionAchievementResponse;
 import com.travelgo.backend.domain.attractionachievement.entity.AttractionAchievement;
-import com.travelgo.backend.domain.attractionachievement.model.VisitStatus;
 import com.travelgo.backend.domain.attractionachievement.repository.AttractionAchievementRepository;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.service.UserService;
@@ -28,9 +27,10 @@ public class AttractionAchievementService {
     private final AttractionAchievementRepository attractionAchievementRepository;
 
     @Transactional
-    public void saveAttractionAchievement(AttractionAchievementRequest request) {
+    public AttractionAchievementResponse saveAttractionAchievement(AttractionAchievementRequest request) {
         AttractionAchievement attractionAchievement = createAttracitonAchievement(request);
-        attractionAchievementRepository.save(attractionAchievement);
+        AttractionAchievement save = attractionAchievementRepository.save(attractionAchievement);
+        return createAttractionAchievementResponse(save);
     }
 
     @Transactional
@@ -38,6 +38,7 @@ public class AttractionAchievementService {
         AttractionAchievement attractionAchievement = getAttractionAchievement(request);
         attractionAchievementRepository.delete(attractionAchievement);
     }
+
 
     public List<AttractionAchievementResponse> getList(String email, AreaCode areaCode) {
         User user = userService.getUser(email);
@@ -52,27 +53,23 @@ public class AttractionAchievementService {
     private AttractionAchievement createAttracitonAchievement(AttractionAchievementRequest request) {
         return AttractionAchievement.builder()
                 .user(userService.getUser(request.getEmail()))
-                .attraction(attractionService.getAttractionByLocation(
-                                request.getLatitude(),
-                                request.getLongitude()
-                        )
-                )
-                .visitStatus(VisitStatus.visit)
+                .attraction(attractionService.getAttraction(request.getAttractionId()))
                 .build();
     }
 
     private AttractionAchievement getAttractionAchievement(AttractionAchievementRequest request) {
         return attractionAchievementRepository.findByUserAndAttraction(
                 userService.getUser(request.getEmail()),
-                attractionService.getAttractionByLocation(
-                        request.getLatitude(),
-                        request.getLongitude()
-                )
+                attractionService.getAttraction(request.getAttractionId())
         );
     }
 
     private List<AttractionAchievement> createAttractionAchievementList(AreaCode areaCode, User user) {
         return attractionAchievementRepository.findAllByUserAndAttraction_Area(user, areaCode);
+    }
+
+    private AttractionAchievementResponse createAttractionAchievementResponse(AttractionAchievement attractionAchievement) {
+        return AttractionAchievementResponse.of(attractionAchievement);
     }
 
     private List<AttractionAchievementResponse> createAttractionAchievementResponseList(List<AttractionAchievement> attractionAchievementList) {

@@ -1,7 +1,6 @@
 package com.travelgo.backend.domain.attractionachievement.entity;
 
 import com.travelgo.backend.domain.attraction.entity.Attraction;
-import com.travelgo.backend.domain.attractionachievement.model.VisitStatus;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -9,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -28,13 +30,12 @@ public class AttractionAchievement extends BaseTimeEntity {
     @JoinColumn(name = "attraction_id")
     private Attraction attraction;
 
-    @Enumerated(EnumType.STRING)
-    private VisitStatus visitStatus;
+    private String visitTime;
 
     @Builder
-    public AttractionAchievement(User user, Attraction attraction, VisitStatus visitStatus) {
+    public AttractionAchievement(User user, Attraction attraction) {
         this.user = user;
         this.attraction = attraction;
-        this.visitStatus = visitStatus;
+        this.visitTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }

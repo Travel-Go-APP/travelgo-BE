@@ -24,19 +24,18 @@ public class AttractionAchievementController {
     /**
      * 생성 메서드
      */
-    @Operation(summary = "명송 방문 기록 저장", description = "유저가 명소에 방문한 기록을 저장한다.")
-    @PostMapping("/save")
-    public ResponseEntity<?> saveAchievement(@Valid @RequestBody AttractionAchievementRequest attractionAchievementRequest) {
-        attractionAchievementService.saveAttractionAchievement(attractionAchievementRequest);
-
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
+    @Operation(summary = "명송 방문 기록 저장", description = "유저가 명소에 방문 기록을 저장한다.")
+    @PostMapping
+    public ResponseEntity<AttractionAchievementResponse> saveAchievement(@Valid @RequestBody AttractionAchievementRequest attractionAchievementRequest) {
+        return new ResponseEntity<>(attractionAchievementService.saveAttractionAchievement(attractionAchievementRequest),
+                HttpStatusCode.valueOf(200));
     }
 
     /**
      * 삭제 메서드
      */
     @Operation(summary = "명송 방문 기록 삭제", description = "유저가 명소에 방문한 기록을 삭제한다.")
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public ResponseEntity<?> deleteAchievement(@Valid @RequestBody AttractionAchievementRequest attractionAchievementRequest) {
         attractionAchievementService.deleteAttractionAchievement(attractionAchievementRequest);
 
@@ -48,9 +47,10 @@ public class AttractionAchievementController {
      * 조회 메서드
      */
     @Operation(summary = "지역별 명송 방문 기록 리스트", description = "지역별 유저가 명소에 방문한 기록을 가져온다.")
-    @GetMapping("/get-list")
+    @GetMapping("/list")
     public ResponseEntity<List<AttractionAchievementResponse>> getList(@RequestParam(name = "email") String email,
                                                                        @RequestParam(name = "area") AreaCode area) {
         return new ResponseEntity<>(attractionAchievementService.getList(email, area), HttpStatusCode.valueOf(200));
     }
+
 }

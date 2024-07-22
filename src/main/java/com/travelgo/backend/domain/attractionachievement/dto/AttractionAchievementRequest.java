@@ -21,11 +21,7 @@ public class AttractionAchievementRequest {
     private String email;
 
     @NotNull
-    @Schema(description = "위도")
-    private Double latitude; // 위도
-
-    @NotNull
-    @Schema(description = "경도")
-    private Double longitude; // 경도
+    @Schema(description = "명소 Id")
+    private Long attractionId; // 명소 Id
 }
 

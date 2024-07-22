@@ -27,13 +27,13 @@ public class AttractionInfoController {
      */
 
     @Operation(summary = "전체 방문 명소 개수", description = "전체 명소중 유저가 방문한 명소 개수를 가져온다.")
-    @GetMapping("/get-all")
+    @GetMapping("/all")
     public ResponseEntity<AllInfo> getAllInfo(@RequestParam(name = "email") String email) {
         return new ResponseEntity<>(attractionInfoService.getAllInfo(email), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "지자체별 방문한 명소 개수", description = "지자체별로 유저가 방문한 명소 개수를 가져온다.")
-    @GetMapping("/get-list")
+    @GetMapping("/city")
     public ResponseEntity<List<AttractionInfo>> getAttrationInfoList(@RequestParam(name = "email") String email) {
         return new ResponseEntity<>(attractionInfoService.getAttractionInfo(email), HttpStatusCode.valueOf(200));
     }
