@@ -1,7 +1,7 @@
 package com.travelgo.backend.domain.item.entity;
 
 import com.travelgo.backend.domain.area.entity.Area;
-import com.travelgo.backend.domain.item.model.Grade;
+import com.travelgo.backend.domain.item.dto.request.ItemRequest;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -22,39 +22,55 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_name")
     private String itemName;
 
-    private int price;
+    @Column(name = "image_url")
+    private String imageUrl;
 
-    @Column(name = "item_type")
-    private String itemType;
-
-    @Column(name = "item_image_url")
-    private String itemImageUrl;
-
-    @Column(name = "item_description")
-    private String itemDescription;
-
-    @Enumerated(EnumType.STRING)
-    private Grade grade;
+    @Column(name = "item_rank")
+    private int itemRank;
 
     @Enumerated(EnumType.STRING)
     private Area area;
 
+    @Column(name = "summary")
+    private String summary;
+
+    @Column(name = "description")
+    private String description;
+
     @Builder
-    public Item(String itemName, int price, String itemType, String itemImageUrl, String itemDescription, Grade grade, Area area) {
+    public Item(String itemName, String imageUrl, int itemRank, Area area, String summary, String description) {
         this.itemName = itemName;
-        this.price = price;
-        this.itemType = itemType;
-        this.itemImageUrl = itemImageUrl;
-        this.itemDescription = itemDescription;
-        this.grade = grade;
+        this.imageUrl = imageUrl;
+        this.itemRank = itemRank;
         this.area = area;
+        this.summary = summary;
+        this.description = description;
     }
 
     /**
      * 메서드
      */
 
+    public static Item createItem(String itemName, String imageUrl, int itemRank, Area area, String summary, String description) {
+        return Item.builder()
+                .itemName(itemName)
+                .imageUrl(imageUrl)
+                .itemRank(itemRank)
+                .area(area)
+                .summary(summary)
+                .description(description)
+                .build();
+    }
+
     public void changeItemImage(String imageUrl) {
-        this.itemImageUrl = imageUrl;
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateItemName(String itemName){
+        this.itemName = itemName;
+    }
+
+    public void updateItemRank(int itemRank){
+        this.itemRank = itemRank;
     }
 }
