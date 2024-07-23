@@ -34,7 +34,7 @@ public class QItem extends EntityPathBase<Item> {
 
     public final StringPath itemName = createString("itemName");
 
-    public final StringPath itemRank = createString("itemRank");
+    public final NumberPath<Integer> itemRank = createNumber("itemRank", Integer.class);
 
     //inherited
     public final StringPath modifiedAt = _super.modifiedAt;
