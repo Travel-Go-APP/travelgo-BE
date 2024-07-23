@@ -3,6 +3,7 @@ package com.travelgo.backend.domain.item.controller;
 import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
 import com.travelgo.backend.domain.item.dto.request.ItemRequest;
 import com.travelgo.backend.domain.item.dto.response.ItemResponse;
+import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.service.ItemService;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,5 +48,13 @@ public class ItemController {
                                            @RequestParam(name = "item_rank") int itemRank){
         itemService.updateItem(itemId, itemName, itemRank);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "개별 아이템 조회", description = "아이템 정보 조회")
+    @GetMapping("/{itemId}")
+    public ResponseEntity<ItemResponse> getItem(@RequestParam(name = "item_id") Long itemId){
+        Item item = itemService.getItem(itemId);
+        ItemResponse itemResponse = ItemResponse.fromEntity(item);
+        return new ResponseEntity<>(itemResponse,HttpStatus.OK);
     }
 }

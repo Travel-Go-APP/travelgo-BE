@@ -63,4 +63,10 @@ public class ItemService {
 
         return new ItemResponse.DeleteItem(itemId, "아이템이 삭제 되었습니다.");
     }
+
+    @Transactional(readOnly = true)
+    public Item getItem(Long itemId) {
+        return itemRepository.findByItemId(itemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    }
 }
