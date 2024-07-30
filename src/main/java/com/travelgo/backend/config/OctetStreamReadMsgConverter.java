@@ -1,4 +1,4 @@
-package com.travelgo.backend.config.converter;
+package com.travelgo.backend.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
