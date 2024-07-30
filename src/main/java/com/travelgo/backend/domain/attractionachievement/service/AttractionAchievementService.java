@@ -35,15 +35,15 @@ public class AttractionAchievementService {
                 .visitCount(visit)
                 .build();
 
-        Map<AreaCode, Long> areaTotalCount = new HashMap<>();
-        Map<AreaCode, Long> areaVisitCount = new HashMap<>();
+        Map<String, Long> areaTotalCount = new HashMap<>();
+        Map<String, Long> areaVisitCount = new HashMap<>();
 
         for (AreaCode area : AreaCode.values()) {
             Long areaTotal = attractionRepository.countByArea(area);
             Long areaVisit = visitRepository.countByUserAndAttraction_Area(user, area);
 
-            areaTotalCount.put(area, areaTotal);
-            areaVisitCount.put(area, areaVisit);
+            areaTotalCount.put(area.getName(), areaTotal);
+            areaVisitCount.put(area.getName(), areaVisit);
         }
 
         // Map에 두 정보를 담아서 반환
