@@ -4,13 +4,13 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class AllInfo {
+public class AttractionAllInfo {
     private Long totalCount;
 
     private Long visitCount;
 
     @Builder
-    public AllInfo(Long totalCount, Long visitCount) {
+    public AttractionAllInfo(Long totalCount, Long visitCount) {
         this.totalCount = totalCount;
         this.visitCount = visitCount;
     }

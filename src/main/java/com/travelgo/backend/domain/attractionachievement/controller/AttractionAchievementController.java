@@ -1,7 +1,7 @@
 package com.travelgo.backend.domain.attractionachievement.controller;
 
-import com.travelgo.backend.domain.attractionachievement.dto.AllInfo;
-import com.travelgo.backend.domain.attractionachievement.dto.AttractionInfo;
+import com.travelgo.backend.domain.attractionachievement.dto.AttractionAllInfo;
+import com.travelgo.backend.domain.attractionachievement.dto.AttractionAreaInfo;
 import com.travelgo.backend.domain.attractionachievement.service.AttractionAchievementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,28 +14,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "명소 방문 정보", description = "명소 방문 정보 API(#20)")
+@Tag(name = "방문 기록(명소)", description = "방문 기록 API(#20)")
 @RequestMapping("/api/attraction-achievement")
-public class AttractionInfoController {
+public class AttractionAchievementController {
     private final AttractionAchievementService attractionAchievementService;
 
     /**
      * 조회 메서드
      */
 
-    @Operation(summary = "전체 방문 명소 개수", description = "전체 명소중 유저가 방문한 명소 개수를 가져온다.")
-    @GetMapping("/all")
-    public ResponseEntity<AllInfo> getAllInfo(@RequestParam(name = "email") String email) {
-        return new ResponseEntity<>(attractionAchievementService.getAllInfo(email), HttpStatusCode.valueOf(200));
-    }
-
-    @Operation(summary = "지자체별 방문한 명소 개수", description = "지자체별로 유저가 방문한 명소 개수를 가져온다.")
-    @GetMapping("/city")
-    public ResponseEntity<List<AttractionInfo>> getAttrationInfoList(@RequestParam(name = "email") String email) {
-        return new ResponseEntity<>(attractionAchievementService.getAttractionInfo(email), HttpStatusCode.valueOf(200));
+    @Operation(summary = "방문 명소 기록", description = "유저의 방문한 명소의 기록을 가져온다.")
+    @GetMapping()
+    public ResponseEntity<Map<String, Object>> getAllInfo(@RequestParam(name = "email") String email) {
+        return new ResponseEntity<>(attractionAchievementService.getAttractionAchievement(email), HttpStatusCode.valueOf(200));
     }
 
 }
