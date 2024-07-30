@@ -30,27 +30,26 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AreaCode {
 
-    서울("1", "서울"),
-    인천("2", "인천"),
-    대전("3", "대전"),
-    대구("4", "대구"),
-    광주("5", "광주"),
-    부산("6", "부산"),
-    울산("7", "울산"),
-    세종특별자치시("8", "세종특별자치시"),
-    경기도("31", "경기도"),
-    강원특별자치도("32", "강원특별자치도"),
-    충청북도("33", "충청북도"),
-    충청남도("34", "충청남도"),
-    경상북도("35", "경상북도"),
-    경상남도("36", "경상남도"),
-    전북특별자치도("37", "전북특별자치도"),
-    전라남도("38", "전라남도"),
-    제주도("39", "제주도");
+    서울("1", "Seoul"),
+    인천("2", "Incheon"),
+    대전("3", "Daejeon"),
+    대구("4", "Daegu"),
+    광주("5", "Gwangju"),
+    부산("6", "Busan"),
+    울산("7", "Ulsan"),
+    세종특별자치시("8", "Sejong"),
+    경기도("31", "Gyeonggido"),
+    강원특별자치도("32", "Gangwondo"),
+    충청북도("33", "Chungcheongbukdo"),
+    충청남도("34", "Chungcheongnamdo"),
+    경상북도("35", "Gyeonsangbukdo"),
+    경상남도("36", "Gyeonsangnamdo"),
+    전북특별자치도("37", "Jeollabukdo"),
+    전라남도("38", "Jeollanamdo"),
+    제주도("39", "Jejudo");
 
     private final String code;
-    @JsonValue // enum 타입을 선택 가능하도록 설정
-    private final String title;
+    private final String name;
 
     public static AreaCode getAreaCode(String code) {
         for (AreaCode areaCode : AreaCode.values()) {
@@ -59,5 +58,9 @@ public enum AreaCode {
             }
         }
         throw new CustomException(ErrorCode.NOT_FOUND_AREA);
+    }
+
+    public static AreaCode fromString(String name) {
+        return AreaCode.valueOf(name);
     }
 }
