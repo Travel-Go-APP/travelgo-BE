@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "조사하기", description = "조사하기 API(#24)")
+@Tag(name = "조사하기(명소)", description = "명소 조사하기 API(#24)")
 @RequestMapping("/api/attraction-record")
 public class AttractionRecordController {
     private final AttractionRecordService attractionRecordService;

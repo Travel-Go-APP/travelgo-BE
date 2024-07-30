@@ -1,7 +1,7 @@
-package com.travelgo.backend.domain.attractionachievement.dto;
+package com.travelgo.backend.domain.visit.dto;
 
 import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
-import com.travelgo.backend.domain.attractionachievement.entity.AttractionAchievement;
+import com.travelgo.backend.domain.visit.entity.AttractionAchievement;
 import lombok.*;
 
 @Getter

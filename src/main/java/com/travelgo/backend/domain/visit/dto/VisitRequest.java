@@ -1,8 +1,7 @@
-package com.travelgo.backend.domain.attractionachievement.dto;
+package com.travelgo.backend.domain.visit.dto;
 
 import com.travelgo.backend.global.validator.customValid.EmailValid;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -10,15 +10,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Visit extends BaseTimeEntity {
+public class AttractionAchievement extends BaseTimeEntity {
+
     @Id
+    @Column(name = "attraction_achievement_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "visit_id")
-    private Long visitId;
+    private Long attractionAchievementId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -28,12 +30,12 @@ public class Visit extends BaseTimeEntity {
     @JoinColumn(name = "attraction_id")
     private Attraction attraction;
 
-    private LocalDateTime visitTime;
+    private String visitTime;
 
     @Builder
-    public Visit(User user, Attraction attraction, LocalDateTime visitTime) {
+    public AttractionAchievement(User user, Attraction attraction) {
         this.user = user;
         this.attraction = attraction;
-        this.visitTime = visitTime;
+        this.visitTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }

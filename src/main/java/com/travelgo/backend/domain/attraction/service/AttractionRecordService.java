@@ -1,10 +1,9 @@
 package com.travelgo.backend.domain.attraction.service;
 
-import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
 import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
-import com.travelgo.backend.domain.attractionachievement.entity.AttractionAchievement;
-import com.travelgo.backend.domain.attractionachievement.repository.AttractionAchievementRepository;
+import com.travelgo.backend.domain.visit.entity.Visit;
+import com.travelgo.backend.domain.visit.repository.VisitRepository;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 public class AttractionRecordService {
     private final UserService userService;
     private final AttractionService attractionService;
-    private final AttractionAchievementRepository attractionAchievementRepository;
+    private final VisitRepository visitRepository;
 
     public List<AttractionResponse> getunVisitAttractionWithInDistance(String email, Double latitude, Double longitude, Double distance) {
         User user = userService.getUser(email);
@@ -32,7 +31,7 @@ public class AttractionRecordService {
         List<Attraction> attractions = attractionService.getAttractionsWithInDistance(latitude, longitude, distance);
 
         //filter를 통해서 방문하지 않은 명소를 가져온다.
-        List<AttractionAchievement> achievementList = attractionAchievementRepository.findAllByUser(user);
+        List<Visit> achievementList = visitRepository.findAllByUser(user);
 
         List<AttractionResponse> result = attractions.stream()
                 .filter(attraction -> achievementList.stream()
