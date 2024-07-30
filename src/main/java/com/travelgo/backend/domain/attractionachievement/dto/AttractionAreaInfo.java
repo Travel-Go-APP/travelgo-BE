@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class AttractionInfo {
+public class AttractionAreaInfo {
     private AreaCode area;
 
     private Long totalCount;
@@ -13,7 +13,7 @@ public class AttractionInfo {
     private Long visitCount;
 
     @Builder
-    public AttractionInfo(AreaCode area, Long totalCount, Long visitCount) {
+    public AttractionAreaInfo(AreaCode area, Long totalCount, Long visitCount) {
         this.area = area;
         this.totalCount = totalCount;
         this.visitCount = visitCount;

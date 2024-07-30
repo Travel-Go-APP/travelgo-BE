@@ -1,56 +1,36 @@
 package com.travelgo.backend.domain.attractionachievement.controller;
 
-import com.travelgo.backend.domain.attraction.model.AreaCode;
-import com.travelgo.backend.domain.attractionachievement.dto.AttractionAchievementRequest;
-import com.travelgo.backend.domain.attractionachievement.dto.AttractionAchievementResponse;
+import com.travelgo.backend.domain.attractionachievement.dto.AttractionAllInfo;
+import com.travelgo.backend.domain.attractionachievement.dto.AttractionAreaInfo;
 import com.travelgo.backend.domain.attractionachievement.service.AttractionAchievementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "명소 방문", description = "명소 방문 API(#20)")
+@Tag(name = "방문 기록(명소)", description = "방문 기록 API(#20)")
 @RequestMapping("/api/attraction-achievement")
 public class AttractionAchievementController {
     private final AttractionAchievementService attractionAchievementService;
 
     /**
-     * 생성 메서드
-     */
-    @Operation(summary = "명송 방문 기록 저장", description = "유저가 명소에 방문한 기록을 저장한다.")
-    @PostMapping("/save")
-    public ResponseEntity<?> saveAchievement(@Valid @RequestBody AttractionAchievementRequest attractionAchievementRequest) {
-        attractionAchievementService.saveAttractionAchievement(attractionAchievementRequest);
-
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
-    }
-
-    /**
-     * 삭제 메서드
-     */
-    @Operation(summary = "명송 방문 기록 삭제", description = "유저가 명소에 방문한 기록을 삭제한다.")
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteAchievement(@Valid @RequestBody AttractionAchievementRequest attractionAchievementRequest) {
-        attractionAchievementService.deleteAttractionAchievement(attractionAchievementRequest);
-
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
-    }
-
-
-    /**
      * 조회 메서드
      */
-    @Operation(summary = "지역별 명송 방문 기록 리스트", description = "지역별 유저가 명소에 방문한 기록을 가져온다.")
-    @GetMapping("/get-list")
-    public ResponseEntity<List<AttractionAchievementResponse>> getList(@RequestParam(name = "email") String email,
-                                                                       @RequestParam(name = "area") AreaCode area) {
-        return new ResponseEntity<>(attractionAchievementService.getList(email, area), HttpStatusCode.valueOf(200));
+
+    @Operation(summary = "방문 명소 기록", description = "유저의 방문한 명소의 기록을 가져온다.")
+    @GetMapping()
+    public ResponseEntity<Map<String, Object>> getAllInfo(@RequestParam(name = "email") String email) {
+        return new ResponseEntity<>(attractionAchievementService.getAttractionAchievement(email), HttpStatusCode.valueOf(200));
     }
+
 }

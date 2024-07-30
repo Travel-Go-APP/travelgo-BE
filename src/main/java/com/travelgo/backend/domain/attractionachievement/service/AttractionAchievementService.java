@@ -1,85 +1,58 @@
 package com.travelgo.backend.domain.attractionachievement.service;
 
 import com.travelgo.backend.domain.attraction.model.AreaCode;
-import com.travelgo.backend.domain.attraction.service.AttractionService;
-import com.travelgo.backend.domain.attractionachievement.dto.AttractionAchievementRequest;
-import com.travelgo.backend.domain.attractionachievement.dto.AttractionAchievementResponse;
-import com.travelgo.backend.domain.attractionachievement.entity.AttractionAchievement;
-import com.travelgo.backend.domain.attractionachievement.model.VisitStatus;
-import com.travelgo.backend.domain.attractionachievement.repository.AttractionAchievementRepository;
+import com.travelgo.backend.domain.attraction.repository.AttractionRepository;
+import com.travelgo.backend.domain.attractionachievement.dto.AttractionAllInfo;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.service.UserService;
-import com.travelgo.backend.global.exception.CustomException;
-import com.travelgo.backend.global.exception.constant.ErrorCode;
+import com.travelgo.backend.domain.visit.repository.VisitRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AttractionAchievementService {
+
+    private final VisitRepository visitRepository;
+    private final AttractionRepository attractionRepository;
     private final UserService userService;
-    private final AttractionService attractionService;
-    private final AttractionAchievementRepository attractionAchievementRepository;
 
-    @Transactional
-    public void saveAttractionAchievement(AttractionAchievementRequest request) {
-        AttractionAchievement attractionAchievement = createAttracitonAchievement(request);
-        attractionAchievementRepository.save(attractionAchievement);
-    }
-
-    @Transactional
-    public void deleteAttractionAchievement(AttractionAchievementRequest request) {
-        AttractionAchievement attractionAchievement = getAttractionAchievement(request);
-        attractionAchievementRepository.delete(attractionAchievement);
-    }
-
-    public List<AttractionAchievementResponse> getList(String email, AreaCode areaCode) {
+    public Map<String, Object> getAttractionAchievement(String email) {
         User user = userService.getUser(email);
-        List<AttractionAchievement> achievementList = createAttractionAchievementList(areaCode, user);
 
-        if (achievementList.isEmpty())
-            throw new CustomException(ErrorCode.EMPTY_VALUE);
-
-        return createAttractionAchievementResponseList(achievementList);
-    }
-
-    private AttractionAchievement createAttracitonAchievement(AttractionAchievementRequest request) {
-        return AttractionAchievement.builder()
-                .user(userService.getUser(request.getEmail()))
-                .attraction(attractionService.getAttractionByLocation(
-                                request.getLatitude(),
-                                request.getLongitude()
-                        )
-                )
-                .visitStatus(VisitStatus.visit)
+        // AttractionAllInfo 생성
+        Long total = attractionRepository.count();
+        Long visit = visitRepository.countByUser(user);
+        AttractionAllInfo allInfo = AttractionAllInfo.builder()
+                .totalCount(total)
+                .visitCount(visit)
                 .build();
-    }
 
-    private AttractionAchievement getAttractionAchievement(AttractionAchievementRequest request) {
-        return attractionAchievementRepository.findByUserAndAttraction(
-                userService.getUser(request.getEmail()),
-                attractionService.getAttractionByLocation(
-                        request.getLatitude(),
-                        request.getLongitude()
-                )
-        );
-    }
+        Map<String, Long> areaTotalCount = new HashMap<>();
+        Map<String, Long> areaVisitCount = new HashMap<>();
 
-    private List<AttractionAchievement> createAttractionAchievementList(AreaCode areaCode, User user) {
-        return attractionAchievementRepository.findAllByUserAndAttraction_Area(user, areaCode);
-    }
+        for (AreaCode area : AreaCode.values()) {
+            Long areaTotal = attractionRepository.countByArea(area);
+            Long areaVisit = visitRepository.countByUserAndAttraction_Area(user, area);
 
-    private List<AttractionAchievementResponse> createAttractionAchievementResponseList(List<AttractionAchievement> attractionAchievementList) {
-        return attractionAchievementList.stream()
-                .map(AttractionAchievementResponse::new)
-                .toList();
+            areaTotalCount.put(area.getName(), areaTotal);
+            areaVisitCount.put(area.getName(), areaVisit);
+        }
 
+        // Map에 두 정보를 담아서 반환
+        Map<String, Object> achievementInfo = new HashMap<>();
+        achievementInfo.put("all", allInfo);
+        achievementInfo.put("areaTotalCount", areaTotalCount);
+        achievementInfo.put("areaVisitCount", areaVisitCount);
+
+        return achievementInfo;
     }
 
 }

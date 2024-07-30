@@ -126,7 +126,7 @@ public class AttractionController {
     }
 
     @Operation(summary = "DB에 저장된 전체 명소 검색", description = "DB에 저장된 전체 명소를 가져옵니다.")
-    @GetMapping("/find-all")
+    @GetMapping("/all")
     public ResponseEntity<Result<List<AttractionDetailResponse>>> findAll() {
         List<AttractionDetailResponse> responseList = attractionService.getList();
 
@@ -134,7 +134,7 @@ public class AttractionController {
     }
 
     @Operation(summary = "지역별 DB에 저장된 전체 명소 검색", description = "지역별 DB에 저장된 전체 명소를 가져옵니다.")
-    @GetMapping("/find-area")
+    @GetMapping("/area")
     public ResponseEntity<Result<List<AttractionDetailResponse>>> findAllByArea(@RequestParam(name = "AreaCode") AreaCode areaCode) {
         List<AttractionDetailResponse> responseList = attractionService.getListByArea(areaCode);
 

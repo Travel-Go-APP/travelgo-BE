@@ -12,6 +12,7 @@ import com.travelgo.backend.domain.attractionImage.service.AttractionImageServic
 import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -31,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AttractionService {
+    private final EntityManager em;
     private final AttractionRepository attractionRepository;
     private final S3UploadService s3UploadService;
     private final AttractionImageService attractionImageService;
@@ -77,7 +79,7 @@ public class AttractionService {
                 } else
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
             }
-            isEmptyList(attractionList);
+            checkEmpty(attractionList);
 
         } catch (CustomException e) {
             throw new CustomException(e.getErrorCode());
@@ -107,7 +109,7 @@ public class AttractionService {
                 } else
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
             }
-            isEmptyList(contentIdList);
+            checkEmpty(contentIdList);
 
         } catch (CustomException e) {
             throw new CustomException(e.getErrorCode());
@@ -139,7 +141,7 @@ public class AttractionService {
                 } else
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
             }
-            isEmptyList(contentIdList);
+            checkEmpty(contentIdList);
 
         } catch (CustomException e) {
             throw new CustomException(e.getErrorCode());
@@ -168,7 +170,7 @@ public class AttractionService {
                 } else
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
             }
-            isEmptyList(contentIdList);
+            checkEmpty(contentIdList);
 
         } catch (CustomException e) {
             throw new CustomException(e.getErrorCode());
@@ -194,8 +196,8 @@ public class AttractionService {
     }
 
     @Transactional
-    public Attraction save(Attraction attraction) {
-        return attractionRepository.save(attraction);
+    public void save(Attraction attraction) {
+        attractionRepository.save(attraction);
     }
 
     @Transactional
@@ -236,13 +238,8 @@ public class AttractionService {
                 .build();
     }
 
-    private Attraction getAttraction(Long attractionId) {
+    public Attraction getAttraction(Long attractionId) {
         return attractionRepository.findById(attractionId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
-    }
-
-    public Attraction getAttractionByLocation(Double latitude, Double longitude) {
-        return attractionRepository.findByLatitudeAndLongitude(latitude, longitude)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
     }
 
@@ -253,6 +250,11 @@ public class AttractionService {
 
     private static AttractionDetailResponse createAttractionResponse(Attraction attraction) {
         return AttractionDetailResponse.of(attraction);
+    }
+
+
+    public List<Attraction> getAttractionsWithInDistance(Double latitude, Double longitude, Double distance) {
+        return attractionRepository.findAttractionsWithInDistance(latitude, longitude, distance);
     }
 
     public List<AttractionDetailResponse> getList() {
@@ -277,7 +279,7 @@ public class AttractionService {
         return attractionRepository.findByAttractionName(name) != null;
     }
 
-    private static void isEmptyList(List<?> list) {
+    private static void checkEmpty(List<?> list) {
         if (list.isEmpty())
             throw new CustomException(ErrorCode.EMPTY_VALUE);
     }
