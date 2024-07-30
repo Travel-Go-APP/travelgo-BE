@@ -1,11 +1,11 @@
-package com.travelgo.backend.domain.attractionachievement.service;
+package com.travelgo.backend.domain.visit.service;
 
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.service.AttractionService;
-import com.travelgo.backend.domain.visit.dto.AttractionAchievementRequest;
+import com.travelgo.backend.domain.visit.dto.VisitRequest;
 import com.travelgo.backend.domain.visit.dto.VisitResponse;
 import com.travelgo.backend.domain.visit.entity.Visit;
-import com.travelgo.backend.domain.visit.repository.AttractionAchievementRepository;
+import com.travelgo.backend.domain.visit.repository.VisitRepository;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
@@ -21,22 +21,22 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AttractionAchievementService {
+public class VisitService {
     private final UserService userService;
     private final AttractionService attractionService;
-    private final AttractionAchievementRepository attractionAchievementRepository;
+    private final VisitRepository visitRepository;
 
     @Transactional
-    public VisitResponse saveAttractionAchievement(AttractionAchievementRequest request) {
+    public VisitResponse saveAttractionAchievement(VisitRequest request) {
         Visit visit = createAttracitonAchievement(request);
-        Visit save = attractionAchievementRepository.save(visit);
+        Visit save = visitRepository.save(visit);
         return createAttractionAchievementResponse(save);
     }
 
     @Transactional
-    public void deleteAttractionAchievement(AttractionAchievementRequest request) {
+    public void deleteAttractionAchievement(VisitRequest request) {
         Visit visit = getAttractionAchievement(request);
-        attractionAchievementRepository.delete(visit);
+        visitRepository.delete(visit);
     }
 
 
@@ -50,22 +50,22 @@ public class AttractionAchievementService {
         return createAttractionAchievementResponseList(achievementList);
     }
 
-    private Visit createAttracitonAchievement(AttractionAchievementRequest request) {
+    private Visit createAttracitonAchievement(VisitRequest request) {
         return Visit.builder()
                 .user(userService.getUser(request.getEmail()))
                 .attraction(attractionService.getAttraction(request.getAttractionId()))
                 .build();
     }
 
-    private Visit getAttractionAchievement(AttractionAchievementRequest request) {
-        return attractionAchievementRepository.findByUserAndAttraction(
+    private Visit getAttractionAchievement(VisitRequest request) {
+        return visitRepository.findByUserAndAttraction(
                 userService.getUser(request.getEmail()),
                 attractionService.getAttraction(request.getAttractionId())
         );
     }
 
     private List<Visit> createAttractionAchievementList(AreaCode areaCode, User user) {
-        return attractionAchievementRepository.findAllByUserAndAttraction_Area(user, areaCode);
+        return visitRepository.findAllByUserAndAttraction_Area(user, areaCode);
     }
 
     private VisitResponse createAttractionAchievementResponse(Visit visit) {

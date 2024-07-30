@@ -1,9 +1,9 @@
 package com.travelgo.backend.domain.visit.controller;
 
 import com.travelgo.backend.domain.attraction.model.AreaCode;
-import com.travelgo.backend.domain.visit.dto.AttractionAchievementRequest;
+import com.travelgo.backend.domain.visit.dto.VisitRequest;
 import com.travelgo.backend.domain.visit.dto.VisitResponse;
-import com.travelgo.backend.domain.attractionachievement.service.AttractionAchievementService;
+import com.travelgo.backend.domain.visit.service.VisitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,18 +16,18 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "명소 방문", description = "명소 방문 API(#20)")
+@Tag(name = "방문 하기(명소)", description = "명소 방문 API(#24)")
 @RequestMapping("/api/visit")
-public class AttractionAchievementController {
-    private final AttractionAchievementService attractionAchievementService;
+public class VisitController {
+    private final VisitService visitService;
 
     /**
      * 생성 메서드
      */
     @Operation(summary = "명송 방문 기록 저장", description = "유저가 명소에 방문 기록을 저장한다.")
     @PostMapping
-    public ResponseEntity<VisitResponse> saveAchievement(@Valid @RequestBody AttractionAchievementRequest attractionAchievementRequest) {
-        return new ResponseEntity<>(attractionAchievementService.saveAttractionAchievement(attractionAchievementRequest),
+    public ResponseEntity<VisitResponse> saveAchievement(@Valid @RequestBody VisitRequest visitRequest) {
+        return new ResponseEntity<>(visitService.saveAttractionAchievement(visitRequest),
                 HttpStatusCode.valueOf(200));
     }
 
@@ -36,8 +36,8 @@ public class AttractionAchievementController {
      */
     @Operation(summary = "명송 방문 기록 삭제", description = "유저가 명소에 방문한 기록을 삭제한다.")
     @DeleteMapping
-    public ResponseEntity<?> deleteAchievement(@Valid @RequestBody AttractionAchievementRequest attractionAchievementRequest) {
-        attractionAchievementService.deleteAttractionAchievement(attractionAchievementRequest);
+    public ResponseEntity<?> deleteAchievement(@Valid @RequestBody VisitRequest visitRequest) {
+        visitService.deleteAttractionAchievement(visitRequest);
 
         return ResponseEntity.ok(HttpStatusCode.valueOf(200));
     }
@@ -50,7 +50,7 @@ public class AttractionAchievementController {
     @GetMapping("/list")
     public ResponseEntity<List<VisitResponse>> getList(@RequestParam(name = "email") String email,
                                                        @RequestParam(name = "area") AreaCode area) {
-        return new ResponseEntity<>(attractionAchievementService.getList(email, area), HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(visitService.getList(email, area), HttpStatusCode.valueOf(200));
     }
 
 }

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AttractionAchievementRepository extends JpaRepository<Visit, Long> {
+public interface VisitRepository extends JpaRepository<Visit, Long> {
     Visit findByUserAndAttraction(User user, Attraction attraction);
 
     List<Visit> findAllByUser(User user);

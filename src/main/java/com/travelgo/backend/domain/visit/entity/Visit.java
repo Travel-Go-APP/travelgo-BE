@@ -15,12 +15,12 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AttractionAchievement extends BaseTimeEntity {
+public class Visit extends BaseTimeEntity {
 
     @Id
-    @Column(name = "attraction_achievement_id")
+    @Column(name = "visit_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long attractionAchievementId;
+    private Long visitId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -33,7 +33,7 @@ public class AttractionAchievement extends BaseTimeEntity {
     private String visitTime;
 
     @Builder
-    public AttractionAchievement(User user, Attraction attraction) {
+    public Visit(User user, Attraction attraction) {
         this.user = user;
         this.attraction = attraction;
         this.visitTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));

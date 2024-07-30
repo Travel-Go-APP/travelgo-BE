@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttractionAchievementRequest {
+public class VisitRequest {
 
     @NotNull
     @EmailValid
