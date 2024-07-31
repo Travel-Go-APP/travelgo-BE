@@ -19,15 +19,13 @@ public class ItemRequest {
     @NotNull
     private String itemName;
 
-    @NotNull
     private String imageUrl;
 
     @NotNull
     private int itemRank;
 
-    @Enumerated(EnumType.STRING)
     @NotNull
-    private Area area;
+    private String area;
 
     @NotNull
     private String summary;

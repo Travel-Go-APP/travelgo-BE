@@ -1,6 +1,8 @@
 package com.travelgo.backend.domain.userItems.entity;
 
+import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.item.entity.Item;
+import com.travelgo.backend.domain.item.model.Grade;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -28,4 +30,12 @@ public class UserItems extends BaseTimeEntity {
         this.user = user;
         this.item = item;
     }
+
+    public Area getArea(){
+        return this.item.getArea();
+    }
+
+//    public Grade getGrade(){
+//        return this.item.getItemRank();
+//    }
 }

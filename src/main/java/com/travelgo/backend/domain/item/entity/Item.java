@@ -2,12 +2,16 @@ package com.travelgo.backend.domain.item.entity;
 
 import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.item.dto.request.ItemRequest;
+import com.travelgo.backend.domain.userItems.entity.UserItems;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +40,9 @@ public class Item extends BaseTimeEntity {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserItems> userItems = new ArrayList<>();
 
     @Builder
     public Item(String itemName, String imageUrl, int itemRank, Area area, String summary, String description) {
