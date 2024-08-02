@@ -1,6 +1,5 @@
 package com.travelgo.backend.domain.userItems.service;
 
-import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
 import com.travelgo.backend.domain.user.entity.User;
@@ -11,15 +10,18 @@ import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserItemsService {
 
+    @Autowired
     private final UserItemsRepository userItemsRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -31,8 +33,8 @@ public class UserItemsService {
             "Gyeonggido", "Chungcheongnamdo", "Daegu"
     );
 
-    public void add(Long userId, Long itemId){
-        User user = userRepository.findById(userId)
+    public void add(String email, Long itemId){
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ITEM));
@@ -45,13 +47,6 @@ public class UserItemsService {
         userItemsRepository.save(userItems);
     }
 
-    public List<Long> getItemIdsByUserId(Long userId){
-        List<UserItems> userItemsList = userItemsRepository.findAllByUser_UserId(userId);
-
-        return userItemsList.stream()
-                .map(userItems -> userItems.getItem().getItemId())
-                .collect(Collectors.toList());
-    }
 
     // 아이템 수 설정
     private static final Map<String, Integer> AREA_ITEM_COUNT = new HashMap<>();
@@ -75,8 +70,15 @@ public class UserItemsService {
         ITEM_RANK_TOTAL_COUNT.put("0", 68);   // 지역 아이템 총 68개 Local
     }
 
-    public UserItemsResponse getUserItemsResponse(Long userId) {
-        List<UserItems> userItemsList = userItemsRepository.findAllByUser_UserId(userId);
+    public List<Long> getItemIdsByUserEmail(String email) {
+        List<UserItems> userItemsList = userItemsRepository.findAllByUserEmail(email);
+        return userItemsList.stream()
+                .map(userItems -> userItems.getItem().getItemId())
+                .collect(Collectors.toList());
+    }
+
+    public UserItemsResponse getUserItemsResponse(String email) {
+        List<UserItems> userItemsList = userItemsRepository.findAllByUserEmail(email);
         List<Long> itemIds = userItemsList.stream()
                 .map(userItems -> userItems.getItem().getItemId())
                 .collect(Collectors.toList());
@@ -86,10 +88,10 @@ public class UserItemsService {
         double earnPercentage = (double) earnItemCount / totalItemCount * 100;
 
         Map<String, Integer> areaTotalItemCounts = new HashMap<>(AREA_ITEM_COUNT);
-        Map<String, Integer> areaEarnItemCounts = getEarnedItemCountByArea(userId);
+        Map<String, Integer> areaEarnItemCounts = getEarnedItemCountByArea(userItemsList);
 
         Map<String, Integer> rankTotalItemCounts = new HashMap<>(ITEM_RANK_TOTAL_COUNT);
-        Map<String, Integer> rankEarnItemCounts = getEarnedItemCountByRank(userId);
+        Map<String, Integer> rankEarnItemCounts = getEarnedItemCountByRank(userItemsList);
 
         // 지역별 획득 아이템 개수를 0으로 초기화
         for (String area : AREAS) {
@@ -114,21 +116,15 @@ public class UserItemsService {
     }
 
     // 지역별 유저 획득 아이템 집계
-    public Map<String, Integer> getEarnedItemCountByArea(Long userId) {
-        List<UserItems> userItems = userItemsRepository.findAllByUser_UserId(userId);
-
-        return userItems.stream()
-                .collect(Collectors.groupingBy(userItem -> userItem.getItem().getArea().getValue(),
-                        Collectors.summingInt(userItem -> 1)));
+    public Map<String, Integer> getEarnedItemCountByArea(List<UserItems> userItemsList) {
+        return userItemsList.stream()
+                .collect(Collectors.groupingBy(userItem -> userItem.getItem().getArea().name(), Collectors.summingInt(userItem -> 1)));
     }
 
     // 랭크별 유저 획득 아이템 집계
-    public Map<String, Integer> getEarnedItemCountByRank(Long userId) {
-        List<UserItems> userItems = userItemsRepository.findAllByUser_UserId(userId);
-
-        return userItems.stream()
-                .collect(Collectors.groupingBy(userItem -> String.valueOf(userItem.getItem().getItemRank()),
-                        Collectors.summingInt(userItem -> 1)));
+    public Map<String, Integer> getEarnedItemCountByRank(List<UserItems> userItemsList) {
+        return userItemsList.stream()
+                .collect(Collectors.groupingBy(userItem -> String.valueOf(userItem.getItem().getItemRank()), Collectors.summingInt(userItem -> 1)));
     }
 
     public int getTotalItemCount() {

@@ -23,23 +23,23 @@ public class UserItemsController {
 
     @Operation(summary = "아이템 획득", description = "유저가 아이템을 획득한다")
     @PostMapping("/add")
-    public ResponseEntity<Void> addUserItems(@RequestParam(name = "userId") Long userId,
+    public ResponseEntity<Void> addUserItems(@RequestParam(name = "email") String email,
                                              @RequestParam(name = "itemId") Long itemId){
-        userItemsService.add(userId, itemId);
+        userItemsService.add(email, itemId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "아이템 리스트 조회", description = "유저 아이템 획득 리스트 조회")
     @GetMapping("/items")
-    public ResponseEntity<List<Long>> getItemIdsByUserId(@RequestParam(name = "userId") Long userId){
-        List<Long> itemIds = userItemsService.getItemIdsByUserId(userId);
+    public ResponseEntity<List<Long>> getItemIdsByUserEmail(@RequestParam(name = "email") String email){
+        List<Long> itemIds = userItemsService.getItemIdsByUserEmail(email);
         return ResponseEntity.ok(itemIds);
     }
 
     @Operation(summary = "유저 아이템 정보 조회", description = "유저의 아이템 정보와 지역별 수집 현황 조회")
     @GetMapping("/user-info")
-    public ResponseEntity<UserItemsResponse> getUserItemsResponse(@RequestParam(name = "userId") Long userId) {
-        UserItemsResponse response = userItemsService.getUserItemsResponse(userId);
+    public ResponseEntity<UserItemsResponse> getUserItemsResponse(@RequestParam(name = "email") String email) {
+        UserItemsResponse response = userItemsService.getUserItemsResponse(email);
         return ResponseEntity.ok(response);
     }
 
