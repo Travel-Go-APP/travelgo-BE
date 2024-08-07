@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.user.entity;
 
+import com.travelgo.backend.domain.user.dto.Request.UserEditRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.model.Bag;
 import com.travelgo.backend.domain.user.model.Shoes;
@@ -34,8 +35,12 @@ public class User extends BaseTimeEntity {
     @Email
     private String email; // kakaoId -> email
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+//    @Column(name = "phone_number", unique = true)
+//    private String phoneNumber;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     @Column(name = "detection_range")
     @NotNull
@@ -67,11 +72,12 @@ public class User extends BaseTimeEntity {
     private Bag bag;
 
     @Builder
-    public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int nextLevelExp, double percentage, int workCount, int level, int quest, int tg, int maxSearch, int possibleSearch, double experienceX, double tgX, Shoes shoes, Bag bag) {
+    public User(String username, String nickname, String email, String phoneNumber,Role role, double detectionRange, int experience, int nextLevelExp, double percentage, int workCount, int level, int quest, int tg, int maxSearch, int possibleSearch, double experienceX, double tgX, Shoes shoes, Bag bag) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
-        this.phoneNumber = phoneNumber;
+//        this.phoneNumber = phoneNumber;
+        this.role = role;
         this.detectionRange = detectionRange;
         this.experience = experience;
         this.nextLevelExp = nextLevelExp;
@@ -98,7 +104,7 @@ public class User extends BaseTimeEntity {
         this.email = request.getEmail();
         this.nickname = request.getNickname();
         this.username = "";
-        this.phoneNumber = "";
+//        this.phoneNumber = "";
         this.detectionRange = 0;
         this.experience = 0;
         this.workCount = 0;
@@ -127,6 +133,15 @@ public class User extends BaseTimeEntity {
 
     public void changeNickname(String nickname){
         this.nickname = nickname;
+    }
+
+//    public void updateUser(UserEditRequest request) {
+//        this.name = request.name();
+//        this.phoneNumber = request.phoneNumber();
+//    }
+
+    public void changeAdmin(){
+        this.role = Role.ADMIN;
     }
 }
 
