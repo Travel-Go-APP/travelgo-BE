@@ -1,0 +1,18 @@
+version: "3"
+services:
+  travelgo_redis:
+    image: redis:latest
+    container_name: travelgo_redis
+    hostname: redis
+    ports:
+      - "6380:6379"
+#  ggudock_redis:
+#    image: redis:latest
+#    container_name: ggudock_redis
+#    hostname: redis
+#    ports:
+#      - "6379:6379"
+# 도커 컨테이너 생성
+# docker-compose -f docker-compose-redis.yml up -d
+# 도커 컨테이너 실행
+# docker exec -it treavelgo_redis redis-cli --raw
