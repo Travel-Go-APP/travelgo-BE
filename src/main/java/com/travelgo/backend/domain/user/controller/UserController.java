@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.user.controller;
 
+import com.travelgo.backend.auth.utils.SecurityUtil;
 import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,32 +28,32 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입 후 닉네임과 기본 값들 설정")
     @PostMapping("/signup")
-    public ResponseEntity<UserResponse> signupUser(@Valid @RequestBody UserRequest.SignUp request){
+    public ResponseEntity<UserResponse> signupUser(@Valid @RequestBody UserRequest.SignUp request) {
         userService.signUp(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //1개짜리 이메일만 있으면 됨
     @Operation(summary = "유저삭제", description = "유저 삭제")
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<UserResponse.DeleteUser> deleteUser(@PathVariable(name = "userId") Long userId){
-        UserResponse.DeleteUser response = userService.deleteUser(userId);
+    @DeleteMapping
+    public ResponseEntity<UserResponse.DeleteUser> deleteUser(Authentication authentication) {
+        UserResponse.DeleteUser response = userService.deleteUser(SecurityUtil.getCurrentName(authentication));
         return new ResponseEntity<>(response, HttpStatus.valueOf(200));
     }
 
     //1개짜리 이메일만 있으면 됨
     @Operation(summary = "닉네임 체크", description = "DB 대조를 통한 닉네임 가능 여부 체크(중복, 욕설)")
     @PostMapping("/check-nickname")
-    public ResponseEntity<Void> checkNickname(@RequestParam(name = "nickName") String nickname){
-        try{
+    public ResponseEntity<Void> checkNickname(@RequestParam(name = "nickName") String nickname) {
+        try {
             userService.checkNicknameValidity(nickname);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (CustomException e){
-            if(e.getErrorCode() == ErrorCode.ALREADY_EXIST_USER){
+        } catch (CustomException e) {
+            if (e.getErrorCode() == ErrorCode.ALREADY_EXIST_USER) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }else if(e.getErrorCode() == ErrorCode.INCLUDE_SLANG){
+            } else if (e.getErrorCode() == ErrorCode.INCLUDE_SLANG) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }else{
+            } else {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -59,33 +61,34 @@ public class UserController {
 
     @Operation(summary = "닉네임 변경", description = "닉네임 변경")
     @PatchMapping("/update-nickname")
-    public ResponseEntity<UserResponse.UpdateNickname> updateUser(@RequestParam(name = "email") String email,
+    public ResponseEntity<UserResponse.UpdateNickname> updateUser(Authentication authentication,
                                                                   @RequestParam(name = "nickName") String nickName) {
-        return new ResponseEntity<>(userService.updateUser(email, nickName), HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(userService.updateUser(SecurityUtil.getCurrentName(authentication), nickName),
+                HttpStatusCode.valueOf(200));
     }
 
 
     @Operation(summary = "로그인", description = "이메일로 로그인 시도")
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestParam(name = "email") String email){
-        userService.login(email);
+    public ResponseEntity<Void> login(Authentication authentication) {
+        userService.login(SecurityUtil.getCurrentName(authentication));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "경험치 업데이트", description = "유저 경험치 업데이트")
     @PostMapping("/exp")
-    public ResponseEntity<?> updateExperience(@RequestBody UserRequest.UpdateExp request){
-        try{
+    public ResponseEntity<?> updateExperience(@RequestBody UserRequest.UpdateExp request) {
+        try {
             UserResponse.UpdateExp response = userService.updateExp(request);
             return ResponseEntity.ok(response);
-        } catch(UserNotFoundException e){
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @Operation(summary = "메인 페이지 정보 가져오기", description = "유저 메인 페이지 정보 조회")
     @PostMapping("/get-main")
-    public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request){
+    public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request) {
         MainPageResponse response = userService.getMainPageResponse(request);
         return ResponseEntity.ok(response);
     }

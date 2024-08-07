@@ -2,12 +2,11 @@ package com.travelgo.backend.domain.visit.service;
 
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.service.AttractionService;
-import com.travelgo.backend.domain.visit.dto.VisitRequest;
+import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.domain.visit.dto.VisitResponse;
 import com.travelgo.backend.domain.visit.entity.Visit;
 import com.travelgo.backend.domain.visit.repository.VisitRepository;
-import com.travelgo.backend.domain.user.entity.User;
-import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +26,15 @@ public class VisitService {
     private final VisitRepository visitRepository;
 
     @Transactional
-    public VisitResponse saveAttractionAchievement(VisitRequest request) {
-        Visit visit = createAttracitonAchievement(request);
+    public VisitResponse saveAttractionAchievement(String email, Long attractionId) {
+        Visit visit = createAttracitonAchievement(email, attractionId);
         Visit save = visitRepository.save(visit);
         return createAttractionAchievementResponse(save);
     }
 
     @Transactional
-    public void deleteAttractionAchievement(VisitRequest request) {
-        Visit visit = getAttractionAchievement(request);
+    public void deleteAttractionAchievement(String email, Long attractionId) {
+        Visit visit = getAttractionAchievement(email, attractionId);
         visitRepository.delete(visit);
     }
 
@@ -50,17 +49,17 @@ public class VisitService {
         return createAttractionAchievementResponseList(achievementList);
     }
 
-    private Visit createAttracitonAchievement(VisitRequest request) {
+    private Visit createAttracitonAchievement(String email, Long attractionId) {
         return Visit.builder()
-                .user(userService.getUser(request.getEmail()))
-                .attraction(attractionService.getAttraction(request.getAttractionId()))
+                .user(userService.getUser(email))
+                .attraction(attractionService.getAttraction(attractionId))
                 .build();
     }
 
-    private Visit getAttractionAchievement(VisitRequest request) {
+    private Visit getAttractionAchievement(String email, Long attractionId) {
         return visitRepository.findByUserAndAttraction(
-                userService.getUser(request.getEmail()),
-                attractionService.getAttraction(request.getAttractionId())
+                userService.getUser(email),
+                attractionService.getAttraction(attractionId)
         );
     }
 

@@ -4,9 +4,12 @@ package com.travelgo.backend.domain.user.service;
 import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
+import com.travelgo.backend.domain.user.dto.Response.UserDto;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
+import com.travelgo.backend.domain.user.entity.Role;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
+import com.travelgo.backend.domain.user.exception.UserException;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
@@ -16,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -96,8 +100,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse.DeleteUser deleteUser(Long userId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    public UserResponse.DeleteUser deleteUser(String email){
+        User user = getUser(email);
         userRepository.delete(user);
 
         return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
@@ -157,7 +161,7 @@ public class UserService {
                 .username(user.getUsername())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
+//                .phoneNumber(user.getPhoneNumber())
                 .detectionRange(user.getDetectionRange())
                 .experience(user.getExperience())
                 .workCount(user.getWorkCount())
@@ -167,5 +171,36 @@ public class UserService {
                 .shoes(user.getShoes())
                 .bag(user.getBag())
                 .build();
+    }
+
+    // oauth user service
+    public UserDto userInfo(String email) {
+        User user = findByEmailOrThrow(email);
+        return UserDto.fromEntity(user);
+    }
+
+//    @Transactional
+//    public UserDto userEdit(UserEditRequest request, String email) {
+//        User user = findByEmailOrThrow(email);
+//        user.updateUser(request);
+//        return UserDto.fromEntity(user);
+//    }
+
+    @Transactional
+    public Role changeAdmin(String email) {
+        User user = findByEmailOrThrow(email);
+        user.changeAdmin();
+        return user.getRole();
+    }
+
+    public List<UserDto> getList() {
+        return userRepository.findAll().stream()
+                .map(UserDto::fromEntity)
+                .toList();
+    }
+
+    private User findByEmailOrThrow(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
     }
 }
