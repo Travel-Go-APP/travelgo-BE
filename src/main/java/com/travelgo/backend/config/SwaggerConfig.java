@@ -11,16 +11,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    //JWT 미사용 설정
+    /*//JWT 미사용 설정
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .components(new Components())
                 .info(apiInfo());
-    }
+    }*/
 
     // JWT 사용 설정
-    /*@Bean
+    @Bean
     public OpenAPI openAPI() {
         String jwt = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
@@ -35,7 +35,7 @@ public class SwaggerConfig {
                 .info(apiInfo())
                 .addSecurityItem(securityRequirement)
                 .components(components);
-    }*/
+    }
 
     private Info apiInfo() {
         return new Info()
