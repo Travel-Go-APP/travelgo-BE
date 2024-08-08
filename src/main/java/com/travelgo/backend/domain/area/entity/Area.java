@@ -23,8 +23,8 @@ public enum Area {
     전북("Jeollabukdo"),
     경남("Gyeonsangnamdo"),
     경북("Gyeonsangbukdo"),
-    제주특별자치도("Jejudo"),
-    기본("Common");
+    제주특별자치도("Jejudo");
+//    기본("Common");
 
     @JsonValue // enum 타입을 선택 가능하도록 설정
     private final String value;

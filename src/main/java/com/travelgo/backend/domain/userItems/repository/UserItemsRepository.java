@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface UserItemsRepository extends JpaRepository<UserItems, Long> {
-    @Query("SELECT ui FROM UserItems ui WHERE ui.user.email= :email")
-    List<UserItems> findAllByUserEmail(@Param("email") String email);
+//    @Query("SELECT ui FROM UserItems ui WHERE ui.user.email= :email")
+//    List<UserItems> findAllByUser_Email(@Param("email") String email);
+
+    List<UserItems> findAllByUser_Email(String email);
 }
