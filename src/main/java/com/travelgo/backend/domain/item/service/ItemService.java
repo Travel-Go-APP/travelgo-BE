@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.item.service;
 
+import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
 import com.travelgo.backend.domain.item.dto.request.ItemRequest;
 import com.travelgo.backend.domain.item.dto.response.ItemResponse;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Slf4j
@@ -27,23 +29,39 @@ public class ItemService {
 
     @Transactional
     public void addItem(ItemRequest request, MultipartFile imageFile) throws IOException {
+        // 아이템이 이미 존재하는지 확인
         Optional<Item> existingItem = itemRepository.findByItemId(request.getItemId());
 
-        if(existingItem.isPresent()){
-            throw new CustomException(ErrorCode.BAD_REQUEST);
+        if (existingItem.isPresent()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ITEM); // 아이템이 이미 존재하는 경우
         }
 
+        // 이미지 URL 처리
         String imageUrl = null;
-        if(imageFile != null && !imageFile.isEmpty()){
+        if (imageFile != null && !imageFile.isEmpty()) {
             imageUrl = s3UploadService.upload(imageFile, "items");
-
         }
+
+        // 문자열을 Area Enum으로 변환
+        Area area;
+        try {
+            area = Arrays.stream(Area.values())
+                    .filter(a -> a.getValue().equalsIgnoreCase(request.getArea()))
+                    .findFirst()
+                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_AREA)); // 유효하지 않은 Area 값 처리
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.NOT_FOUND_AREA); // 유효하지 않은 Area 값 처리
+        }
+
+        // 새로운 Item 객체 생성
         Item newItem = Item.createItem(request.getItemName(), imageUrl, request.getItemRank(),
-                request.getArea(), request.getSummary(), request.getDescription());
+                area, request.getSummary(), request.getDescription());
 
+        // 아이템 저장
         itemRepository.save(newItem);
-
     }
+
+
 
     @Transactional
     public void updateItem(Long itemId, String itemName, int itemRank){

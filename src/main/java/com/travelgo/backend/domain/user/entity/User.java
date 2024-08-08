@@ -3,6 +3,7 @@ package com.travelgo.backend.domain.user.entity;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.model.Bag;
 import com.travelgo.backend.domain.user.model.Shoes;
+import com.travelgo.backend.domain.userItems.entity.UserItems;
 import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -11,6 +12,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -65,6 +69,9 @@ public class User extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private Bag bag;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserItems> userItems = new ArrayList<>();
 
     @Builder
     public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int nextLevelExp, double percentage, int workCount, int level, int quest, int tg, int maxSearch, int possibleSearch, double experienceX, double tgX, Shoes shoes, Bag bag) {
