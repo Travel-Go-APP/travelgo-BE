@@ -3,6 +3,9 @@ package com.travelgo.backend.auth.jwt;
 import com.travelgo.backend.auth.dto.model.PrincipalDetails;
 import com.travelgo.backend.auth.exception.TokenException;
 import com.travelgo.backend.auth.service.TokenService;
+import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.exception.UserException;
+import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import com.travelgo.backend.redis.entity.Token;
 import io.jsonwebtoken.Claims;
@@ -18,7 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -40,6 +42,7 @@ public class TokenProvider {
     private String key;
     private SecretKey secretKey;
     private final TokenService tokenService;
+    private final UserRepository userRepository;
 
     @PostConstruct
     private void setSecretKey() {
@@ -78,8 +81,15 @@ public class TokenProvider {
         Claims claims = parseClaims(token);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
 
-        // 3. security의 User 객체 생성
-        User principal = new User(claims.getSubject(), "", authorities);
+        // 3.  UserDetail 객체 생성
+//        User user = new User(claims.getSubject(), "", authorities);
+
+        // 3. user entity search
+        User user = userRepository.findByEmail(claims.getSubject()).orElseThrow(() -> new UserException(ErrorCode.NOT_FOUND_USER));
+
+
+        PrincipalDetails principal = new PrincipalDetails(user, claims);
+
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 

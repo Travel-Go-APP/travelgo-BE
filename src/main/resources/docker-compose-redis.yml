@@ -15,4 +15,4 @@ services:
 # 도커 컨테이너 생성
 # docker-compose -f docker-compose-redis.yml up -d
 # 도커 컨테이너 실행
-# docker exec -it treavelgo_redis redis-cli --raw
+# docker exec -it travelgo_redis redis-cli --raw

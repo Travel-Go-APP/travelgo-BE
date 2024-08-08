@@ -2,6 +2,7 @@ package com.travelgo.backend.auth.controller;
 
 
 import com.travelgo.backend.auth.dto.LoginResponse;
+import com.travelgo.backend.auth.dto.model.PrincipalDetails;
 import com.travelgo.backend.auth.jwt.TokenProvider;
 import com.travelgo.backend.auth.service.TokenService;
 import com.travelgo.backend.auth.utils.SecurityUtil;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,8 +51,9 @@ public class AuthController {
 
     @Operation(summary = "토큰 유효기간", description = "토큰에 남은 유효기간을 반환한다.")
     @GetMapping("/expire")
-    public ResponseEntity<Long> getTokenExpireTime(Authentication authentication) {
-        String email = SecurityUtil.getCurrentName(authentication);
+    public ResponseEntity<Long> getTokenExpireTime(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+//        String email = SecurityUtil.getCurrentName(authentication);
+        String email = principalDetails.getName();
         Token token = tokenService.findByEmailOrThrow(email);
         return ResponseEntity.ok().body(tokenProvider.getExpiration(token.getAccessToken()));
     }
@@ -75,10 +78,10 @@ public class AuthController {
 
     @Operation(summary = "테스트", description = "테스트")
     @GetMapping("/test")
-    public ResponseEntity<UserDto> test(Authentication authentication) {
-        String email = SecurityUtil.getCurrentName(authentication);
-
-        return ResponseEntity.ok(userService.userInfo(email));
+    public ResponseEntity<UserDto> test(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        log.info("Attributes : {}", principalDetails.getAttributes());
+        log.info("Authority : {}", principalDetails.getAuthorities());
+        return ResponseEntity.ok(userService.userInfo(principalDetails.getName()));
     }
 }
 

@@ -5,6 +5,7 @@ import com.travelgo.backend.auth.dto.model.PrincipalDetails;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -30,8 +32,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         // 3. userNameAttributeName 가져오기
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                .getUserInfoEndpoint().getUserNameAttributeName();
+//        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
+//                .getUserInfoEndpoint().getUserNameAttributeName();
 
         // 4. 유저 정보 dto 생성
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(registrationId, oAuth2UserAttributes);
@@ -40,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user = getOrSave(oAuth2UserInfo);
 
         // 6. OAuth2User로 반환
-        return new PrincipalDetails(user, oAuth2UserAttributes, userNameAttributeName);
+        return new PrincipalDetails(user, oAuth2UserAttributes);
     }
 
     private User getOrSave(OAuth2UserInfo oAuth2UserInfo) {
