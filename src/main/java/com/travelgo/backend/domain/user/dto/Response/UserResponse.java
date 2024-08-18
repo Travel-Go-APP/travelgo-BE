@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class UserResponse {
+
     private Long userId;
     private String username;
     private String nickname;
@@ -84,4 +85,6 @@ public class UserResponse {
         private Shoes shoes;
         private Bag bag;
     }
+
+
 }

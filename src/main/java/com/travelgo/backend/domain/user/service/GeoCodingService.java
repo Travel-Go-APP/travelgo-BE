@@ -23,7 +23,7 @@ public class GeoCodingService {
     private final String KAKAO_REST_API_KEY = "4985bb6e1259e1eea63d88a7decc596b";
     private final String KAKAO_GEOCODE_URL = "https://dapi.kakao.com/v2/local/geo/coord2address.json";
 
-    public String reverseGeocode(Double latitude, Double longitude) {
+    public String[] reverseGeocode(Double latitude, Double longitude) {
         RestTemplate restTemplate = new RestTemplate();
         String uri = UriComponentsBuilder.fromHttpUrl(KAKAO_GEOCODE_URL)
                 .queryParam("x", longitude)
@@ -38,14 +38,13 @@ public class GeoCodingService {
         try {
             ResponseEntity<KakaoGeoResponse> response = restTemplate.exchange(uri, HttpMethod.GET, entity, KakaoGeoResponse.class);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                logger.info("Kakao API response: {}", response.getBody());
                 List<KakaoGeoResponse.Document> documents = response.getBody().getDocuments();
                 if (documents != null && !documents.isEmpty()) {
                     KakaoGeoResponse.Document document = documents.get(0);
                     if (document.getAddress() != null) {
                         String fullAddress = document.getAddress().getAddressName();
-                        String area = extractRegion(fullAddress);
-                        return area;
+                        String[] areaAndVisitArea = extractRegion(fullAddress);
+                        return areaAndVisitArea; // 지역명과 방문 지역명을 모두 반환
                     } else {
                         throw new CustomException(ErrorCode.NOT_FOUND_GEO);
                     }
@@ -59,16 +58,16 @@ public class GeoCodingService {
 
         return null;
     }
-    private String extractRegion(String fullAddress) {
-        // 주소 문자열에서 첫 번째 단어를 추출
+
+    private String[] extractRegion(String fullAddress) {
         if (fullAddress != null && !fullAddress.isEmpty()) {
             String[] parts = fullAddress.split(" ");
             if (parts.length > 1) {
-                return parts[0] + " " + parts[1];
-            }else if(parts.length == 1){
-                return parts[0];
+                return new String[]{parts[0], parts[1]};  // "경기"와 "평택시"로 분리
+            } else if (parts.length == 1) {
+                return new String[]{parts[0], ""};  // 하나의 부분만 있는 경우
             }
         }
-        return null;
+        return new String[]{null, null};  // 주소가 없을 때
     }
 }
