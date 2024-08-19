@@ -126,6 +126,23 @@ public class User extends BaseTimeEntity {
         this.level++;
     }
 
+    public void addTg(int amount) {
+        this.tg += amount;
+    }
+
+    public void loseTgPercentage(int percentage) {
+        int tgLost = this.tg * percentage / 100;
+        this.tg -= tgLost;
+    }
+
+    public void recoverPossibleSearch(int amount) {
+        this.possibleSearch = Math.min(this.possibleSearch + amount, this.maxSearch);
+    }
+
+    public void decreasePossibleSearch(int amount) {
+        this.possibleSearch = Math.max(this.possibleSearch - amount, 0); // 최소 0 이하로는 내려가지 않도록 함
+    }
+
     public void reduceExperience(int exp){
         this.experience -= exp;
     }
