@@ -124,7 +124,7 @@ public class VisitCountEventService {
                     case "경상남도":
                         visitData = GyeongsangnamdoCount;
                         break;
-                    case "전라북도":
+                    case "전북특별자치도":
                         visitData = JeollabukdoCount;
                         break;
                     case "전라남도":
@@ -137,18 +137,18 @@ public class VisitCountEventService {
                         System.out.println("해당 지역이 없습니다.");
                         break;
                 }
+
                 if (visitData != null)
                     visitData.addCount(Double.parseDouble((String) getObject.get("touNum")));
-
-                for (VisitData data : visitDataList) {
-                    if (data.getVisitorCount() > max) {
-                        max = data.getVisitorCount();
-                        visitResult.setMaxArea(data.getAreaCode());
-                    }
-                    if (data.getVisitorCount() < min) {
-                        min = data.getVisitorCount();
-                        visitResult.setMinArea(data.getAreaCode());
-                    }
+            }
+            for (VisitData data : visitDataList) {
+                if (data.getVisitorCount() > max) {
+                    max = data.getVisitorCount();
+                    visitResult.setMaxArea(data.getAreaCode());
+                }
+                if (data.getVisitorCount() < min) {
+                    min = data.getVisitorCount();
+                    visitResult.setMinArea(data.getAreaCode());
                 }
             }
 
