@@ -13,9 +13,9 @@ public enum ErrorCode {
     DO_NOT_LOGIN(HttpStatus.NOT_FOUND, "현재 로그인중이 아닙니다."),
 
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
-    NOT_FOUND_AREA(HttpStatus.NOT_FOUND, "명소를 찾을 수 없습니다."),
+    NOT_FOUND_AREA(HttpStatus.NOT_FOUND, "지역를 찾을 수 없습니다."),
     NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
-    NOT_FOUND_ATTRACTION(HttpStatus.NOT_FOUND, "업체를 찾을 수 없습니다."),
+    NOT_FOUND_ATTRACTION(HttpStatus.NOT_FOUND, "명소를 찾을 수 없습니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."),
     NOT_FOUND_ACHIEVEMENT(HttpStatus.NOT_FOUND, "이력을 찾을 수 없습니다."),
