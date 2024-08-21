@@ -70,7 +70,6 @@ public class AuthController {
     @DeleteMapping("/logout")
     public ResponseEntity<String> logout(Authentication authentication) {
         String email = SecurityUtil.getCurrentName(authentication);
-
         tokenService.deleteRefreshToken(email);
 
         return ResponseEntity.ok().body(userService.userInfo(email).getName() + "님의 계정이 로그아웃 되었습니다.");
