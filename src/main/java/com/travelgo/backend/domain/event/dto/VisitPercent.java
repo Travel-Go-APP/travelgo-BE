@@ -7,7 +7,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VisitResult {
-    AreaCode maxArea;
-    AreaCode minArea;
+public class VisitPercent {
+    AreaCode areaCode;
+    Double percent;
 }
