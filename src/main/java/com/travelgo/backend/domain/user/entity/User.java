@@ -8,16 +8,14 @@ import com.travelgo.backend.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
 
@@ -44,21 +42,13 @@ public class User extends BaseTimeEntity {
     @Column(name = "detection_range")
     @NotNull
     private double detectionRange;
-
     private int experience;
-
     private int nextLevelExp;
-
     private double percentage;
-
     private int workCount;
-
     private int level;
-
     private int quest;
-
     private int tg;
-
     private int maxSearch;
     private int possibleSearch;
     private double experienceX;
@@ -126,6 +116,23 @@ public class User extends BaseTimeEntity {
 
     public void levelUp(){
         this.level++;
+    }
+
+    public void addTg(int amount) {
+        this.tg += amount;
+    }
+
+    public void loseTgPercentage(int percentage) {
+        int tgLost = this.tg * percentage / 100;
+        this.tg -= tgLost;
+    }
+
+    public void recoverPossibleSearch(int amount) {
+        this.possibleSearch = Math.min(this.possibleSearch + amount, this.maxSearch);
+    }
+
+    public void decreasePossibleSearch(int amount) {
+        this.possibleSearch = Math.max(this.possibleSearch - amount, 0); // 최소 0 이하로는 내려가지 않도록 함
     }
 
     public void reduceExperience(int exp){

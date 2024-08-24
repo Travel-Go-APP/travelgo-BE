@@ -111,12 +111,12 @@ public class UserService {
     public MainPageResponse getMainPageResponse(MainPageRequest request){
         User user = getUser(request.getEmail());
 
-        String area;
+        String[] areaAndVisitArea;
 
         try{
-            area = geoCodingService.reverseGeocode(request.getLatitude(), request.getLongitude());
+            areaAndVisitArea = geoCodingService.reverseGeocode(request.getLatitude(), request.getLongitude());
 
-            if(area == null){
+            if (areaAndVisitArea == null || areaAndVisitArea[0] == null) {
                 throw new CustomException(ErrorCode.NOT_FOUND_AREA);
             }
         } catch (Exception e){
@@ -137,7 +137,8 @@ public class UserService {
                 user.getExperience(),
                 nextLevelExp,
                 percentage,
-                area,
+                areaAndVisitArea[0],
+                areaAndVisitArea[1],
                 visitingBenefit,
                 user.getShoes(),
                 user.getMaxSearch(),

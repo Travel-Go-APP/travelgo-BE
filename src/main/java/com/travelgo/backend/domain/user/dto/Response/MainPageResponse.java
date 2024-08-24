@@ -17,7 +17,8 @@ public class MainPageResponse {
     private int experience;
     private int nextLevelExp;
     private double percentage;
-    private String area; // 역지오코딩으로 호출
+    private String area; // "경기" 역지오코딩으로 호출
+    private String visitArea; //"평택시"
     private String visitingBenefit = "경험치 2배"; // 역지오코딩으로 불러온 값에 매핑할건데 임시 하드 코딩 처리
     private Shoes shoes;
     private int maxSearch; // 일일 최대 조사하기 횟수 10회
