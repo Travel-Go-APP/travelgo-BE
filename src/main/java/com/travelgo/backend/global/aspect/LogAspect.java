@@ -24,11 +24,11 @@ public class LogAspect {
     public void all() {
     }
 
-    @Pointcut("execution(* com.travelgo.backend.domain..*Controller.*(..))")
+    @Pointcut("execution(* com.travelgo.backend.domain..*Controller.*(..)) && !execution(* com.travelgo.backend.domain.event.controller.VisitCountEventController.*(..)))")
     public void controller() {
     }
 
-    @Pointcut("execution(* com.travelgo.backend..domain..*Service.*(..))")
+    @Pointcut("execution(* com.travelgo.backend..domain..*Service.*(..)) && !execution(* com.travelgo.backend.domain.event.service.VisitCountEventService*(..)))")
     public void service() {
     }
 
