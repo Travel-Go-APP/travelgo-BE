@@ -135,5 +135,13 @@ public class User extends BaseTimeEntity {
     public void changeNickname(String nickname){
         this.nickname = nickname;
     }
+
+    public void rewardTgx(double ratio) {
+        this.tgX = ratio;
+    }
+
+    public void rewardExpX(double ratio) {
+        this.experienceX = ratio;
+    }
 }
 
