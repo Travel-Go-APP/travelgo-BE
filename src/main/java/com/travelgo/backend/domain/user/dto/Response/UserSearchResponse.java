@@ -4,13 +4,16 @@ import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
 import lombok.Getter;
 
+import java.util.List;
+
+
 @Getter
 public class UserSearchResponse {
     private Long userId;
     private String email;
     private int tg;
     private String result;
-    private String eventCategory;
+    private int eventCategory;
     private String nickname;
     private int level;
     private int experience;
@@ -29,11 +32,12 @@ public class UserSearchResponse {
     private Integer expChange;
     private Integer possibleSearchChange;
 
-    public UserSearchResponse(User user, String eventCategory, String result,  Integer tgChange, Integer expChange, Integer possibleSearchChange) {
+    private List<String> merchantResults;  // 상인 이벤트 결과 리스트 추가
+
+    public UserSearchResponse(User user, int eventCategory) {
         this.userId = user.getUserId();
         this.email = user.getEmail();
         this.tg = user.getTg();
-        this.result = result;
         this.eventCategory = eventCategory;
 
         this.nickname = user.getNickname();
@@ -49,9 +53,24 @@ public class UserSearchResponse {
         this.experienceX = user.getExperienceX();
         this.tgX = user.getTgX();
         this.workCount = user.getWorkCount();
+    }
+
+    public UserSearchResponse(User user, int eventCategory,  Integer tgChange, Integer expChange, Integer possibleSearchChange) {
+        this(user, eventCategory);
 
         this.tgChange = tgChange;
         this.expChange = expChange;
         this.possibleSearchChange = possibleSearchChange;
+    }
+
+    public UserSearchResponse(User user, int eventCategory, List<String> merchantResults) {
+
+        this(user, eventCategory);
+        this.merchantResults = merchantResults;
+    }
+
+    public UserSearchResponse(User user, int eventCategory,  Integer tgChange) {
+        this(user, eventCategory);
+        this.tgChange = tgChange;
     }
 }

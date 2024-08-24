@@ -28,7 +28,7 @@ public class SearchController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
-        String eventCategory = searchService.selectEvent();
+        int eventCategory = searchService.selectEvent();
         UserSearchResponse response = searchService.handleSelectedEvent(user, eventCategory);
 
         userRepository.save(user);
@@ -40,28 +40,35 @@ public class SearchController {
     @PostMapping("/event/wallet")
     public UserSearchResponse handleWalletEvent(@RequestParam(name = "email") String email,
                                                 @RequestParam(name = "takeAction") boolean takeAction) {
-        String eventCategory = "지갑을 발견했다!";
+        int eventCategory = 11;
         return searchService.handleWalletEvent(email, takeAction, eventCategory);
     }
 
     @Operation(summary = "조사하기(이벤트-상호작용)", description = "수상한 상인이다!")
     @PostMapping("/event/merchant")
     public UserSearchResponse handleMerchantEvent(@RequestParam(name = "email") String email) {
-        String eventCategory = "수상한 상인이다!";
+        int eventCategory = 12;
         return searchService.handleMerchantEvent(email, eventCategory);
     }
 
     @Operation(summary = "조사하기(이벤트-상호작용)", description = "복권 사는 날")
     @PostMapping("/event/lottery")
     public UserSearchResponse handleLotteryEvent(@RequestParam(name = "email") String email) {
-        String eventCategory = "복권 사는 날";
+        int eventCategory = 13;
         return searchService.handleLotteryEvent(email, eventCategory);
     }
 
     @Operation(summary = "조사하기(이벤트-상호작용)", description = "카메라를 발견했다!")
     @PostMapping("/event/camera")
     public UserSearchResponse handleCameraEvent(@RequestParam(name = "email") String email) {
-        String eventCategory = "카메라를 발견했다!";
+        int eventCategory = 14;
         return searchService.handleCameraEvent(email, eventCategory);
+    }
+
+    @Operation(summary = "룰렛 데이터 반영", description = "수상한 상인 이벤트 반영")
+    @PostMapping("/event/merchant/roulette")
+    public UserSearchResponse roulette(@RequestParam(name = "email") String email
+                                      ,@RequestParam(name = "result") String result){
+        return searchService.roulette(email,result);
     }
 }

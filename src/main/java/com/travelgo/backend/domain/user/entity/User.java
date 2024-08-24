@@ -42,21 +42,13 @@ public class User extends BaseTimeEntity {
     @Column(name = "detection_range")
     @NotNull
     private double detectionRange;
-
     private int experience;
-
     private int nextLevelExp;
-
     private double percentage;
-
     private int workCount;
-
     private int level;
-
     private int quest;
-
     private int tg;
-
     private int maxSearch;
     private int possibleSearch;
     private double experienceX;
