@@ -87,7 +87,7 @@ public class UserController {
     @Operation(summary = "유저 동의 저장", description = "유저가 회원가입시 약관 동의항 목을 저장한다.")
     @PostMapping("/agree")
     public ResponseEntity<Void> updateUserAgree(@RequestParam(name = "email") String email, @RequestBody AgreeDto agreeDto) {
-        userService.updateAgree(email, agreeDto);
+        userService.saveAgree(email, agreeDto);
         return new ResponseEntity<>(HttpStatusCode.valueOf(200));
     }
 

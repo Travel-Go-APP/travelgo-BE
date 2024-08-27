@@ -8,6 +8,7 @@ import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
+import com.travelgo.backend.domain.user.repository.UserAgreeRepository;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserAgreeRepository userAgreeRepository;
     private final GeoCodingService geoCodingService;
 
     BadWordFiltering badWordFiltering = new BadWordFiltering();
@@ -109,9 +111,11 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
-    public void updateAgree(String email, AgreeDto agreeDto) {
+    @Transactional
+    public void saveAgree(String email, AgreeDto agreeDto) {
         User user = getUser(email);
         user.saveAgree(agreeDto);
+        userAgreeRepository.save(user.getUserAgree());
 //        return AgreeDto.of(user.getUserAgree());
     }
 

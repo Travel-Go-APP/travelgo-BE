@@ -1,17 +1,18 @@
 package com.travelgo.backend.domain.user.dto;
 
 import com.travelgo.backend.domain.user.entity.UserAgree;
+import com.travelgo.backend.domain.user.model.Checking;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
 public class AgreeDto {
-    private Boolean snsAgree;
+    private Checking snsAgree;
 
-    private Boolean locationAgree;
+    private Checking locationAgree;
 
-    private Boolean stepCountAgree;
+    private Checking stepCountAgree;
 
     public static AgreeDto of(UserAgree userAgree) {
         return new AgreeDto(

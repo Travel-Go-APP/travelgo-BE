@@ -1,6 +1,7 @@
 package com.travelgo.backend.domain.user.entity;
 
 import com.travelgo.backend.domain.user.dto.AgreeDto;
+import com.travelgo.backend.domain.user.model.Checking;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,11 +18,14 @@ public class UserAgree {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long agreeId;
 
-    private Boolean snsAgree;
+    @Enumerated(EnumType.STRING)
+    private Checking snsAgree;
 
-    private Boolean locationAgree;
+    @Enumerated(EnumType.STRING)
+    private Checking locationAgree;
 
-    private Boolean stepCountAgree;
+    @Enumerated(EnumType.STRING)
+    private Checking stepCountAgree;
 
     public UserAgree(AgreeDto agreeDto) {
         this.snsAgree = agreeDto.getSnsAgree();
