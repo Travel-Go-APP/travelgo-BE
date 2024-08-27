@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.user.entity;
 
+import com.travelgo.backend.domain.user.dto.AgreeDto;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.model.Bag;
 import com.travelgo.backend.domain.user.model.Shoes;
@@ -53,6 +54,10 @@ public class User extends BaseTimeEntity {
     private int possibleSearch;
     private double experienceX;
     private double tgX;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "agree_id")
+    private UserAgree userAgree;
 
     @Enumerated(EnumType.STRING)
     private Shoes shoes;
@@ -149,6 +154,10 @@ public class User extends BaseTimeEntity {
 
     public void rewardExpX(double ratio) {
         this.experienceX = ratio;
+    }
+
+    public void saveAgree(AgreeDto agree){
+        this.userAgree = new UserAgree(agree);
     }
 }
 
