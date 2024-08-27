@@ -1,12 +1,14 @@
 package com.travelgo.backend.domain.user.service;
 
 
+import com.travelgo.backend.domain.user.dto.AgreeDto;
 import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
+import com.travelgo.backend.domain.user.repository.UserAgreeRepository;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
@@ -25,15 +27,16 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserAgreeRepository userAgreeRepository;
     private final GeoCodingService geoCodingService;
 
     BadWordFiltering badWordFiltering = new BadWordFiltering();
 
     @Transactional
-    public void signUp(UserRequest.SignUp request){
+    public void signUp(UserRequest.SignUp request) {
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
 
-        if(existingUser.isPresent()){
+        if (existingUser.isPresent()) {
             throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
@@ -52,16 +55,16 @@ public class UserService {
     }
 
 
-    public void checkNicknameValidity(@Valid String nickName){
-        if(userRepository.findByNickname(nickName).isPresent()){
+    public void checkNicknameValidity(@Valid String nickName) {
+        if (userRepository.findByNickname(nickName).isPresent()) {
             throw new CustomException(ErrorCode.ALREADY_EXIST_USER);
-        }else if(badWordFiltering.check(nickName)){
+        } else if (badWordFiltering.check(nickName)) {
             throw new CustomException(ErrorCode.INCLUDE_SLANG);
         }
     }
 
     @Transactional
-    public UserResponse.UpdateNickname updateUser(String email, String nickName){
+    public UserResponse.UpdateNickname updateUser(String email, String nickName) {
         User user = getUser(email);
         checkNicknameValidity(nickName);
 
@@ -72,7 +75,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse.UpdateExp updateExp(UserRequest.UpdateExp request){
+    public UserResponse.UpdateExp updateExp(UserRequest.UpdateExp request) {
         User user = getUser(request.getEmail());
 
         user.addExperience(request.getExperience());
@@ -80,7 +83,7 @@ public class UserService {
         boolean levelUp = false;
         int[] expTable = UserExp.getExpTable();
 
-        while(user.getExperience() >= expTable[user.getLevel()]){
+        while (user.getExperience() >= expTable[user.getLevel()]) {
             user.reduceExperience(expTable[user.getLevel()]);
             user.levelUp();
             levelUp = true;
@@ -96,30 +99,38 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse.DeleteUser deleteUser(Long userId){
+    public UserResponse.DeleteUser deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
         userRepository.delete(user);
 
         return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
     }
 
-    public  User getUser(String email) {
+    public User getUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
-    public MainPageResponse getMainPageResponse(MainPageRequest request){
+    @Transactional
+    public void saveAgree(String email, AgreeDto agreeDto) {
+        User user = getUser(email);
+        user.saveAgree(agreeDto);
+        userAgreeRepository.save(user.getUserAgree());
+//        return AgreeDto.of(user.getUserAgree());
+    }
+
+    public MainPageResponse getMainPageResponse(MainPageRequest request) {
         User user = getUser(request.getEmail());
 
         String[] areaAndVisitArea;
 
-        try{
+        try {
             areaAndVisitArea = geoCodingService.reverseGeocode(request.getLatitude(), request.getLongitude());
 
             if (areaAndVisitArea == null || areaAndVisitArea[0] == null) {
                 throw new CustomException(ErrorCode.NOT_FOUND_AREA);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new CustomException(ErrorCode.NOT_FOUND_AREA);
         }
 
@@ -152,7 +163,7 @@ public class UserService {
         );
     }
 
-    private UserResponse createResponse(User user){
+    private UserResponse createResponse(User user) {
         return UserResponse.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())

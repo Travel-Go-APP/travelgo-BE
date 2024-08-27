@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.user.controller;
 
+import com.travelgo.backend.domain.user.dto.AgreeDto;
 import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
@@ -26,7 +27,7 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입 후 닉네임과 기본 값들 설정")
     @PostMapping("/signup")
-    public ResponseEntity<UserResponse> signupUser(@Valid @RequestBody UserRequest.SignUp request){
+    public ResponseEntity<UserResponse> signupUser(@Valid @RequestBody UserRequest.SignUp request) {
         userService.signUp(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -34,7 +35,7 @@ public class UserController {
     //1개짜리 이메일만 있으면 됨
     @Operation(summary = "유저삭제", description = "유저 삭제")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<UserResponse.DeleteUser> deleteUser(@PathVariable(name = "userId") Long userId){
+    public ResponseEntity<UserResponse.DeleteUser> deleteUser(@PathVariable(name = "userId") Long userId) {
         UserResponse.DeleteUser response = userService.deleteUser(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(200));
     }
@@ -42,16 +43,16 @@ public class UserController {
     //1개짜리 이메일만 있으면 됨
     @Operation(summary = "닉네임 체크", description = "DB 대조를 통한 닉네임 가능 여부 체크(중복, 욕설)")
     @PostMapping("/check-nickname")
-    public ResponseEntity<Void> checkNickname(@RequestParam(name = "nickName") String nickname){
-        try{
+    public ResponseEntity<Void> checkNickname(@RequestParam(name = "nickName") String nickname) {
+        try {
             userService.checkNicknameValidity(nickname);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (CustomException e){
-            if(e.getErrorCode() == ErrorCode.ALREADY_EXIST_USER){
+        } catch (CustomException e) {
+            if (e.getErrorCode() == ErrorCode.ALREADY_EXIST_USER) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }else if(e.getErrorCode() == ErrorCode.INCLUDE_SLANG){
+            } else if (e.getErrorCode() == ErrorCode.INCLUDE_SLANG) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }else{
+            } else {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -67,25 +68,32 @@ public class UserController {
 
     @Operation(summary = "로그인", description = "이메일로 로그인 시도")
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestParam(name = "email") String email){
+    public ResponseEntity<Void> login(@RequestParam(name = "email") String email) {
         userService.login(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "경험치 업데이트", description = "유저 경험치 업데이트")
     @PostMapping("/exp")
-    public ResponseEntity<?> updateExperience(@RequestBody UserRequest.UpdateExp request){
-        try{
+    public ResponseEntity<?> updateExperience(@RequestBody UserRequest.UpdateExp request) {
+        try {
             UserResponse.UpdateExp response = userService.updateExp(request);
             return ResponseEntity.ok(response);
-        } catch(UserNotFoundException e){
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
+    @Operation(summary = "유저 동의 저장", description = "유저가 회원가입시 약관 동의항 목을 저장한다.")
+    @PostMapping("/agree")
+    public ResponseEntity<Void> updateUserAgree(@RequestParam(name = "email") String email, @RequestBody AgreeDto agreeDto) {
+        userService.saveAgree(email, agreeDto);
+        return new ResponseEntity<>(HttpStatusCode.valueOf(200));
+    }
+
     @Operation(summary = "메인 페이지 정보 가져오기", description = "유저 메인 페이지 정보 조회")
     @PostMapping("/get-main")
-    public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request){
+    public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request) {
         MainPageResponse response = userService.getMainPageResponse(request);
         return ResponseEntity.ok(response);
     }
