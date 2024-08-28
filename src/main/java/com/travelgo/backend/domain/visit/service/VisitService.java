@@ -29,6 +29,14 @@ public class VisitService {
     @Transactional
     public VisitResponse saveAttractionAchievement(VisitRequest request) {
         Visit visit = createAttracitonAchievement(request);
+
+        //조사하기시 명소 저장할때 조사하기 카운트 감소시키기
+        User user = userService.getUser(request.getEmail());
+        if (user.getPossibleSearch() == 0) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        } else {
+            user.decreasePossibleSearch(1);
+        }
         Visit save = visitRepository.save(visit);
         return createAttractionAchievementResponse(save);
     }
