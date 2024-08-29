@@ -5,6 +5,9 @@ import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.event.dto.Period;
 import com.travelgo.backend.domain.event.dto.VisitCountEventDto;
 import com.travelgo.backend.domain.event.dto.VisitPercent;
+import com.travelgo.backend.domain.event.entity.VisitCountBenefit;
+import com.travelgo.backend.domain.event.repository.BenefitBulkRepository;
+import com.travelgo.backend.domain.event.repository.VisitCountBenefitRepository;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
@@ -27,9 +30,25 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class VisitCountEventService {
     private final UserService userService;
+    private final VisitCountBenefitRepository benefitRepository;
 
     @Transactional
-    public VisitCountEventDto visitCountRewardEvent(int numOfRows, int pageNo, String email, AreaCode nowLocation, Period period) throws ParseException {
+    public VisitCountEventDto getBenefit(String email, AreaCode area) {
+        User user = userService.getUser(email);
+        VisitCountBenefit benefit = benefitRepository.findByAreaCode(area);
+        int ranking = benefit.getRanking();
+        String type = benefit.getBenefitType();
+        double ratio = benefit.getBenefitRatio();
+
+        if (type.equals("TG")) {
+            user.rewardTgx(ratio);
+        } else
+            user.rewardExpX(ratio);
+
+        return new VisitCountEventDto(ranking, type, ratio);
+    }
+
+    public List<VisitCountBenefit> getVisitCountData(int numOfRows, int pageNo, Period period) throws ParseException {
         String jsonData1 = DataApiExplorer.getCountInfo(numOfRows, pageNo, period.getStartDate(), period.getMiddleDate());
         String jsonData2 = DataApiExplorer.getCountInfo(numOfRows, pageNo, period.getMiddleDate(), period.getEndDate());
 
@@ -66,38 +85,47 @@ public class VisitCountEventService {
             result.add(new VisitPercent(areaCode, Double.parseDouble(formattedRatio)));
         }
 
-        List<VisitPercent> sortedResult = result.stream()
+        List<VisitPercent> list = result.stream()
                 .sorted(Comparator.comparingDouble(VisitPercent::getPercent).reversed())
                 .toList();
 
-        User user = userService.getUser(email);
+        List<VisitCountBenefit> benefits = new ArrayList<>();
 
         // 보상 배수를 정의한 배열
         double[] rewardRatio = {1.3, 1.2, 1.1}; // 1등부터 3등
 
-        // 보상 처리
-        for (int i = 0; i < sortedResult.size(); i++) {
-            AreaCode area = sortedResult.get(i).getAreaCode();
+        for (int i = 0; i < list.size(); i++) {
+            AreaCode area = list.get(i).getAreaCode();
+            VisitCountBenefit benefit;
 
-            if (nowLocation == area) {
-                if (i < 3) { // 1등부터 3등
-                    user.rewardTgx(rewardRatio[i]);
-                    return new VisitCountEventDto("tg", user.getTgX());
-                } else if (i < 6) { // 4등부터 6등
-                    user.rewardExpX(rewardRatio[i - 3]);
-                    return new VisitCountEventDto("exp", user.getExperienceX());
-                }
+            if (i < 3) {
+                benefit = VisitCountBenefit.builder()
+                        .areaCode(area)
+                        .ranking(i + 1)
+                        .benefitType("TG")
+                        .benefitRatio(rewardRatio[i])
+                        .build();
+            } else if (i < 6) {
+                benefit = VisitCountBenefit.builder()
+                        .areaCode(area)
+                        .ranking(i + 1)
+                        .benefitType("EXP")
+                        .benefitRatio(rewardRatio[i - 3])
+                        .build();
+            } else {
+                benefit = VisitCountBenefit.builder()
+                        .areaCode(area)
+                        .ranking(i + 1)
+                        .benefitType("없음")
+                        .benefitRatio(1.0)
+                        .build();
             }
+
+            benefits.add(benefit);
         }
-        throw new CustomException(ErrorCode.NOT_REWARD_ATTRACTION);
+        return benefits;
     }
 
-    @Transactional
-    public void resetReward(String email) {
-        User user = userService.getUser(email);
-        user.rewardTgx(1.0);
-        user.rewardExpX(1.0);
-    }
 
     // 방문자 수 계산을 위한 메소드
     private void calculateVisitCounts(JSONArray array, Map<AreaCode, Double> visitCounts) {
