@@ -38,6 +38,9 @@ dependencies {
 	//hibernate 공간탐색
 //	implementation group: 'org.hibernate.orm', name: 'hibernate-spatial', version: '6.2.7.Final'
 
+	//스케쥴러
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+
 	// s3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
