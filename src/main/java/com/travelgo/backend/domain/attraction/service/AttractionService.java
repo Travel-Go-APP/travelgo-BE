@@ -1,18 +1,21 @@
 package com.travelgo.backend.domain.attraction.service;
 
-import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
 import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
+import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
+import com.travelgo.backend.domain.attraction.dto.CustomAttractionRequest;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.model.BigCategory;
 import com.travelgo.backend.domain.attraction.model.MiddleCategory;
 import com.travelgo.backend.domain.attraction.model.SmallCategory;
 import com.travelgo.backend.domain.attraction.repository.AttractionRepository;
+import com.travelgo.backend.domain.attractionImage.entity.AttractionImage;
 import com.travelgo.backend.domain.attractionImage.service.AttractionImageService;
 import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
+import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -32,10 +35,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AttractionService {
-    private final EntityManager em;
     private final AttractionRepository attractionRepository;
     private final S3UploadService s3UploadService;
     private final AttractionImageService attractionImageService;
+    private final UserService userService;
 
     /**
      * 공공데이터 포털 api 연동
@@ -70,14 +73,18 @@ public class AttractionService {
                         .bigCategory(BigCategory.getCategory((String) getObject.get("cat1")))
                         .middleCategory(MiddleCategory.getCategory((String) getObject.get("cat2")))
                         .smallCategory(SmallCategory.getCategory((String) getObject.get("cat3")))
+                        .poster("한국관광공사")
+                        .likes(0)
                         .hiddenFlag(false)
                         .build();
 
                 if (!isAttractionDuplicated(attractionInfo.getAttractionName())) { // 명소 이름으로 중복 체크
                     attractionList.add(attractionInfo);
                     save(attractionInfo);
-                } else
+                } else {
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
+                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
+                }
             }
             checkEmpty(attractionList);
 
@@ -106,8 +113,10 @@ public class AttractionService {
 
                 if (!isAttractionDuplicated((String) getObject.get("title"))) { // 명소 이름으로 중복 체크
                     contentIdList.add(Long.parseLong((String) getObject.get("contentid")));
-                } else
+                } else {
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
+                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
+                }
             }
             checkEmpty(contentIdList);
 
@@ -116,9 +125,6 @@ public class AttractionService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        return attractionList.stream()
-//                .map(AttractionResponse::new)
-//                .toList();
         return contentIdList;
     }
 
@@ -138,8 +144,9 @@ public class AttractionService {
 
                 if (!isAttractionDuplicated((String) getObject.get("title"))) {// 명소 이름으로 중복 체크
                     contentIdList.add(Long.parseLong((String) getObject.get("contentid")));
-                } else
+                } else {
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
+                }
             }
             checkEmpty(contentIdList);
 
@@ -167,8 +174,10 @@ public class AttractionService {
 
                 if (!isAttractionDuplicated((String) getObject.get("title"))) { // 명소 이름으로 중복 체크
                     contentIdList.add(Long.parseLong((String) getObject.get("contentid")));
-                } else
+                } else {
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
+                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
+                }
             }
             checkEmpty(contentIdList);
 
@@ -180,17 +189,25 @@ public class AttractionService {
         return contentIdList;
     }
 
+    /**
+     * 수동 명소 저장
+     */
 
     @Transactional
-    public AttractionDetailResponse saveAttraction(AttractionRequest attractionRequest, MultipartFile image) throws IOException {
+    public AttractionDetailResponse saveAttraction(CustomAttractionRequest attractionRequest, String email, List<MultipartFile> image) throws IOException {
+        if (isAttractionDuplicated(attractionRequest.getAttractionName()))
+            throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
+
+        User user = userService.getUser(email);
+        attractionRequest.setPoster(user.getNickname()); //닉네임 설정
+
         Attraction attraction = createAttraction(attractionRequest);
         Attraction savedAttraction = attractionRepository.save(attraction);
 
-//        if(!image.isEmpty()){ // 다중 이미지 업로드
-//            for (MultipartFile multipartFile : image)
-//                attractionImageService.save(multipartFile, attraction);
-//        }
-        attractionImageService.save(image, attraction); //단일 이미지 업로드
+        if (!image.isEmpty()) { // 다중 이미지 업로드
+            for (MultipartFile multipartFile : image)
+                attractionImageService.save(multipartFile, attraction);
+        }
 
         return getDetail(savedAttraction.getAttractionId());
     }
@@ -202,22 +219,34 @@ public class AttractionService {
 
     @Transactional
     public void delete(Long attractionId) {
-//        List<AttractionImage> images = attractionImageService.getImages(attractionId);
-//
-//        if (!images.isEmpty()) {
-//            for (AttractionImage image : images)
-//                s3UploadService.fileDelete(image.getAttractionImageUrl());
-//        }
+        List<AttractionImage> images = attractionImageService.getImages(attractionId);
 
-//        attractionImageService.deleteAllById(attractionId); // s3 다중 이미지
+        if (!images.isEmpty()) {
+            for (AttractionImage image : images)
+                s3UploadService.fileDelete(image.getAttractionImageUrl());
+        }
+
+        attractionImageService.deleteAllById(attractionId); // s3 다중 이미지
         Attraction attraction = getAttraction(attractionId);
         attractionRepository.delete(attraction);
     }
+//
+//    @Transactional
+//    public void deleteAll() {
+//        attractionImageService.deleteAll(); // s3 다중 이미지
+//        attractionRepository.deleteAll();
+//    }
+    @Transactional
+    public void pressLikes(Long attractionId){
+        Attraction attraction = getAttraction(attractionId);
+        attraction.plusLikes();
+    }
 
     @Transactional
-    public void deleteAll() {
-//        attractionImageService.deleteAll(); // s3 다중 이미지
-        attractionRepository.deleteAll();
+    public void cancelLikes(Long attractionId){
+        Attraction attraction = getAttraction(attractionId);
+        if(attraction.getLikes() > 0)
+            attraction.minusLikes();
     }
 
     /**
@@ -225,16 +254,21 @@ public class AttractionService {
      */
 
     @Transactional
-    public Attraction createAttraction(AttractionRequest attractionRequest) {
+    public Attraction createAttraction(CustomAttractionRequest attractionRequest) {
         return Attraction.builder()
                 .attractionId(attractionRequest.getAttractionId())
                 .attractionName(attractionRequest.getAttractionName())
+                .poster(attractionRequest.getPoster())
                 .address(attractionRequest.getAddress())
                 .latitude(attractionRequest.getLatitude())
                 .longitude(attractionRequest.getLongitude())
                 .description(attractionRequest.getDescription())
                 .area(attractionRequest.getArea())
-                .hiddenFlag(false)
+                /*.bigCategory(attractionRequest.getBigCategory())
+                .middleCategory(attractionRequest.getMiddleCategory())
+                .smallCategory(attractionRequest.getSmallCategory())*/
+                .likes(0)
+                .hiddenFlag(true)
                 .build();
     }
 
