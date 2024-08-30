@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class VisitCountEventDto {
+    private int ranking;
     private String type;
     private Double ratio;
 }
