@@ -1,4 +1,4 @@
-package com.travelgo.backend.util;
+package com.travelgo.backend.domain.common.entity;
 
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;

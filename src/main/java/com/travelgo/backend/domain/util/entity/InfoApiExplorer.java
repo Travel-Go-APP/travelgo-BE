@@ -1,4 +1,4 @@
-package com.travelgo.backend.domain.attraction.entity;
+package com.travelgo.backend.domain.util.entity;
 
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 
