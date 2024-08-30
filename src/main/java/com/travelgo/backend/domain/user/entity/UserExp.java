@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserExp {
 
-    private static final int MAX_LEVEL = 5;
+    private static final int MAX_LEVEL = 10;
 
     public static int[] getExpTable(){
         int[] expTable = new int[MAX_LEVEL];
@@ -16,6 +16,12 @@ public class UserExp {
         expTable[2] = 175; // ...
         expTable[3] = 200;
         expTable[4] = 250;
+
+        expTable[5] = 320;
+        expTable[6] = 400;
+        expTable[7] = 500;
+        expTable[8] = 620;
+        expTable[9] = 750;
 
         return expTable;
     }

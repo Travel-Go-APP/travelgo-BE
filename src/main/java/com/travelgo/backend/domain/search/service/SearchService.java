@@ -58,8 +58,11 @@ public class SearchService {
         List<String> merchantResults = null;
         UserSearchResponse response = null;
 
-
-        user.decreasePossibleSearch(1);
+        if(user.getPossibleSearch() == 0){
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }else{
+            user.decreasePossibleSearch(1);
+        }
 
         // 일반 이벤트 (1~10번) 처리
         if (selectedEvent >= 1 && selectedEvent <= 10) {

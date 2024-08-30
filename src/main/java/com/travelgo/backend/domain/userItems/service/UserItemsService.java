@@ -30,7 +30,7 @@ public class UserItemsService {
             "Daejeon", "Ulsan", "Gyeonsangbukdo", "Gyeonsangnamdo",
             "Busan", "Gangwondo", "Sejong", "Jejudo", "Chungcheongbukdo",
             "Seoul", "Gwangju", "Jeollabukdo", "Jeollanamdo", "Incheon",
-            "Gyeonggido", "Chungcheongnamdo", "Daegu"
+            "Gyeonggido", "Chungcheongnamdo", "Daegu", "Common"
     );
 
     public void add(String email, Long itemId){
@@ -54,7 +54,7 @@ public class UserItemsService {
     // 아이템 갯수 설정
     static {
         for (String area : AREAS) {
-            AREA_ITEM_COUNT.put(area, 4); // 각 지역별 4개의 아이템
+            AREA_ITEM_COUNT.put(area, 2); // 각 지역별 4개의 아이템
         }
     }
 
@@ -103,15 +103,22 @@ public class UserItemsService {
             rankEarnItemCounts.putIfAbsent(rank, 0);
         }
 
+        int areaItemCount = rankTotalItemCounts.getOrDefault("5", 0);  // 랭크 5인 전체 아이템 수
+        int earnAreaItemCount = rankEarnItemCounts.getOrDefault("5", 0);  // 랭크 5인 획득한 아이템 수
+        double earnAreaPercentage = areaItemCount > 0 ? (double) earnAreaItemCount / areaItemCount * 100 : 0;
+
         return UserItemsResponse.builder()
                 .itemIds(itemIds)
                 .totalItemCount(totalItemCount)
                 .earnItemCount(earnItemCount)
                 .earnPercentage(earnPercentage)
-                .areaTotalItemCounts(areaTotalItemCounts) // 지역 아이템 토탈
-                .areaEarnItemCounts(areaEarnItemCounts) // 지역 아이템 획득
-                .rankTotalItemCounts(rankTotalItemCounts) // 추가된 부분
-                .rankEarnItemCounts(rankEarnItemCounts)   // 추가된 부분
+                .areaItemCount(areaItemCount)
+                .earnAreaItemCount(earnAreaItemCount)
+                .earnAreaPercentage(earnAreaPercentage)
+                .areaTotalItemCounts(areaTotalItemCounts)
+                .areaEarnItemCounts(areaEarnItemCounts)
+                .rankTotalItemCounts(rankTotalItemCounts)
+                .rankEarnItemCounts(rankEarnItemCounts)
                 .build();
     }
 
@@ -142,4 +149,10 @@ public class UserItemsService {
         return (int) itemRepository.count();
     }
 
+    public int getEarnedAreaItemCountByRank(List<UserItems> userItemsList, int rank) {
+        // 유저가 획득한 랭크 5인 아이템 개수를 계산
+        return (int) userItemsList.stream()
+                .filter(userItem -> userItem.getItem().getItemRank() == rank)
+                .count();
+    }
 }
