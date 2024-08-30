@@ -2,9 +2,8 @@ package com.travelgo.backend.domain.userItems.entity;
 
 import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.item.entity.Item;
-import com.travelgo.backend.domain.item.model.Grade;
 import com.travelgo.backend.domain.user.entity.User;
-import com.travelgo.backend.util.BaseTimeEntity;
+import com.travelgo.backend.domain.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

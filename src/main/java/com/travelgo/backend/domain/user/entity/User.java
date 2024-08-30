@@ -5,7 +5,7 @@ import com.travelgo.backend.domain.user.dto.Request.UserRequest;
 import com.travelgo.backend.domain.user.model.Bag;
 import com.travelgo.backend.domain.user.model.Shoes;
 import com.travelgo.backend.domain.userItems.entity.UserItems;
-import com.travelgo.backend.util.BaseTimeEntity;
+import com.travelgo.backend.domain.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -55,7 +55,7 @@ public class User extends BaseTimeEntity {
     private double experienceX;
     private double tgX;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "agree_id")
     private UserAgree userAgree;
 

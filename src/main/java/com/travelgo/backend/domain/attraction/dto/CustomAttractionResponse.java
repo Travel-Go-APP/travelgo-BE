@@ -6,15 +6,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttractionResponse {
+public class CustomAttractionResponse {
+
     private Long attractionId; // 명소 코드
 
     private String attractionName; //위치 이름
 
-    private int likes;
+    private String poster; // 작성자
+
+    private int likes; //추천수
 
     private String address; // 주소
 
@@ -24,7 +28,7 @@ public class AttractionResponse {
 
 
     @Builder
-    public AttractionResponse(Attraction attraction) {
+    public CustomAttractionResponse(Attraction attraction) {
         this.attractionId = attraction.getAttractionId();
         this.attractionName = attraction.getAttractionName();
         this.likes = attraction.getLikes();
@@ -33,10 +37,11 @@ public class AttractionResponse {
         this.attractionImageUrl = attraction.getAttractionImageUrl();
     }
 
-    public static AttractionResponse of(Attraction attraction) {
-        return new AttractionResponse(
+    public static CustomAttractionResponse of(Attraction attraction) {
+        return new CustomAttractionResponse(
                 attraction.getAttractionId(),
                 attraction.getAttractionName(),
+                attraction.getPoster(),
                 attraction.getLikes(),
                 attraction.getAddress(),
                 attraction.getCity(),
@@ -44,4 +49,3 @@ public class AttractionResponse {
         );
     }
 }
-

@@ -1,11 +1,10 @@
 package com.travelgo.backend.domain.attraction.controller;
 
-import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
 import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
-import com.travelgo.backend.domain.attraction.entity.DataApiExplorer;
-import com.travelgo.backend.domain.attraction.entity.InfoApiExplorer;
+import com.travelgo.backend.domain.attraction.dto.CustomAttractionRequest;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.service.AttractionService;
+import com.travelgo.backend.domain.util.entity.InfoApiExplorer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,12 +38,12 @@ public class AttractionController {
         return ResponseEntity.ok(HttpStatusCode.valueOf(200));
     }
 
-    @Operation(summary = "전체 명소 삭제", description = "전체 명소를 삭제합니다.")
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity<?> deleteAll() {
-        attractionService.deleteAll();
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
-    }
+//    @Operation(summary = "전체 명소 삭제", description = "전체 명소를 삭제합니다.")
+//    @DeleteMapping("/deleteAll")
+//    public ResponseEntity<?> deleteAll() {
+//        attractionService.deleteAll();
+//        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
+//    }
 
     /**
      * 생성 메서드
@@ -52,10 +51,11 @@ public class AttractionController {
 
     @Operation(summary = "수동 명소 저장", description = "수동으로 정보를 작성해 명소를 저장한다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> saveAttraction(@Valid @RequestPart(value = "attractionRequest") AttractionRequest attractionRequest,
-                                            @RequestPart(value = "image", required = false) MultipartFile image) throws IOException {
+    public ResponseEntity<?> saveAttraction(@Valid @RequestPart(value = "attractionRequest") CustomAttractionRequest attractionRequest,
+                                            @RequestParam(value = "email") String email,
+                                            @RequestPart(value = "image", required = false) List<MultipartFile> image) throws IOException {
 
-        return new ResponseEntity<>(attractionService.saveAttraction(attractionRequest, image), HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(attractionService.saveAttraction(attractionRequest, email, image), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 세부 정보 api 정보 저장", description = "세부 관광지 정보를 db에 저장한다.")
@@ -141,16 +141,16 @@ public class AttractionController {
         return new ResponseEntity<>(new Result<>(responseList.size(), responseList), HttpStatusCode.valueOf(200));
     }
 
-    @Operation(summary = "공공 데이터 포털 방문자 수 api 실행", description = "지자체별 방문자 수를 받는 api를 실행한다.")
-    @GetMapping("/load/location-data")
-    public ResponseEntity<String> loadCountApi(@RequestParam(name = "numOfRows") int numOfRows,
-                                               @RequestParam(name = "pageNo") int pageNo,
-                                               @RequestParam(name = "startDate") int startDate,
-                                               @RequestParam(name = "endDate") int endDate) {
-        String result = DataApiExplorer.getCountInfo(numOfRows, pageNo, startDate, endDate);
-
-        return new ResponseEntity<>(result, HttpStatusCode.valueOf(200));
-    }
+//    @Operation(summary = "공공 데이터 포털 방문자 수 api 실행", description = "지자체별 방문자 수를 받는 api를 실행한다.")
+//    @GetMapping("/load/location-data")
+//    public ResponseEntity<String> loadCountApi(@RequestParam(name = "numOfRows") int numOfRows,
+//                                               @RequestParam(name = "pageNo") int pageNo,
+//                                               @RequestParam(name = "startDate") int startDate,
+//                                               @RequestParam(name = "endDate") int endDate) {
+//        String result = DataApiExplorer.getCountInfo(numOfRows, pageNo, startDate, endDate);
+//
+//        return new ResponseEntity<>(result, HttpStatusCode.valueOf(200));
+//    }
 
     @Data
     static class Result<T> {

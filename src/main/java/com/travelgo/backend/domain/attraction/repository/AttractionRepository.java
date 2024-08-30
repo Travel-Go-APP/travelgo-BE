@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface AttractionRepository extends JpaRepository<Attraction, Long>, AttractionRepositoryCustom{
+public interface AttractionRepository extends JpaRepository<Attraction, Long> {
     Attraction findByAttractionName(String name);
 
     List<Attraction> findAllByArea(AreaCode areaCode);

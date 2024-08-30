@@ -1,12 +1,11 @@
 package com.travelgo.backend.domain.event.service;
 
-import com.travelgo.backend.domain.attraction.entity.DataApiExplorer;
+import com.travelgo.backend.domain.util.entity.DataApiExplorer;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.event.dto.Period;
 import com.travelgo.backend.domain.event.dto.VisitCountEventDto;
 import com.travelgo.backend.domain.event.dto.VisitPercent;
 import com.travelgo.backend.domain.event.entity.VisitCountBenefit;
-import com.travelgo.backend.domain.event.repository.BenefitBulkRepository;
 import com.travelgo.backend.domain.event.repository.VisitCountBenefitRepository;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.service.UserService;
