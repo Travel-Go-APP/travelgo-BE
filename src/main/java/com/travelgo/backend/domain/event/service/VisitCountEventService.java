@@ -41,11 +41,21 @@ public class VisitCountEventService {
         double ratio = benefit.getBenefitRatio();
 
         if (type.equals("TG")) {
+            resetBenefit(user);
             user.rewardTgx(ratio);
-        } else
+        } else if (type.equals("EXP")) {
+            resetBenefit(user);
             user.rewardExpX(ratio);
+        } else {
+            resetBenefit(user);
+        }
 
         return new VisitCountEventDto(ranking, type, ratio);
+    }
+
+    public void resetBenefit(User user) {
+        user.rewardTgx(1.0);
+        user.rewardExpX(1.0);
     }
 
     public List<VisitCountBenefit> getVisitCountData(int numOfRows, int pageNo, Period period) throws ParseException {
