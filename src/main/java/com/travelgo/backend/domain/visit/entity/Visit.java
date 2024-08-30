@@ -2,7 +2,7 @@ package com.travelgo.backend.domain.visit.entity;
 
 import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.domain.user.entity.User;
-import com.travelgo.backend.util.BaseTimeEntity;
+import com.travelgo.backend.domain.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
