@@ -15,6 +15,10 @@ public class AttractionDetailResponse {
 
     private String attractionName; //위치 이름
 
+    private int likes; // 추천수
+
+    private String poster; //등록자
+
     private String address; // 주소
 
     private String city;
@@ -33,6 +37,8 @@ public class AttractionDetailResponse {
     public AttractionDetailResponse(Attraction attraction) {
         this.attractionId = attraction.getAttractionId();
         this.attractionName = attraction.getAttractionName();
+        this.poster = attraction.getPoster();
+        this.likes = attraction.getLikes();
         this.address = attraction.getAddress();
         this.city = attraction.getCity();
         this.latitude = attraction.getLatitude();
@@ -46,6 +52,8 @@ public class AttractionDetailResponse {
         return new AttractionDetailResponse(
                 attraction.getAttractionId(),
                 attraction.getAttractionName(),
+                attraction.getLikes(),
+                attraction.getPoster(),
                 attraction.getAddress(),
                 attraction.getCity(),
                 attraction.getLatitude(),
