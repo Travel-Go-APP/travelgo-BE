@@ -12,7 +12,6 @@ public class UserSearchResponse {
     private Long userId;
     private String email;
     private int tg;
-    private String result;
     private int eventCategory;
     private String nickname;
     private int level;

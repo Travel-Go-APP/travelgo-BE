@@ -34,6 +34,15 @@ public class ItemController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(summary = "위치기반 아이템 획득", description = "사용자 위경도로 지역 추출 후 아이템 랜덤 획득")
+    @PostMapping("/acquire")
+    public ResponseEntity<ItemResponse> acquireItem(@RequestParam(name = "email") String email,
+                                                    @RequestParam(name = "latitude") Double latitude,
+                                                    @RequestParam(name = "longitude") Double longitude) {
+        ItemResponse itemResponse = itemService.acquireItem(email, latitude, longitude);
+        return new ResponseEntity<>(itemResponse, HttpStatus.OK);
+    }
+
     @Operation(summary = "아이템 삭제", description = "아이템 삭제")
     @DeleteMapping("/{itemId}")
     public ResponseEntity<ItemResponse.DeleteItem> deleteItem(@PathVariable(name = "itemId") Long itemId){

@@ -112,6 +112,15 @@ public class User extends BaseTimeEntity {
 
     public void addExperience(int exp){
         this.experience += exp;
+        checkLevelUp();
+    }
+
+    private void checkLevelUp() {
+        int[] expTable = UserExp.getExpTable();
+        while (this.experience >= expTable[this.level]) {
+            reduceExperience(expTable[this.level]);
+            levelUp();
+        }
     }
 
     public void levelUp(){

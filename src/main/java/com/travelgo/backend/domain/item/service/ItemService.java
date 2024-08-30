@@ -6,6 +6,11 @@ import com.travelgo.backend.domain.item.dto.request.ItemRequest;
 import com.travelgo.backend.domain.item.dto.response.ItemResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
+import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.repository.UserRepository;
+import com.travelgo.backend.domain.user.service.GeoCodingService;
+import com.travelgo.backend.domain.userItems.entity.UserItems;
+import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -25,7 +32,10 @@ import java.util.Optional;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final UserItemsRepository userItemsRepository;
     private final S3UploadService s3UploadService;
+    private final GeoCodingService geoCodingService;
 
     @Transactional
     public void addItem(ItemRequest request, MultipartFile imageFile) throws IOException {
@@ -61,7 +71,46 @@ public class ItemService {
         itemRepository.save(newItem);
     }
 
+    @Transactional
+    public ItemResponse acquireItem(String email, Double latitude, Double longitude) {
+        // 역지오코딩을 통해 지역명 분석
+        String[] areaAndVisitArea = geoCodingService.reverseGeocode(latitude, longitude);
+        String areaName = areaAndVisitArea[0];
 
+        Area area;
+        try {
+            area = Area.fromString(areaName);
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.NOT_FOUND_AREA);  // 유효하지 않은 지역명 처리
+        }
+
+        List<Item> itemsInArea = itemRepository.findByArea(area);
+        if (itemsInArea.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ITEM);  // 해당 지역에 아이템이 없을 때 처리
+        }
+
+        Random random = new Random();
+        Item selectedItem = itemsInArea.get(random.nextInt(itemsInArea.size()));
+
+        // 유저가 이미 해당 아이템을 획득했는지 확인
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        boolean alreadyAcquired = userItemsRepository.existsByUserAndItem(user, selectedItem);
+        if (alreadyAcquired) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);  // 이미 아이템을 획득한 경우
+        }
+
+        // UserItems 테이블에 아이템 저장
+        UserItems userItems = UserItems.builder()
+                .user(user)
+                .item(selectedItem)
+                .build();
+
+        userItemsRepository.save(userItems);
+
+        return ItemResponse.fromEntity(selectedItem);
+    }
 
     @Transactional
     public void updateItem(Long itemId, String itemName, int itemRank){
