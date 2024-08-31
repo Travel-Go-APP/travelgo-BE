@@ -15,33 +15,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomAttractionRequest {
-
-    @NotNull
-    private Long attractionId;
-
     @NotNull
     @Schema(description = "명소 이름")
     private String attractionName;
 
     @NotNull
-    @Schema(description = "작성자")
-    private String poster;
-
-    @NotNull
     @Schema(description = "주소")
     private String address; //주소
-
-    @NotNull
-    @Schema(description = "위도")
-    private Double latitude; //위도
-
-    @NotNull
-    @Schema(description = "경도")
-    private Double longitude; //경도
-
-    @NotNull
-    @Schema(description = "이미지 URL")
-    private String attractionImageUrl; // 이미지
 
     @NotNull
     @Schema(description = "설명")

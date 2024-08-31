@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class AttractionDetailResponse {
     private Long attractionId;
 
+    private Long publicAttractionId;
+
     private String attractionName; //위치 이름
 
     private int likes; // 추천수
@@ -36,6 +38,7 @@ public class AttractionDetailResponse {
     @Builder
     public AttractionDetailResponse(Attraction attraction) {
         this.attractionId = attraction.getAttractionId();
+        this.publicAttractionId = attraction.getPublicAttractionId();
         this.attractionName = attraction.getAttractionName();
         this.poster = attraction.getPoster();
         this.likes = attraction.getLikes();
@@ -51,6 +54,7 @@ public class AttractionDetailResponse {
     public static AttractionDetailResponse of(Attraction attraction) {
         return new AttractionDetailResponse(
                 attraction.getAttractionId(),
+                attraction.getPublicAttractionId(),
                 attraction.getAttractionName(),
                 attraction.getLikes(),
                 attraction.getPoster(),
