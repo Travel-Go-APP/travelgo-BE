@@ -1,8 +1,8 @@
 package com.travelgo.backend.domain.attraction.service;
 
 import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
-import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
 import com.travelgo.backend.domain.attraction.dto.CustomAttractionRequest;
+import com.travelgo.backend.domain.attraction.dto.CustomAttractionResponse;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.model.BigCategory;
@@ -12,7 +12,7 @@ import com.travelgo.backend.domain.attraction.repository.AttractionRepository;
 import com.travelgo.backend.domain.attractionImage.entity.AttractionImage;
 import com.travelgo.backend.domain.attractionImage.service.AttractionImageService;
 import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
-import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.service.GeoCodingService;
 import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
@@ -38,6 +38,7 @@ public class AttractionService {
     private final AttractionRepository attractionRepository;
     private final S3UploadService s3UploadService;
     private final AttractionImageService attractionImageService;
+    private final GeoCodingService geoCodingService;
     private final UserService userService;
 
     /**
@@ -64,7 +65,7 @@ public class AttractionService {
                         .attractionName((String) getObject.get("title"))
                         .address((String) getObject.get("addr1"))
                         .city(addr[1])
-                        .attractionId(Long.parseLong((String) getObject.get("contentid")))
+                        .publicAttractionId(Long.parseLong((String) getObject.get("contentid")))
                         .longitude(Double.parseDouble((String) getObject.get("mapx")))
                         .latitude(Double.parseDouble((String) getObject.get("mapy")))
                         .attractionImageUrl((String) getObject.get("firstimage"))
@@ -75,7 +76,7 @@ public class AttractionService {
                         .smallCategory(SmallCategory.getCategory((String) getObject.get("cat3")))
                         .poster("한국관광공사")
                         .likes(0)
-                        .hiddenFlag(false)
+                        .customFlag(false)
                         .build();
 
                 if (!isAttractionDuplicated(attractionInfo.getAttractionName())) { // 명소 이름으로 중복 체크
@@ -194,22 +195,23 @@ public class AttractionService {
      */
 
     @Transactional
-    public AttractionDetailResponse saveAttraction(CustomAttractionRequest attractionRequest, String email, List<MultipartFile> image) throws IOException {
+    public CustomAttractionResponse saveAttraction(CustomAttractionRequest attractionRequest, String email, MultipartFile image) throws IOException {
         if (isAttractionDuplicated(attractionRequest.getAttractionName()))
             throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
 
-        User user = userService.getUser(email);
-        attractionRequest.setPoster(user.getNickname()); //닉네임 설정
+        String poster = userService.getUser(email).getNickname();
 
-        Attraction attraction = createAttraction(attractionRequest);
+        Attraction attraction = createAttraction(attractionRequest, poster);
         Attraction savedAttraction = attractionRepository.save(attraction);
 
-        if (!image.isEmpty()) { // 다중 이미지 업로드
-            for (MultipartFile multipartFile : image)
-                attractionImageService.save(multipartFile, attraction);
-        }
+//        if (!image.isEmpty()) { // 다중 이미지 업로드
+//            for (MultipartFile multipartFile : image)
+//                attractionImageService.save(multipartFile, attraction);
+//        }
+        String savedImageURL = attractionImageService.save(image, attraction);
+        savedAttraction.initialAttractionImageUrl(savedImageURL);
 
-        return getDetail(savedAttraction.getAttractionId());
+        return CustomAttractionResponse.of(savedAttraction);
     }
 
     @Transactional
@@ -219,33 +221,39 @@ public class AttractionService {
 
     @Transactional
     public void delete(Long attractionId) {
-        List<AttractionImage> images = attractionImageService.getImages(attractionId);
+        //단일 이미지
+        AttractionImage image = attractionImageService.getImage(attractionId);
+        s3UploadService.fileDelete(image.getAttractionImageUrl());
 
-        if (!images.isEmpty()) {
-            for (AttractionImage image : images)
-                s3UploadService.fileDelete(image.getAttractionImageUrl());
-        }
-
-        attractionImageService.deleteAllById(attractionId); // s3 다중 이미지
+//        //다중 이미지
+//        List<AttractionImage> images = attractionImageService.getImages(attractionId);
+//
+//        if (!images.isEmpty()) {
+//            for (AttractionImage image : images)
+//                s3UploadService.fileDelete(image.getAttractionImageUrl());
+//        }
+//        attractionImageService.deleteAllById(attractionId); // s3 다중 이미지
+        attractionImageService.deleteByAttractionId(attractionId); // s3 단일 이미지
         Attraction attraction = getAttraction(attractionId);
         attractionRepository.delete(attraction);
     }
-//
+
+    //
 //    @Transactional
 //    public void deleteAll() {
 //        attractionImageService.deleteAll(); // s3 다중 이미지
 //        attractionRepository.deleteAll();
 //    }
     @Transactional
-    public void pressLikes(Long attractionId){
+    public void pressLikes(Long attractionId) {
         Attraction attraction = getAttraction(attractionId);
         attraction.plusLikes();
     }
 
     @Transactional
-    public void cancelLikes(Long attractionId){
+    public void cancelLikes(Long attractionId) {
         Attraction attraction = getAttraction(attractionId);
-        if(attraction.getLikes() > 0)
+        if (attraction.getLikes() > 0)
             attraction.minusLikes();
     }
 
@@ -254,21 +262,23 @@ public class AttractionService {
      */
 
     @Transactional
-    public Attraction createAttraction(CustomAttractionRequest attractionRequest) {
+    public Attraction createAttraction(CustomAttractionRequest attractionRequest, String poster) {
+        Double[] geocode = geoCodingService.geocode(attractionRequest.getAddress());
+
         return Attraction.builder()
-                .attractionId(attractionRequest.getAttractionId())
                 .attractionName(attractionRequest.getAttractionName())
-                .poster(attractionRequest.getPoster())
+                .poster(poster)
                 .address(attractionRequest.getAddress())
-                .latitude(attractionRequest.getLatitude())
-                .longitude(attractionRequest.getLongitude())
+                .latitude(geocode[0])
+                .longitude(geocode[1])
                 .description(attractionRequest.getDescription())
+                .city(attractionRequest.getAddress().split(" ")[1])
                 .area(attractionRequest.getArea())
-                /*.bigCategory(attractionRequest.getBigCategory())
+                .bigCategory(attractionRequest.getBigCategory())
                 .middleCategory(attractionRequest.getMiddleCategory())
-                .smallCategory(attractionRequest.getSmallCategory())*/
+                .smallCategory(attractionRequest.getSmallCategory())
                 .likes(0)
-                .hiddenFlag(true)
+                .customFlag(true)
                 .build();
     }
 
