@@ -20,25 +20,35 @@ public class AttractionImageService {
     private final S3UploadService s3UploadService;
 
     @Transactional
-    public void save(MultipartFile image, Attraction attraction) throws IOException {
+    public String save(MultipartFile image, Attraction attraction) throws IOException {
         String fileUrl = s3UploadService.upload(image, "images");
         AttractionImage attractionImage = new AttractionImage(fileUrl, attraction);
-        attractionImageRepository.save(attractionImage);
+        AttractionImage savedImage = attractionImageRepository.save(attractionImage);
+
+        return savedImage.getAttractionImageUrl();
     }
 
     @Transactional
-    public void delete(Long attractionImageId) {
-        attractionImageRepository.deleteById(attractionImageId);
+    public void save(List<MultipartFile> image, Attraction attraction) throws IOException {
+        for (MultipartFile file : image) {
+            String fileUrl = s3UploadService.upload(file, "images");
+            AttractionImage attractionImage = new AttractionImage(fileUrl, attraction);
+            attractionImageRepository.save(attractionImage);
+        }
     }
 
     @Transactional
-    public void deleteAllById(Long attractionId) {
-        attractionImageRepository.deleteAllByAttraction_AttractionId(attractionId);
+    public void deleteByAttractionId(Long attractionId) {
+        attractionImageRepository.deleteByAttraction_AttractionId(attractionId);
     }
 
     @Transactional
-    public void deleteAll(){
+    public void deleteAll() {
         attractionImageRepository.deleteAll();
+    }
+
+    public AttractionImage getImage(Long attractionId){
+        return attractionImageRepository.findByAttraction_AttractionId(attractionId);
     }
 
     public List<AttractionImage> getImages(Long attractionId) {
