@@ -21,6 +21,8 @@ public class KakaoGeoResponse {
             @JsonProperty("address_name")
             private String addressName;
         }
+        public Double x;
+        public Double y;
     }
 
     /*@Getter
