@@ -30,6 +30,7 @@ public enum ErrorCode {
 
     EMPTY_VALUE(HttpStatus.NOT_FOUND, "데이터가 비어있습니다."),
     INCLUDE_SLANG(HttpStatus.BAD_REQUEST, "닉네임에 비속어가 포함되어 있습니다."),
+    S3_BUCKET_ERROR(HttpStatus.BAD_REQUEST, "S3 업로드 과정중 오류가 발생했습니다."),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "정상적인 요청이 아닙니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
     UNAUTHORIZED_KAKAO(HttpStatus.UNAUTHORIZED, "카카오 API 호출 중 오류 발생"),

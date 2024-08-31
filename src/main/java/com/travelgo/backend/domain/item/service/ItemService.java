@@ -8,7 +8,7 @@ import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.repository.UserRepository;
-import com.travelgo.backend.domain.user.service.GeoCodingService;
+import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import com.travelgo.backend.domain.userItems.entity.UserItems;
 import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
 import com.travelgo.backend.global.exception.CustomException;

@@ -18,10 +18,12 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Attraction extends BaseTimeEntity {
-
     @Id
     @Column(name = "attraction_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attractionId;
+
+    private Long publicAttractionId;
 
     @Enumerated(EnumType.STRING)
     private AreaCode area;
@@ -39,7 +41,7 @@ public class Attraction extends BaseTimeEntity {
 
     private String poster; // 등록자 이름
 
-    private boolean hiddenFlag;
+    private boolean customFlag;
 
     @Column(name = "attraction_name", unique = true)
     private String attractionName; //이름
@@ -62,13 +64,13 @@ public class Attraction extends BaseTimeEntity {
     private Path path;
 
     @Builder
-    public Attraction(Long attractionId, AreaCode area, BigCategory bigCategory, MiddleCategory middleCategory, SmallCategory smallCategory, boolean hiddenFlag, int likes, String poster, String attractionName, String address, String city, Double latitude, Double longitude, String attractionImageUrl, String description, Path path) {
-        this.attractionId = attractionId;
+    public Attraction(Long publicAttractionId, AreaCode area, BigCategory bigCategory, MiddleCategory middleCategory, SmallCategory smallCategory, boolean customFlag, int likes, String poster, String attractionName, String address, String city, Double latitude, Double longitude, String attractionImageUrl, String description, Path path) {
+        this.publicAttractionId = publicAttractionId;
         this.area = area;
         this.bigCategory = bigCategory;
         this.middleCategory = middleCategory;
         this.smallCategory = smallCategory;
-        this.hiddenFlag = hiddenFlag;
+        this.customFlag = customFlag;
         this.likes = likes;
         this.poster = poster;
         this.attractionName = attractionName;
@@ -87,5 +89,9 @@ public class Attraction extends BaseTimeEntity {
 
     public void minusLikes() {
         likes -= 1;
+    }
+
+    public void initialAttractionImageUrl(String attractionImageUrl) {
+        this.attractionImageUrl = attractionImageUrl;
     }
 }

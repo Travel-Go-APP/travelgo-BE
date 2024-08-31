@@ -10,6 +10,8 @@ import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.repository.UserAgreeRepository;
 import com.travelgo.backend.domain.user.repository.UserRepository;
+import com.travelgo.backend.domain.util.entity.filter.BadWordFiltering;
+import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import jakarta.validation.Valid;
