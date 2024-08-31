@@ -1,4 +1,4 @@
-package com.travelgo.backend.domain.user.service;
+package com.travelgo.backend.domain.util.entity.filter;
 
 interface BadWords {
     String[] koreaWord1 = {

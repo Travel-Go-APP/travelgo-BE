@@ -1,4 +1,4 @@
-package com.travelgo.backend.domain.user.service;
+package com.travelgo.backend.domain.util.entity.geo.service;
 
 import com.travelgo.backend.domain.user.dto.Response.KakaoGeoResponse;
 import com.travelgo.backend.global.exception.CustomException;

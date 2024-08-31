@@ -12,7 +12,7 @@ import com.travelgo.backend.domain.attraction.repository.AttractionRepository;
 import com.travelgo.backend.domain.attractionImage.entity.AttractionImage;
 import com.travelgo.backend.domain.attractionImage.service.AttractionImageService;
 import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
-import com.travelgo.backend.domain.user.service.GeoCodingService;
+import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;

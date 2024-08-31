@@ -1,11 +1,8 @@
-package com.travelgo.backend.domain.user.controller;
+package com.travelgo.backend.domain.util.entity.geo.controller;
 
-import com.travelgo.backend.domain.user.dto.Request.UserRequest;
-import com.travelgo.backend.domain.user.dto.Response.UserResponse;
-import com.travelgo.backend.domain.user.service.GeoCodingService;
+import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
