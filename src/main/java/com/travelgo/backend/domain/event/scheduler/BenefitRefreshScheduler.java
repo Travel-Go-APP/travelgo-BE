@@ -27,6 +27,7 @@ public class BenefitRefreshScheduler {
     private final BenefitBulkRepository benefitBulkRepository;
 
     //    @Scheduled(cron = "0 0 0 */14 * ?") // 2주마다 자정에 실행
+//    @Scheduled(cron = "*/10 * * * * ?") // 매 10초마다 실행
     @Scheduled(cron = "0 0 0 1 * ?") // 매달 1일 자정에 실행
     public void updateBenefit() throws ParseException {
         // 새로운 데이터를 가져오는 로직

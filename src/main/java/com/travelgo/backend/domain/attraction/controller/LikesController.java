@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "명소 좋아요", description = "명소 개발 API(#40)")
+@Tag(name = "명소 추천", description = "명소 추천 API(#40)")
 @RequestMapping("/api/like")
 public class LikesController {
     private final LikesService likesService;

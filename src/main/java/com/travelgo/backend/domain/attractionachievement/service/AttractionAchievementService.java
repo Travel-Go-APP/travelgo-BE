@@ -39,7 +39,7 @@ public class AttractionAchievementService {
         Map<String, Long> areaVisitCount = new HashMap<>();
 
         for (AreaCode area : AreaCode.values()) {
-            Long areaTotal = attractionRepository.countByArea(area);
+            Long areaTotal = attractionRepository.countByAreaAndCustomFlagFalse(area);
             Long areaVisit = visitRepository.countByUserAndAttraction_Area(user, area);
 
             areaTotalCount.put(area.getName(), areaTotal);
