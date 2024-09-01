@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,10 +25,10 @@ public class UserItemsController {
 
     @Operation(summary = "아이템 획득", description = "유저가 아이템을 획득한다")
     @PostMapping("/add")
-    public ResponseEntity<Void> addUserItems(@RequestParam(name = "email") String email,
-                                             @RequestParam(name = "itemId") Long itemId){
-        userItemsService.add(email, itemId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> addUserItems(@RequestParam(name = "email") String email,
+                                                            @RequestParam(name = "itemId") Long itemId){
+        Map<String,Object> response = userItemsService.add(email, itemId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "아이템 리스트 조회", description = "유저 아이템 획득 리스트 조회")

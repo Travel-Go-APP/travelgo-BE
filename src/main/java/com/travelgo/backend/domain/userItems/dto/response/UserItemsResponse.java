@@ -25,4 +25,6 @@ public class UserItemsResponse {
     private Map<String, Integer> rankTotalItemCounts; // 랭크별 전체 아이템 수
     private Map<String, Integer> rankEarnItemCounts; // 랭크별 전체 아이템 수
 
+
+
 }
