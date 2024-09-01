@@ -290,11 +290,16 @@ public class AttractionService {
 
     public AttractionDetailResponse getDetail(Long attractionId) {
         Attraction attraction = getAttraction(attractionId);
+        if (attraction.getCustomFlag())
+            throw new CustomException(ErrorCode.NOT_CUSTOM_ATTRACTION);
+
         return createAttractionResponse(attraction);
     }
 
     public CustomAttractionResponse getCustomDetail(Long attractionId) {
         Attraction attraction = getAttraction(attractionId);
+        if (!attraction.getCustomFlag())
+            throw new CustomException(ErrorCode.NOT_CUSTOM_ATTRACTION);
         return createCustomAttractionResponse(attraction);
     }
 

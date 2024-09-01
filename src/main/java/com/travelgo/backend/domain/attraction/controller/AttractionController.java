@@ -120,10 +120,16 @@ public class AttractionController {
      * 조회 메서드
      */
 
-    @Operation(summary = "DB에 저장된 단일 명소 검색", description = "DB에 저장된 단일 명소를 가져옵니다.")
+    @Operation(summary = "DB에 저장된 공공 명소 검색", description = "DB에 저장된 공공 명소를 가져옵니다.")
     @GetMapping("/{attractionId}")
     public ResponseEntity<AttractionDetailResponse> findAttractionById(@PathVariable(name = "attractionId") Long attractionId) {
         return new ResponseEntity<>(attractionService.getDetail(attractionId), HttpStatusCode.valueOf(200));
+    }
+
+    @Operation(summary = "DB에 저장된 단일 커스텀 명소 검색", description = "DB에 저장된 단일 커스텀 명소 명소를 가져옵니다.")
+    @GetMapping("/custom/{attractionId}")
+    public ResponseEntity<CustomAttractionResponse> findCustomAttractionById(@PathVariable(name = "attractionId") Long attractionId) {
+        return new ResponseEntity<>(attractionService.getCustomDetail(attractionId), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "DB에 저장된 전체 명소 검색", description = "DB에 저장된 전체 명소를 가져옵니다.")
@@ -137,17 +143,17 @@ public class AttractionController {
     @Operation(summary = "지역별 DB에 저장된 전체 명소 검색", description = "지역별 DB에 저장된 전체 명소를 가져옵니다.")
     @GetMapping("/area")
     public ResponseEntity<Result<List<AttractionDetailResponse>>> findAllByArea(@RequestParam(name = "AreaCode") AreaCode areaCode) {
-        List<AttractionDetailResponse> responseList = attractionService.getListByArea(areaCode);
+        List<AttractionDetailResponse> attractionList = attractionService.getListByArea(areaCode);
 
-        return new ResponseEntity<>(new Result<>(responseList.size(), responseList), HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(new Result<>(attractionList.size(), attractionList), HttpStatusCode.valueOf(200));
     }
 
-    @Operation(summary = "전체 커스텀 명소를 추천순으로 검색", description = "저장된 커스텀 명소를 가져옵니다.")
-    @GetMapping("/custom")
+    @Operation(summary = "전체 커스텀 명소 리스트를 추천순으로 검색", description = "저장된 커스텀 명소를 가져옵니다.")
+    @GetMapping("/custom-list")
     public ResponseEntity<Result<List<CustomAttractionResponse>>> findAllByCustom() {
-        List<CustomAttractionResponse> responseList = attractionService.getCustomList();
+        List<CustomAttractionResponse> customList = attractionService.getCustomList();
 
-        return new ResponseEntity<>(new Result<>(responseList.size(), responseList), HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(new Result<>(customList.size(), customList), HttpStatusCode.valueOf(200));
     }
 
 //    @Operation(summary = "공공 데이터 포털 방문자 수 api 실행", description = "지자체별 방문자 수를 받는 api를 실행한다.")

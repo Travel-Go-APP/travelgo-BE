@@ -41,7 +41,7 @@ public class Attraction extends BaseTimeEntity {
 
     private String poster; // 등록자 이름
 
-    private boolean customFlag;
+    private Boolean customFlag;
 
     @Column(name = "attraction_name", unique = true)
     private String attractionName; //이름
