@@ -2,6 +2,7 @@ package com.travelgo.backend.domain.review.service;
 
 import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.domain.attraction.service.AttractionService;
+import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
 import com.travelgo.backend.domain.review.dto.ReviewRequest;
 import com.travelgo.backend.domain.review.dto.ReviewResponse;
 import com.travelgo.backend.domain.review.entity.Review;
@@ -14,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -26,16 +29,19 @@ import java.util.List;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final AttractionService attractionService;
+    private final S3UploadService s3UploadService;
     private final UserService userService;
 
     @Transactional
-    public ReviewResponse saveReview(ReviewRequest reviewRequest) {
+    public ReviewResponse saveReview(ReviewRequest reviewRequest, MultipartFile image) throws IOException {
         User user = userService.getUser(reviewRequest.getEmail());
         Attraction attraction = attractionService.getAttraction(reviewRequest.getAttractionId());
 
         notCustomAttraction(attraction);
 
-        Review review = createReview(reviewRequest, attraction, user);
+        String fileUrl = s3UploadService.upload(image, "images");
+
+        Review review = createReview(reviewRequest, attraction, user, fileUrl);
         Review savedReview = reviewRepository.save(review);
 
         return getDetail(savedReview.getReviewId());
@@ -53,13 +59,21 @@ public class ReviewService {
 
     @Transactional
     public Long delete(Long reviewId) {
-        reviewRepository.deleteById(reviewId);
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_REVIEW));
+        s3UploadService.fileDelete(review.getReviewImageUrl()); //s3 사진 삭제
+        reviewRepository.delete(review);
         return reviewId;
     }
 
     @Transactional
     public void deleteList(String email) {
         List<Review> reviewList = reviewRepository.findByUser_EmailOrderByDateDesc(email);
+
+        for (Review review : reviewList) {
+            s3UploadService.fileDelete(review.getReviewImageUrl()); //s3 사진 삭제
+        }
+
         reviewRepository.deleteAll(reviewList);
     }
 
@@ -125,20 +139,20 @@ public class ReviewService {
         return reviewRepository.findByAttraction_AttractionIdOrderByRatingDescDateDesc(attractionId);
     }
 
-    @Transactional(readOnly = true)
     public ReviewResponse getDetail(Long reviewId) {
         Review review = getReview(reviewId);
         return createReviewResposnse(review);
     }
 
     @Transactional
-    public Review createReview(ReviewRequest reviewRequest, Attraction attratiocn, User user) {
+    public Review createReview(ReviewRequest reviewRequest, Attraction attratiocn, User user, String reviewImageUrl) {
         return Review.builder()
                 .content(reviewRequest.getContent())
                 .rating(reviewRequest.getRating())
                 .date(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .attraction(attratiocn)
                 .user(user)
+                .reviewImageUrl(reviewImageUrl)
                 .build();
     }
 
