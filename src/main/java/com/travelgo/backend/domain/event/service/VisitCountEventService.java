@@ -1,5 +1,6 @@
 package com.travelgo.backend.domain.event.service;
 
+import com.travelgo.backend.domain.event.repository.BenefitBulkRepository;
 import com.travelgo.backend.domain.util.entity.DataApiExplorer;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.event.dto.Period;
@@ -29,6 +30,7 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class VisitCountEventService {
     private final UserService userService;
+    private final BenefitBulkRepository benefitBulkRepository;
     private final VisitCountBenefitRepository benefitRepository;
 
     @Transactional
@@ -133,6 +135,13 @@ public class VisitCountEventService {
             benefits.add(benefit);
         }
         return benefits;
+    }
+
+    // 테이블 초기화 메서드
+    @Transactional
+    public void initialVisitCount(List<VisitCountBenefit> benefits) {
+        benefitRepository.deleteAll();
+        benefitBulkRepository.saveAll(benefits);
     }
 
 

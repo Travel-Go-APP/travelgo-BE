@@ -287,13 +287,29 @@ public class AttractionService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ATTRACTION));
     }
 
+
     public AttractionDetailResponse getDetail(Long attractionId) {
         Attraction attraction = getAttraction(attractionId);
+        if (attraction.getCustomFlag())
+            throw new CustomException(ErrorCode.NOT_CUSTOM_ATTRACTION);
+
         return createAttractionResponse(attraction);
     }
 
+    public CustomAttractionResponse getCustomDetail(Long attractionId) {
+        Attraction attraction = getAttraction(attractionId);
+        if (!attraction.getCustomFlag())
+            throw new CustomException(ErrorCode.NOT_CUSTOM_ATTRACTION);
+        return createCustomAttractionResponse(attraction);
+    }
+
+
     private static AttractionDetailResponse createAttractionResponse(Attraction attraction) {
         return AttractionDetailResponse.of(attraction);
+    }
+
+    private static CustomAttractionResponse createCustomAttractionResponse(Attraction attraction) {
+        return CustomAttractionResponse.of(attraction);
     }
 
 
@@ -309,9 +325,17 @@ public class AttractionService {
     }
 
     public List<AttractionDetailResponse> getListByArea(AreaCode areaCode) {
-        return attractionRepository.findAllByArea(areaCode).stream()
+        return attractionRepository.findAllByAreaAndCustomFlagFalse(areaCode).stream()
                 .map(Attraction::getAttractionId)
                 .map(this::getDetail)
+                .toList();
+    }
+
+    public List<CustomAttractionResponse> getCustomList() {
+        return attractionRepository.findAllByCustomFlagTrueOrderByLikesDesc()
+                .stream()
+                .map(Attraction::getAttractionId)
+                .map(this::getCustomDetail)
                 .toList();
     }
 
@@ -320,7 +344,7 @@ public class AttractionService {
      */
 
     private boolean isAttractionDuplicated(String name) {
-        return attractionRepository.findByAttractionName(name) != null;
+        return attractionRepository.findByAttractionNameAndCustomFlagFalse(name) != null;
     }
 
     private static void checkEmpty(List<?> list) {
