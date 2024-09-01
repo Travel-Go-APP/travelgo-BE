@@ -16,6 +16,8 @@ public enum ErrorCode {
     NOT_FOUND_AREA(HttpStatus.NOT_FOUND, "지역를 찾을 수 없습니다."),
     NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
     NOT_FOUND_ATTRACTION(HttpStatus.NOT_FOUND, "명소를 찾을 수 없습니다."),
+    NOT_COMMON_ATTRACTION(HttpStatus.NOT_FOUND, "등록한 명소가 아닙니다."),
+    NOT_CUSTOM_ATTRACTION(HttpStatus.NOT_FOUND, "커스텀 명소가 아닙니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     NOT_FOUND_ITEM(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다."),
     NOT_FOUND_ACHIEVEMENT(HttpStatus.NOT_FOUND, "이력을 찾을 수 없습니다."),
@@ -23,6 +25,8 @@ public enum ErrorCode {
     NOT_FOUND_KAKAO(HttpStatus.NOT_FOUND, "카카오 API에서 올바른 응답을 가져오지 못했습니다."),
     NOT_REWARD_ATTRACTION(HttpStatus.BAD_REQUEST, "현재 보상 받을 수 있는 지역이 아닙니다."),
     ALREADY_EXIST_USER(HttpStatus.NOT_FOUND, "이미 사용 중인 닉네임입니다."),
+
+
 
     DUPLICATED_USER(HttpStatus.CREATED, "이미 존재하는 회원입니다."),
     DUPLICATED_ITEM(HttpStatus.CREATED, "이미 존재하는 아이템입니다."),
