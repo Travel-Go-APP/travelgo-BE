@@ -14,6 +14,7 @@ public class ReviewResponse {
     private Long attrationId;
     private String nickname;
     private float rating;
+    private String reviewImageUrl;
     private String content;
     private String date;
 
@@ -21,6 +22,7 @@ public class ReviewResponse {
     public ReviewResponse(Review review) {
         this.attrationId = review.getAttraction().getAttractionId();
         this.nickname = review.getUser().getNickname();
+        this.reviewImageUrl = review.getReviewImageUrl();
         this.rating = review.getRating();
         this.content = review.getContent();
         this.date = review.getDate();
