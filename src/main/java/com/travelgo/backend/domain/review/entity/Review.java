@@ -31,23 +31,24 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Max(value = 5) @Min(value = 0)
+    @Max(value = 5)
+    @Min(value = 0)
     private Float rating;
 
     private String content;
 
-    private LocalDateTime time;
+    private String date;
 
     @Column(name = "review_image_url")
     private String reviewImageUrl;
 
     @Builder
-    public Review(Attraction attraction, User user, Float rating, String content, LocalDateTime time, String reviewImageUrl) {
+    public Review(Attraction attraction, User user, Float rating, String date, String content, String reviewImageUrl) {
         this.attraction = attraction;
         this.user = user;
         this.rating = rating;
         this.content = content;
-        this.time = time;
+        this.date = date;
         this.reviewImageUrl = reviewImageUrl;
     }
 }
