@@ -24,17 +24,32 @@ public class UserItems extends BaseTimeEntity {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    private int piece; // 아이템 조각 수
+
+    private boolean isCompleted; // 아이템 완성 여부
+
     @Builder
     public UserItems(User user, Item item){
         this.user = user;
         this.item = item;
+        this.piece = 1;
+        this.isCompleted = false;
     }
 
     public Area getArea(){
         return this.item.getArea();
     }
 
-//    public Grade getGrade(){
-//        return this.item.getItemRank();
-//    }
+    public void addPiece() {
+        if (!isCompleted) {
+            this.piece++;  // 조각 수를 1 증가
+            if (this.piece >= 10) {
+                this.isCompleted = true;  // 조각이 10개 이상이면 완성 처리
+            }
+        }
+    }
+
+    public int getPiece() {
+        return this.piece;  // 현재 조각 수를 반환
+    }
 }

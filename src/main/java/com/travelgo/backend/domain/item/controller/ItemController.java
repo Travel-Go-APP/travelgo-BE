@@ -3,6 +3,7 @@ package com.travelgo.backend.domain.item.controller;
 import com.travelgo.backend.domain.attraction.dto.AttractionRequest;
 import com.travelgo.backend.domain.item.dto.request.ItemRequest;
 import com.travelgo.backend.domain.item.dto.response.ItemResponse;
+import com.travelgo.backend.domain.item.dto.response.ShopResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.service.ItemService;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
@@ -65,5 +66,13 @@ public class ItemController {
         Item item = itemService.getItem(itemId);
         ItemResponse itemResponse = ItemResponse.fromEntity(item);
         return new ResponseEntity<>(itemResponse,HttpStatus.OK);
+    }
+
+    @Operation(summary = "상점 뽑기", description = "상점에서 등급별 뽑기 구매")
+    @GetMapping("/shop")
+    public ResponseEntity<ShopResponse> buyShop(@RequestParam(name = "email") String email,
+                                                @RequestParam(name = "gachaLevel") Integer gachaLevel){
+        ShopResponse response = itemService.buyShop(email, gachaLevel);
+        return ResponseEntity.ok(response);
     }
 }

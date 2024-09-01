@@ -4,10 +4,12 @@ import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
 import com.travelgo.backend.domain.item.dto.request.ItemRequest;
 import com.travelgo.backend.domain.item.dto.response.ItemResponse;
+import com.travelgo.backend.domain.item.dto.response.ShopResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.repository.UserRepository;
+import com.travelgo.backend.domain.userItems.service.UserItemsService;
 import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import com.travelgo.backend.domain.userItems.entity.UserItems;
 import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
@@ -36,6 +38,8 @@ public class ItemService {
     private final UserItemsRepository userItemsRepository;
     private final S3UploadService s3UploadService;
     private final GeoCodingService geoCodingService;
+    private final UserItemsService userItemsService;
+    private final Random rand = new Random();
 
     @Transactional
     public void addItem(ItemRequest request, MultipartFile imageFile) throws IOException {
@@ -135,5 +139,91 @@ public class ItemService {
     public Item getItem(Long itemId) {
         return itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    }
+
+    @Transactional
+    public ShopResponse buyShop(String email, Integer gachaLevel){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        double itemProbability;
+        double moneyProbability;
+        double expProbability;
+        int minMoney, maxMoney, minExp, maxExp;
+
+        switch (gachaLevel){
+            case 1:
+                if(user.getTg() < 2000){
+                    throw new CustomException(ErrorCode.BAD_REQUEST);
+                }else{
+                    user.addTg(-2000);
+                }
+
+                itemProbability = 0.4;
+                moneyProbability = 0.3;
+                expProbability = 0.3;
+                minMoney = 1000;
+                maxMoney = 3000;
+                minExp = 30;
+                maxExp = 80;
+                break;
+            case 2:
+                if(user.getTg() < 5000){
+                    throw new CustomException(ErrorCode.BAD_REQUEST);
+                }else{
+                    user.addTg(-5000);
+                }
+                itemProbability = 0.5;
+                moneyProbability = 0.25;
+                expProbability = 0.25;
+                minMoney = 3000;
+                maxMoney = 8000;
+                minExp = 50;
+                maxExp = 110;
+                break;
+            case 3:
+                if(user.getTg() < 7000){
+                    throw new CustomException(ErrorCode.BAD_REQUEST);
+                }else{
+                    user.addTg(-7000);
+                }
+//'0','0','1','4','10','0','0','2','0','8680','1','0','1','string','2024-08-09 00:09','2024-08-30 12:11','string','','','초급','맨발','0',NULL
+
+                itemProbability = 0.6;
+                moneyProbability = 0.2;
+                expProbability = 0.2;
+                minMoney = 4000;
+                maxMoney = 15000;
+                minExp = 80;
+                maxExp = 200;
+                break;
+            default:
+                throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+        ShopResponse response;
+
+        double roll = rand.nextDouble();
+        if(roll < itemProbability){
+            Item item = getRandomItem();
+            Long itemId = item.getItemId();
+            userItemsService.add(email, itemId);
+            response = new ShopResponse(item);
+        }else if(roll < itemProbability + moneyProbability){
+            int money = rand.nextInt(maxMoney -minMoney + 1) + minMoney;
+            user.addTg(money);
+            response = new ShopResponse("tg", user.getTg(), user.getExperience(), money, 0);
+        }else{
+            int experience = rand.nextInt(maxExp - minExp + 1) + minExp;
+            user.addExperience(experience);
+            response = new ShopResponse("exp", user.getTg(), user.getExperience(), 0, experience);
+        }
+
+        userRepository.save(user);
+        return response;
+    }
+
+    private Item getRandomItem(){
+        List<Item> items = itemRepository.findByArea(Area.valueOf("일반"));
+        return items.get(rand.nextInt(items.size()));
     }
 }

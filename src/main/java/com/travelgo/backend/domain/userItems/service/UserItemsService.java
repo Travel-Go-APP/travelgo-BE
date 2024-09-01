@@ -13,6 +13,7 @@ import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ public class UserItemsService {
     private final UserItemsRepository userItemsRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final Random rand = new Random();
 
     private static final List<String> AREAS = Arrays.asList(
             "Daejeon", "Ulsan", "Gyeonsangbukdo", "Gyeonsangnamdo",
@@ -33,18 +35,61 @@ public class UserItemsService {
             "Gyeonggido", "Chungcheongnamdo", "Daegu", "Common"
     );
 
-    public void add(String email, Long itemId){
+    @Transactional
+    public Map<String, Object> add(String email, Long itemId) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ITEM));
 
-        UserItems userItems = UserItems.builder()
-                .user(user)
-                .item(item)
-                .build();
+        UserItems userItems = userItemsRepository.findByUserAndItem(user, item)
+                .orElse(null);
 
-        userItemsRepository.save(userItems);
+        Map<String, Object> response = new HashMap<>();
+        int currentPieces = 0;
+
+        try {
+            if (userItems != null) {
+                userItems.addPiece();
+                userItemsRepository.save(userItems);
+                currentPieces = userItems.getPiece();  // 조각 수 갱신
+                if (userItems.isCompleted()) {
+                    Map<String, Integer> reward = rewardUser(user);
+                    response.putAll(reward);
+                }
+            } else {
+                userItems = UserItems.builder()
+                        .user(user)
+                        .item(item)
+                        .build();
+                userItemsRepository.save(userItems);
+                currentPieces = userItems.getPiece();
+            }
+
+            response.put("itemId", itemId);
+            response.put("itemPiece", currentPieces);
+        } catch (Exception e) {
+            e.printStackTrace();  // 예외가 발생했을 때 스택 트레이스를 출력
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        return response;
+    }
+
+    private Map<String, Integer> rewardUser(User user) {
+        Map<String, Integer> reward = new HashMap<>();
+        int rewardType = rand.nextInt(2);
+        if (rewardType == 0) {
+            int tgReward = rand.nextInt(1000) + 500;
+            user.addTg(tgReward);
+            reward.put("tg", tgReward);
+        } else {
+            int expReward = rand.nextInt(50) + 20;
+            user.addExperience(expReward);
+            reward.put("exp", expReward);
+        }
+        userRepository.save(user);
+        return reward;  // 반환값을 null이 아닌 reward로 수정
     }
 
 
@@ -125,6 +170,7 @@ public class UserItemsService {
     // 지역별 유저 획득 아이템 집계
     public Map<String, Integer> getEarnedItemCountByArea(List<UserItems> userItemsList) {
         return userItemsList.stream()
+                .filter(UserItems::isCompleted)//완성 여부
                 .collect(Collectors.groupingBy(
                         userItem -> Optional.ofNullable(userItem.getItem().getArea())
                                 .map(Area::getValue)
@@ -136,6 +182,7 @@ public class UserItemsService {
     // 랭크별 유저 획득 아이템 집계
     public Map<String, Integer> getEarnedItemCountByRank(List<UserItems> userItemsList) {
         return userItemsList.stream()
+                .filter(UserItems::isCompleted)//완성 여부
                 .collect(Collectors.groupingBy(
                         userItem -> {
                             Integer rank = userItem.getItem().getItemRank();
