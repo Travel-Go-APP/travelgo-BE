@@ -46,6 +46,7 @@ public class User extends BaseTimeEntity {
     private int experience;
     private int nextLevelExp;
     private double percentage;
+    private int reportCount;
     private int workCount;
     private int level;
     private int quest;
@@ -69,7 +70,7 @@ public class User extends BaseTimeEntity {
     private List<UserItems> userItems = new ArrayList<>();
 
     @Builder
-    public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int nextLevelExp, double percentage, int workCount, int level, int quest, int tg, int maxSearch, int possibleSearch, double experienceX, double tgX, Shoes shoes, Bag bag) {
+    public User(String username, String nickname, String email, String phoneNumber, double detectionRange, int experience, int nextLevelExp, double percentage, int reportCount, int workCount, int level, int quest, int tg, int maxSearch, int possibleSearch, double experienceX, double tgX, Shoes shoes, Bag bag) {
         this.username = username;
         this.nickname = nickname;
         this.email = email;
@@ -78,6 +79,7 @@ public class User extends BaseTimeEntity {
         this.experience = experience;
         this.nextLevelExp = nextLevelExp;
         this.percentage = percentage;
+        this.reportCount = reportCount;
         this.workCount = workCount;
         this.level = level;
         this.quest = quest;
@@ -90,19 +92,20 @@ public class User extends BaseTimeEntity {
         this.bag = bag;
     }
 
-    public static User createUser(UserRequest.SignUp request){
+    public static User createUser(UserRequest.SignUp request) {
         User user = new User();
         user.signupUser(request);
         return user;
     }
 
-    public void signupUser(UserRequest.SignUp request){
+    public void signupUser(UserRequest.SignUp request) {
         this.email = request.getEmail();
         this.nickname = request.getNickname();
         this.username = "";
         this.phoneNumber = "";
         this.detectionRange = 0;
         this.experience = 0;
+        this.reportCount = 0;
         this.workCount = 0;
         this.level = 1;
         this.quest = 0;
@@ -115,7 +118,7 @@ public class User extends BaseTimeEntity {
         this.tgX = 1.0;
     }
 
-    public void addExperience(int exp){
+    public void addExperience(int exp) {
         this.experience += exp;
         checkLevelUp();
     }
@@ -128,7 +131,7 @@ public class User extends BaseTimeEntity {
         }
     }
 
-    public void levelUp(){
+    public void levelUp() {
         this.level++;
     }
 
@@ -149,11 +152,11 @@ public class User extends BaseTimeEntity {
         this.possibleSearch = Math.max(this.possibleSearch - amount, 0); // 최소 0 이하로는 내려가지 않도록 함
     }
 
-    public void reduceExperience(int exp){
+    public void reduceExperience(int exp) {
         this.experience -= exp;
     }
 
-    public void changeNickname(String nickname){
+    public void changeNickname(String nickname) {
         this.nickname = nickname;
     }
 
@@ -165,8 +168,13 @@ public class User extends BaseTimeEntity {
         this.experienceX = ratio;
     }
 
-    public void saveAgree(AgreeDto agree){
+    public void saveAgree(AgreeDto agree) {
         this.userAgree = new UserAgree(agree);
     }
+
+    public void report() {
+        reportCount += 1;
+    }
+
 }
 
