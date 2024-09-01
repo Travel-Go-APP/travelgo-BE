@@ -113,6 +113,11 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
+    public User getUserByNickname(String nickname) {
+        return userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    }
+
     @Transactional
     public void saveAgree(String email, AgreeDto agreeDto) {
         User user = getUser(email);
