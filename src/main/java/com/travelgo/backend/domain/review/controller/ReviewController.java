@@ -39,7 +39,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "유저의 전체 리뷰 삭제", description = "로그인중인 유저의 전체 리뷰를 삭제한다.")
-    @DeleteMapping("/deleteAll-User")
+    @DeleteMapping("/delete-User")
     public ResponseEntity<?> deleteReviewList(@RequestParam(name = "email") String email) {
         reviewService.deleteList(email);
         return new ResponseEntity<>(null, HttpStatusCode.valueOf(200));
