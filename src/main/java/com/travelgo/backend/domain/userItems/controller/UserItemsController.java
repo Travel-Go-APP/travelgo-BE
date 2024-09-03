@@ -33,8 +33,8 @@ public class UserItemsController {
 
     @Operation(summary = "아이템 리스트 조회", description = "유저 아이템 획득 리스트 조회")
     @GetMapping("/items")
-    public ResponseEntity<List<Long>> getItemIdsByUserEmail(@RequestParam(name = "email") String email){
-        List<Long> itemIds = userItemsService.getItemIdsByUserEmail(email);
+    public ResponseEntity<Map<Long, Integer>> getItemIdsByUserEmail(@RequestParam(name = "email") String email){
+        Map<Long, Integer> itemIds = userItemsService.getItemIdsByUserEmail(email);
         return ResponseEntity.ok(itemIds);
     }
 
