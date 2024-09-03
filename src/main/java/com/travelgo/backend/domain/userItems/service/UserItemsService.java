@@ -115,11 +115,13 @@ public class UserItemsService {
         ITEM_RANK_TOTAL_COUNT.put("5", 68);   // 지역 아이템 총 68개 Local
     }
 
-    public List<Long> getItemIdsByUserEmail(String email) {
+    public Map<Long, Integer> getItemIdsByUserEmail(String email) {
         List<UserItems> userItemsList = userItemsRepository.findAllByUser_Email(email);
         return userItemsList.stream()
-                .map(userItems -> userItems.getItem().getItemId())
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(
+                        userItems -> userItems.getItem().getItemId(),
+                        UserItems::getPiece
+                ));
     }
 
     public UserItemsResponse getUserItemsResponse(String email) {
