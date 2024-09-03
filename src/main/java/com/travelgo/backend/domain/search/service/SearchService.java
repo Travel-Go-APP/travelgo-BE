@@ -7,8 +7,11 @@ import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -17,6 +20,34 @@ public class SearchService {
 
     private final UserRepository userRepository;
     private final Random rand = new Random();
+
+    @Transactional
+    public Map<String, Object> recoverSearchCount(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        if(user.getTg() < 5000){
+            response.put("status", "실패");
+            response.put("message", "TG가 부족합니다.");
+            return response;
+        }else if(user.getPossibleSearch()==10){
+            response.put("status", "실패");
+            response.put("message", "이미 조사 가능 횟수가 최대입니다.");
+            return response;
+        }
+
+        user.addTg(-5000);
+        user.setPossibleSearch(10);
+        userRepository.save(user);
+
+        response.put("status", "성공");
+        response.put("message", "조사하기 횟수 회복 성공");
+        response.put("TG", user.getTg());
+
+        return response;
+    }
 
     // 이벤트를 확률에 따라 선택하는 메서드
     public int selectEvent() {

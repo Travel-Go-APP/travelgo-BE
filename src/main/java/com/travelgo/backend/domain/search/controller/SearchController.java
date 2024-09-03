@@ -9,9 +9,12 @@ import com.travelgo.backend.global.exception.constant.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +24,23 @@ public class SearchController {
 
     private final SearchService searchService;
     private final UserRepository userRepository;
+
+    @Operation(summary = "조사하기 회복", description = "TG를 지불하고 조사하기 회복")
+    @PostMapping("/SearchCountRecover")
+    public ResponseEntity<Map<String, Object>> SearchCountRecover(@RequestParam(name = "email") String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        Map<String, Object> result = searchService.recoverSearchCount(email);
+
+        if(result.get("status").equals("성공")){
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+        git commit "feat: 조사하기 회복  개발)
+
+    }
 
     @Operation(summary = "조사하기(이벤트-상호작용)", description = "이벤트 통합 처리 포인트")
     @PostMapping("/event")
