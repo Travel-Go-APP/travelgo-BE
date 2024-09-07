@@ -77,6 +77,10 @@ public class ItemService {
 
     @Transactional
     public ItemResponse acquireItem(String email, Double latitude, Double longitude) {
+        // 유저 정보 확인
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
         // 역지오코딩을 통해 지역명 분석
         String[] areaAndVisitArea = geoCodingService.reverseGeocode(latitude, longitude);
         String areaName = areaAndVisitArea[0];
@@ -88,18 +92,17 @@ public class ItemService {
             throw new CustomException(ErrorCode.NOT_FOUND_AREA);  // 유효하지 않은 지역명 처리
         }
 
+        // 해당 지역의 아이템 목록 가져오기
         List<Item> itemsInArea = itemRepository.findByArea(area);
         if (itemsInArea.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_ITEM);  // 해당 지역에 아이템이 없을 때 처리
         }
 
+        // 랜덤으로 아이템 선택
         Random random = new Random();
         Item selectedItem = itemsInArea.get(random.nextInt(itemsInArea.size()));
 
         // 유저가 이미 해당 아이템을 획득했는지 확인
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
-
         boolean alreadyAcquired = userItemsRepository.existsByUserAndItem(user, selectedItem);
         if (alreadyAcquired) {
             throw new CustomException(ErrorCode.BAD_REQUEST);  // 이미 아이템을 획득한 경우
@@ -113,6 +116,7 @@ public class ItemService {
 
         userItemsRepository.save(userItems);
 
+        // 응답 생성
         return ItemResponse.fromEntity(selectedItem);
     }
 
@@ -142,7 +146,7 @@ public class ItemService {
     }
 
     @Transactional
-    public ShopResponse buyShop(String email, Integer gachaLevel){
+    public ShopResponse buyShop(String email, Integer gachaLevel, Double latitude, Double longitude){
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
@@ -206,7 +210,7 @@ public class ItemService {
         if(roll < itemProbability){
             Item item = getRandomItem();
             Long itemId = item.getItemId();
-            userItemsService.add(email, itemId);
+            userItemsService.add(email, latitude, longitude);
             response = new ShopResponse(item);
         }else if(roll < itemProbability + moneyProbability){
             int money = rand.nextInt(maxMoney -minMoney + 1) + minMoney;

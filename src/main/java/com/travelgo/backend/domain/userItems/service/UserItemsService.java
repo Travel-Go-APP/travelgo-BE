@@ -1,13 +1,17 @@
 package com.travelgo.backend.domain.userItems.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelgo.backend.domain.area.entity.Area;
+import com.travelgo.backend.domain.item.dto.response.ItemResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
+import com.travelgo.backend.domain.item.service.ItemService;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.userItems.entity.UserItems;
 import com.travelgo.backend.domain.userItems.dto.response.UserItemsResponse;
 import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
+import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ public class UserItemsService {
 
     @Autowired
     private final UserItemsRepository userItemsRepository;
+    private final GeoCodingService geoCodingService;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final Random rand = new Random();
@@ -36,44 +41,114 @@ public class UserItemsService {
     );
 
     @Transactional
-    public Map<String, Object> add(String email, Long itemId) {
+    public Map<String, Object> add(String email, Double latitude, Double longitude) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
-        Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ITEM));
 
-        UserItems userItems = userItemsRepository.findByUserAndItem(user, item)
-                .orElse(null);
-
+        // 랜덤으로 아이템 rank 결정 (1~4 일반 아이템, 5는 지역 아이템)
+        int rank = determineRandomItemRank();  // 아이템 확률 로직 적용
+        Item randomItem;
         Map<String, Object> response = new HashMap<>();
-        int currentPieces = 0;
 
-        try {
+        if (rank == 5) {
+            // 지역 아이템 지급 (latitude와 longitude 전달)
+            randomItem = acquireRegionalItem(latitude, longitude);
+
+            UserItems userItems = userItemsRepository.findByUserAndItem(user, randomItem)
+                    .orElse(null);
+
+            int currentPieces = 0;
+
             if (userItems != null) {
                 userItems.addPiece();
                 userItemsRepository.save(userItems);
-                currentPieces = userItems.getPiece();  // 조각 수 갱신
+                currentPieces = userItems.getPiece();
                 if (userItems.isCompleted()) {
                     Map<String, Integer> reward = rewardUser(user);
                     response.putAll(reward);
                 }
+                response.put("itemId", randomItem.getItemId());
+                response.put("itemPiece", currentPieces);
             } else {
                 userItems = UserItems.builder()
                         .user(user)
-                        .item(item)
+                        .item(randomItem)
                         .build();
                 userItemsRepository.save(userItems);
                 currentPieces = userItems.getPiece();
-            }
 
-            response.put("itemId", itemId);
-            response.put("itemPiece", currentPieces);
-        } catch (Exception e) {
-            e.printStackTrace();  // 예외가 발생했을 때 스택 트레이스를 출력
-            throw new CustomException(ErrorCode.BAD_REQUEST);
+                response.put("itemId", randomItem.getItemId());
+                response.put("itemPiece", currentPieces);
+            }
+        } else {
+            // 일반 아이템 지급 로직
+            randomItem = findRandomItemByRank(rank);
+            UserItems userItems = userItemsRepository.findByUserAndItem(user, randomItem)
+                    .orElse(null);
+
+            int currentPieces = 0;
+
+            if (userItems != null) {
+                userItems.addPiece();
+                userItemsRepository.save(userItems);
+                currentPieces = userItems.getPiece();
+                if (userItems.isCompleted()) {
+                    Map<String, Integer> reward = rewardUser(user);
+                    response.putAll(reward);
+                }
+                response.put("itemId", randomItem.getItemId());
+                response.put("itemPiece", currentPieces);
+            } else {
+                userItems = UserItems.builder()
+                        .user(user)
+                        .item(randomItem)
+                        .build();
+                userItemsRepository.save(userItems);
+                currentPieces = userItems.getPiece();
+
+                response.put("itemId", randomItem.getItemId());
+                response.put("itemPiece", currentPieces);
+            }
+        }
+        return response;
+    }
+
+    private Item acquireRegionalItem(Double latitude, Double longitude) {
+        String[] areaAndVisitArea = geoCodingService.reverseGeocode(latitude, longitude);
+        String areaName = areaAndVisitArea[0];
+
+        Area area = Area.fromString(areaName);
+        List<Item> itemsInArea = itemRepository.findByArea(area);
+        if (itemsInArea.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ITEM);
         }
 
-        return response;
+        return itemsInArea.get(new Random().nextInt(itemsInArea.size()));
+    }
+
+    private Item findRandomItemByRank(int rank) {
+        List<Item> items = itemRepository.findByItemRank(rank);
+        if (items.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_ITEM);
+        }
+        return items.get(new Random().nextInt(items.size()));
+    }
+
+    private int determineRandomItemRank() {
+        Random random = new Random();
+        int randomValue = random.nextInt(100) + 1;
+
+        if (randomValue <= 50) {
+            return 1;  // 50% 확률로 rank 1 아이템
+        } else if (randomValue <= 75) {
+            return 2;  // 25% 확률로 rank 2 아이템
+        } else if (randomValue <= 90) {
+            return 3;  // 15% 확률로 rank 3 아이템
+        } else if (randomValue <= 95) {
+            return 4;  // 5% 확률로 rank 4 아이템
+        } else {
+            return 5;  // 5% 확률로 rank 5 지역 아이템
+        }
     }
 
     private Map<String, Integer> rewardUser(User user) {

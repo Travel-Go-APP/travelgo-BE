@@ -71,8 +71,10 @@ public class ItemController {
     @Operation(summary = "상점 뽑기", description = "상점에서 등급별 뽑기 구매")
     @GetMapping("/shop")
     public ResponseEntity<ShopResponse> buyShop(@RequestParam(name = "email") String email,
-                                                @RequestParam(name = "gachaLevel") Integer gachaLevel){
-        ShopResponse response = itemService.buyShop(email, gachaLevel);
+                                                @RequestParam(name = "gachaLevel") Integer gachaLevel,
+                                                @RequestParam(name = "latitude") Double latitude,
+                                                @RequestParam(name = "longitude") Double longitude){
+        ShopResponse response = itemService.buyShop(email, gachaLevel, latitude, longitude);
         return ResponseEntity.ok(response);
     }
 }

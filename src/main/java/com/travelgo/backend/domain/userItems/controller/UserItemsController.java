@@ -26,8 +26,9 @@ public class UserItemsController {
     @Operation(summary = "아이템 획득", description = "유저가 아이템을 획득한다")
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addUserItems(@RequestParam(name = "email") String email,
-                                                            @RequestParam(name = "itemId") Long itemId){
-        Map<String,Object> response = userItemsService.add(email, itemId);
+                                                            @RequestParam(name = "latitude") Double latitude,
+                                                            @RequestParam(name = "longitude") Double longitude){
+        Map<String,Object> response = userItemsService.add(email, latitude, longitude);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

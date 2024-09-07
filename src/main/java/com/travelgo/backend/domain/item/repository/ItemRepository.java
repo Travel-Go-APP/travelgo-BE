@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findByItemId(Long itemId);
     List<Item> findByArea(Area area);
+    List<Item> findByItemRank(int itemRank);
 }
