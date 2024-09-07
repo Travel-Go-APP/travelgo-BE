@@ -6,6 +6,8 @@ import com.travelgo.backend.domain.user.model.Bag;
 import com.travelgo.backend.domain.user.model.Shoes;
 import com.travelgo.backend.domain.userItems.entity.UserItems;
 import com.travelgo.backend.domain.common.entity.BaseTimeEntity;
+import com.travelgo.backend.global.exception.CustomException;
+import com.travelgo.backend.global.exception.constant.ErrorCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -136,20 +138,30 @@ public class User extends BaseTimeEntity {
     }
 
     public void addTg(int amount) {
-        this.tg += amount;
+        if (this.tg + amount < 0) {
+            // 현재 가진 TG보다 더 큰 금액을 차감하려 할 경우, TG를 0으로 설정
+            this.tg = 0;
+        } else {
+            this.tg += amount;
+        }
     }
 
     public void loseTgPercentage(int percentage) {
         int tgLost = this.tg * percentage / 100;
-        this.tg -= tgLost;
+        this.addTg(-tgLost);  // addTg로 유효성 검사와 함께 TG 차감
     }
 
     public void recoverPossibleSearch(int amount) {
+
         this.possibleSearch = Math.min(this.possibleSearch + amount, this.maxSearch);
     }
 
     public void decreasePossibleSearch(int amount) {
-        this.possibleSearch = Math.max(this.possibleSearch - amount, 0); // 최소 0 이하로는 내려가지 않도록 함
+        if (this.possibleSearch - amount < 0) {
+            this.possibleSearch = 0; // 최소 0 이하로는 내려가지 않도록 함
+        } else {
+            this.possibleSearch -= amount;
+        }
     }
 
     public void reduceExperience(int exp) {

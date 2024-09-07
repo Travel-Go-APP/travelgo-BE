@@ -115,11 +115,12 @@ public class SearchService {
                     user.addExperience(expChange);
                     break;
                 case 7:
-                    possibleSearchChange = 1;
+                    possibleSearchChange = 2;
                     user.recoverPossibleSearch(possibleSearchChange);
                     break;
                 case 8:
                     possibleSearchChange = -2;
+
                     user.decreasePossibleSearch(2);
                     break;
                 case 9:
@@ -127,8 +128,8 @@ public class SearchService {
                     user.loseTgPercentage(20);
                     break;
                 case 10:
-                    user.addExperience(1000);  // 임의로 예시를 넣음
                     user.levelUp();
+                    user.setExperience(0);
                     break;
             }
             userRepository.save(user);

@@ -38,8 +38,6 @@ public class SearchController {
         } else{
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
-        git commit "feat: 조사하기 회복  개발)
-
     }
 
     @Operation(summary = "조사하기(이벤트-상호작용)", description = "이벤트 통합 처리 포인트")
