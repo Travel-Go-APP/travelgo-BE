@@ -10,6 +10,11 @@ spring:
         format_sql: true
   thymeleaf:
     prefix: classpath:/templates/
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://srv-captain--ygsrmplfzu-mysql-80x:3306/travelgoapp-database?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: travelgoapp-user
+    password: tcyPs98vemfS
 
 # swagger
 springdoc:
