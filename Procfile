@@ -1,1 +1,1 @@
-web: ./run.sh
+web: web: java -jar build/libs/backend-0.0.1-SNAPSHOT.jar

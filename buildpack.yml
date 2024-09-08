@@ -1,2 +1,3 @@
 buildpacks:
   - id: paketo-buildpacks/java
+    version: "8.3.0"
