@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "신고", description = "신고 API(#44)")
-@RequestMapping("/api/Report")
+@RequestMapping("/api/report")
 public class ReportController {
     private final ReportService reportService;
 
