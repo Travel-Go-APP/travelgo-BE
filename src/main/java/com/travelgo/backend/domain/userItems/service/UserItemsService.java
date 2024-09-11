@@ -187,7 +187,7 @@ public class UserItemsService {
         ITEM_RANK_TOTAL_COUNT.put("2", 8);    // 희귀 아이템 총 8개 Rare
         ITEM_RANK_TOTAL_COUNT.put("3", 6);  // 영웅 아이템 총 6개 Legend
         ITEM_RANK_TOTAL_COUNT.put("4", 4); // 전설 아이템 총 4개 Special
-        ITEM_RANK_TOTAL_COUNT.put("5", 68);   // 지역 아이템 총 68개 Local
+        ITEM_RANK_TOTAL_COUNT.put("5", 34);   // 지역 아이템 총 68개 Local
     }
 
     public Map<Long, Integer> getItemIdsByUserEmail(String email) {

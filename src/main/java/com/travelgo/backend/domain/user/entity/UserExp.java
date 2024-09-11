@@ -21,7 +21,7 @@ public class UserExp {
         expTable[6] = 400;
         expTable[7] = 500;
         expTable[8] = 620;
-        expTable[9] = 750;
+        expTable[9] = 999999;
 
         return expTable;
     }
