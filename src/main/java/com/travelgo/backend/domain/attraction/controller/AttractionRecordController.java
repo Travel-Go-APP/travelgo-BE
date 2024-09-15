@@ -1,6 +1,7 @@
 package com.travelgo.backend.domain.attraction.controller;
 
-import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
+import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
+import com.travelgo.backend.domain.attraction.dto.AttractionRecordResponse;
 import com.travelgo.backend.domain.attraction.service.AttractionRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,10 +28,10 @@ public class AttractionRecordController {
 
     @Operation(summary = "위치기반 지역별 미방문 명소 리스트", description = "조사하기를 눌렀을때 현재 유저가 방문하지 않은 기록을 가져온다.")
     @GetMapping
-    public ResponseEntity<List<AttractionResponse>> getUnvisitListByRadius(@RequestParam(name = "email") String email,
-                                                                           @RequestParam(name = "latitude") Double latitude,
-                                                                           @RequestParam(name = "longitude") Double longitude,
-                                                                           @RequestParam(name = "distance", defaultValue = "1") Double distance) {
+    public ResponseEntity<List<AttractionRecordResponse>> getUnvisitListByRadius(@RequestParam(name = "email") String email,
+                                                                                 @RequestParam(name = "latitude") Double latitude,
+                                                                                 @RequestParam(name = "longitude") Double longitude,
+                                                                                 @RequestParam(name = "distance", defaultValue = "10") Double distance) {
         return new ResponseEntity<>(attractionRecordService.getunVisitAttractionWithInDistance(email, latitude, longitude, distance), HttpStatusCode.valueOf(200));
     }
 }

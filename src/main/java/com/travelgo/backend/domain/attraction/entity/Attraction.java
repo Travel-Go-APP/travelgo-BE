@@ -35,6 +35,7 @@ public class Attraction extends BaseTimeEntity {
     private MiddleCategory middleCategory;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private SmallCategory smallCategory;
 
     private int likes;

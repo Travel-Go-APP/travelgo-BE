@@ -1,6 +1,6 @@
 package com.travelgo.backend.domain.visit.dto;
 
-import com.travelgo.backend.domain.attraction.dto.AttractionResponse;
+import com.travelgo.backend.domain.attraction.dto.AttractionRecordResponse;
 import com.travelgo.backend.domain.visit.entity.Visit;
 import lombok.*;
 
@@ -9,19 +9,19 @@ import lombok.*;
 @AllArgsConstructor
 public class VisitResponse {
 
-    private AttractionResponse attractionResponse;
+    private AttractionRecordResponse attractionRecordResponse;
 
     private String visitTime;
 
     @Builder
     public VisitResponse(Visit visit) {
-        this.attractionResponse = AttractionResponse.of(visit.getAttraction());
+        this.attractionRecordResponse = AttractionRecordResponse.of(visit.getAttraction());
         this.visitTime = visit.getVisitTime();
     }
 
     public static VisitResponse of(Visit visit) {
         return new VisitResponse(
-                AttractionResponse.of(visit.getAttraction()),
+                AttractionRecordResponse.of(visit.getAttraction()),
                 visit.getVisitTime());
     }
 }
