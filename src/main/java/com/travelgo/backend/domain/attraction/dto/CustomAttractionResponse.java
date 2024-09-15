@@ -26,6 +26,10 @@ public class CustomAttractionResponse {
 
     private String attractionImageUrl; // 이미지
 
+    private Double latitude; //위도
+
+    private Double longitude; // 경도
+
 
     @Builder
     public CustomAttractionResponse(Attraction attraction) {
@@ -35,6 +39,8 @@ public class CustomAttractionResponse {
         this.address = attraction.getAddress();
         this.city = attraction.getCity();
         this.attractionImageUrl = attraction.getAttractionImageUrl();
+        this.latitude = attraction.getLatitude();
+        this.longitude = attraction.getLongitude();
     }
 
     public static CustomAttractionResponse of(Attraction attraction) {
@@ -45,7 +51,9 @@ public class CustomAttractionResponse {
                 attraction.getLikes(),
                 attraction.getAddress(),
                 attraction.getCity(),
-                attraction.getAttractionImageUrl()
+                attraction.getAttractionImageUrl(),
+                attraction.getLatitude(),
+                attraction.getLongitude()
         );
     }
 }
