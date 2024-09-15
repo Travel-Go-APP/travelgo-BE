@@ -50,6 +50,9 @@ dependencies {
 	// Aop aspect 추가
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
+	//driver
+	implementation 'com.google.cloud.sql:mysql-socket-factory:1.9.0'
+
 	//test 롬복 사용
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'

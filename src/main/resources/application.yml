@@ -1,5 +1,18 @@
-server:
-  port: 8080
+#spring:
+#  profiles:
+#    include: aws, s3
+#  jpa:
+#    hibernate:
+#      dialect: org.hibernate.dialect.MySQL8Dialect
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+#        show_sql: true
+#        format_sql: true
+#  thymeleaf:
+#    prefix: classpath:/templates/
+
 
 spring:
   profiles:
@@ -10,10 +23,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        show_sql: true
-        format_sql: true
-  thymeleaf:
-    prefix: classpath:/templates/
 
 # swagger
 springdoc:

@@ -206,8 +206,14 @@ public class UserItemsService {
                 .collect(Collectors.toList());
 
         int totalItemCount = getTotalItemCount();
-        int earnItemCount = itemIds.size();
-        double earnPercentage = (double) earnItemCount / totalItemCount * 100;
+        // 완성된 아이템 리스트
+        List<Long> completedItemIds = userItemsList.stream()
+                .filter(UserItems::isCompleted)  // is_completed 필터링
+                .map(userItems -> userItems.getItem().getItemId())
+                .collect(Collectors.toList());
+
+        int completedEarnItemCount = completedItemIds.size();
+        double earnPercentage = (double) completedEarnItemCount / totalItemCount * 100;
 
         Map<String, Integer> areaTotalItemCounts = new HashMap<>(AREA_ITEM_COUNT);
         Map<String, Integer> areaEarnItemCounts = getEarnedItemCountByArea(userItemsList);
@@ -232,7 +238,7 @@ public class UserItemsService {
         return UserItemsResponse.builder()
                 .itemIds(itemIds)
                 .totalItemCount(totalItemCount)
-                .earnItemCount(earnItemCount)
+                .earnItemCount(completedEarnItemCount)
                 .earnPercentage(earnPercentage)
                 .areaItemCount(areaItemCount)
                 .earnAreaItemCount(earnAreaItemCount)
@@ -251,7 +257,7 @@ public class UserItemsService {
                 .collect(Collectors.groupingBy(
                         userItem -> Optional.ofNullable(userItem.getItem().getArea())
                                 .map(Area::getValue)
-                                .orElse("UNKNOWN"), // null인 경우 기본값 설정
+                                .orElse("UNKNOWN"),
                         Collectors.summingInt(userItem -> 1)
                 ));
     }
