@@ -64,7 +64,7 @@ public class Attraction extends BaseTimeEntity {
     private Path path;
 
     @Builder
-    public Attraction(Long publicAttractionId, AreaCode area, BigCategory bigCategory, MiddleCategory middleCategory, SmallCategory smallCategory, boolean customFlag, int likes, String poster, String attractionName, String address, String city, Double latitude, Double longitude, String attractionImageUrl, String description, Path path) {
+    public Attraction(Long publicAttractionId, AreaCode area, BigCategory bigCategory, MiddleCategory middleCategory, SmallCategory smallCategory, boolean customFlag, int likes, String poster, String attractionName, String address, String city, Double latitude, Double longitude, String attractionImageUrl, String description) {
         this.publicAttractionId = publicAttractionId;
         this.area = area;
         this.bigCategory = bigCategory;
@@ -80,7 +80,6 @@ public class Attraction extends BaseTimeEntity {
         this.longitude = longitude;
         this.attractionImageUrl = attractionImageUrl;
         this.description = description;
-        this.path = path;
     }
 
     public void plusLikes() {

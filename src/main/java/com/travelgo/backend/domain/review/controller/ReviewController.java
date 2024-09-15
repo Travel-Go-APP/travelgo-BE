@@ -39,7 +39,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "유저의 전체 리뷰 삭제", description = "로그인중인 유저의 전체 리뷰를 삭제한다.")
-    @DeleteMapping("/delete-User")
+    @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteReviewList(@RequestParam(name = "email") String email) {
         reviewService.deleteList(email);
         return new ResponseEntity<>(null, HttpStatusCode.valueOf(200));
@@ -58,25 +58,25 @@ public class ReviewController {
     }
 
     @Operation(summary = "최신 날짜순 리뷰 리스트", description = "명소의 전체 리뷰를 최신 날짜순으로 보여준다.")
-    @GetMapping("/search-orderByDate-Desc")
+    @GetMapping("/search-date-desc")
     public ResponseEntity<List<ReviewResponse>> getListOrderByDateDESC(@RequestParam("attractionId") Long attractionId) {
         return new ResponseEntity<>(reviewService.getListOrderByDateDesc(attractionId), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "오래된 날짜순 리뷰 리스트", description = "명소의 전체 리뷰를 오래된 날짜순으로 보여준다.")
-    @GetMapping("/search-orderByDate-Asc")
+    @GetMapping("/search-date-asc")
     public ResponseEntity<List<ReviewResponse>> getListOrderByDateASC(@RequestParam("attractionId") Long attractionId) {
         return new ResponseEntity<>(reviewService.getListOrderByDateAsc(attractionId), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "높은 별점 순 리뷰 리스트", description = "명소의 전체 리뷰를 높은 별점순으로 보여준다.")
-    @GetMapping("/search-orderByRating-Desc")
+    @GetMapping("/search-rating-desc")
     public ResponseEntity<List<ReviewResponse>> getListOrderByRatingDESC(@RequestParam("attractionId") Long attractionId) {
         return new ResponseEntity<>(reviewService.getListOrderByRatingDesc(attractionId), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "낮은 별점 순 리뷰 리스트", description = "명소의 전체 리뷰를 낮은 별점순으로 보여준다.")
-    @GetMapping("/search-orderByRating-Asc")
+    @GetMapping("/search-rating-dsc")
     public ResponseEntity<List<ReviewResponse>> getListOrderByRatingAsc(@RequestParam("attractionId") Long attractionId) {
         return new ResponseEntity<>(reviewService.getListOrderByRatingAsc(attractionId), HttpStatusCode.valueOf(200));
     }
