@@ -46,7 +46,7 @@ public class VisitController {
     /**
      * 조회 메서드
      */
-    @Operation(summary = "지역별 명송 방문 기록 리스트", description = "지역별 유저가 명소에 방문한 기록을 가져온다.")
+    @Operation(summary = "지역별 명소 방문 기록 리스트", description = "지역별 유저가 명소에 방문한 기록을 가져온다.")
     @GetMapping("/list")
     public ResponseEntity<List<VisitResponse>> getList(@RequestParam(name = "email") String email,
                                                        @RequestParam(name = "area") AreaCode area) {
