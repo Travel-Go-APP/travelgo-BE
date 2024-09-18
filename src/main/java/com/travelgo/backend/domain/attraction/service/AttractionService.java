@@ -12,8 +12,9 @@ import com.travelgo.backend.domain.attraction.repository.AttractionRepository;
 import com.travelgo.backend.domain.attractionImage.entity.AttractionImage;
 import com.travelgo.backend.domain.attractionImage.service.AttractionImageService;
 import com.travelgo.backend.domain.attractionImage.service.S3UploadService;
+import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
-import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class AttractionService {
     private final S3UploadService s3UploadService;
     private final AttractionImageService attractionImageService;
     private final GeoCodingService geoCodingService;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     /**
      * 공공데이터 포털 api 연동
@@ -199,7 +200,7 @@ public class AttractionService {
         if (isAttractionDuplicated(attractionRequest.getAttractionName()))
             throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
 
-        String poster = userService.getUser(email).getNickname();
+        String poster = getUser(email).getNickname();
 
         Attraction attraction = createAttraction(attractionRequest, poster);
         Attraction savedAttraction = attractionRepository.save(attraction);
@@ -280,6 +281,11 @@ public class AttractionService {
                 .likes(0)
                 .customFlag(true)
                 .build();
+    }
+
+    private User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
     public Attraction getAttraction(Long attractionId) {

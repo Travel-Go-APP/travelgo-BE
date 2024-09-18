@@ -2,6 +2,7 @@ package com.travelgo.backend.domain.visit.service;
 
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.service.AttractionService;
+import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.visit.dto.VisitRequest;
 import com.travelgo.backend.domain.visit.dto.VisitResponse;
 import com.travelgo.backend.domain.visit.entity.Visit;
@@ -22,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class VisitService {
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final AttractionService attractionService;
     private final VisitRepository visitRepository;
 
@@ -31,7 +32,7 @@ public class VisitService {
         Visit visit = createAttracitonAchievement(request);
 
         //조사하기시 명소 저장할때 조사하기 카운트 감소시키기
-        User user = userService.getUser(request.getEmail());
+        User user = getUser(request.getEmail());
         if (user.getPossibleSearch() == 0) {
             throw new CustomException(ErrorCode.BAD_REQUEST);
         } else {
@@ -47,9 +48,8 @@ public class VisitService {
         visitRepository.delete(visit);
     }
 
-
     public List<VisitResponse> getList(String email, AreaCode areaCode) {
-        User user = userService.getUser(email);
+        User user = getUser(email);
         List<Visit> achievementList = createAttractionAchievementList(areaCode, user);
 
         if (achievementList.isEmpty())
@@ -60,20 +60,25 @@ public class VisitService {
 
     private Visit createAttracitonAchievement(VisitRequest request) {
         return Visit.builder()
-                .user(userService.getUser(request.getEmail()))
+                .user(getUser(request.getEmail()))
                 .attraction(attractionService.getAttraction(request.getAttractionId()))
                 .build();
     }
 
     private Visit getAttractionAchievement(VisitRequest request) {
         return visitRepository.findByUserAndAttraction(
-                userService.getUser(request.getEmail()),
+                getUser(request.getEmail()),
                 attractionService.getAttraction(request.getAttractionId())
         );
     }
 
     private List<Visit> createAttractionAchievementList(AreaCode areaCode, User user) {
         return visitRepository.findAllByUserAndAttraction_Area(user, areaCode);
+    }
+
+    private User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
     private VisitResponse createAttractionAchievementResponse(Visit visit) {
