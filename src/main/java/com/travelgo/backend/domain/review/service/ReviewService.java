@@ -8,7 +8,7 @@ import com.travelgo.backend.domain.review.dto.ReviewResponse;
 import com.travelgo.backend.domain.review.entity.Review;
 import com.travelgo.backend.domain.review.repository.ReviewRepository;
 import com.travelgo.backend.domain.user.entity.User;
-import com.travelgo.backend.domain.user.service.UserService;
+import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +30,11 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final AttractionService attractionService;
     private final S3UploadService s3UploadService;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional
     public ReviewResponse saveReview(ReviewRequest reviewRequest, MultipartFile image) throws IOException {
-        User user = userService.getUser(reviewRequest.getEmail());
+        User user = getUser(reviewRequest.getEmail());
         Attraction attraction = attractionService.getAttraction(reviewRequest.getAttractionId());
 
         notCustomAttraction(attraction);
@@ -77,6 +77,16 @@ public class ReviewService {
         reviewRepository.deleteAll(reviewList);
     }
 
+    private User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    }
+
+    public Review getReview(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_REVIEW));
+    }
+
     public List<ReviewResponse> getListByUser(String email) {
         List<Review> reviewPage = createReviewPageByUser(email);
         return createReviewResponseList(reviewPage);
@@ -100,12 +110,6 @@ public class ReviewService {
     public List<ReviewResponse> getListOrderByRatingDesc(Long attractionId) {
         List<Review> reviewPage = createReviewListByItemOrderByRatingDesc(attractionId);
         return createReviewResponseList(reviewPage);
-    }
-
-
-    public Review getReview(Long reviewId) {
-        return reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_REVIEW));
     }
 
     private static ReviewResponse createReviewResposnse(Review review) {

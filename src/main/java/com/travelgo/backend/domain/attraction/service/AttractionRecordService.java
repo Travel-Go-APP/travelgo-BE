@@ -4,6 +4,7 @@ import com.travelgo.backend.domain.attraction.dto.AttractionDetailResponse;
 import com.travelgo.backend.domain.attraction.dto.AttractionRecordResponse;
 import com.travelgo.backend.domain.attraction.entity.Attraction;
 import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.user.service.UserService;
 import com.travelgo.backend.domain.visit.entity.Visit;
 import com.travelgo.backend.domain.visit.repository.VisitRepository;
@@ -21,12 +22,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AttractionRecordService {
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final AttractionService attractionService;
     private final VisitRepository visitRepository;
 
     public List<AttractionRecordResponse> getunVisitAttractionWithInDistance(String email, Double latitude, Double longitude, Double distance) {
-        User user = userService.getUser(email);
+        User user = getUser(email);
 
         // 주변에 명소 리스트
         List<Attraction> attractions = attractionService.getAttractionsWithInDistance(latitude, longitude, distance);
@@ -43,6 +44,11 @@ public class AttractionRecordService {
         checkEmpty(result);
 
         return result;
+    }
+
+    private User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
     private static void checkEmpty(List<?> list) {
