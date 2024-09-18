@@ -1,6 +1,9 @@
 package com.travelgo.backend.domain.user.service;
 
 
+import com.travelgo.backend.domain.attraction.model.AreaCode;
+import com.travelgo.backend.domain.event.dto.VisitCountEventDto;
+import com.travelgo.backend.domain.event.service.VisitCountEventService;
 import com.travelgo.backend.domain.user.dto.AgreeDto;
 import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
@@ -30,6 +33,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserAgreeRepository userAgreeRepository;
+    private final VisitCountEventService visitCountEventService;
     private final GeoCodingService geoCodingService;
 
     BadWordFiltering badWordFiltering = new BadWordFiltering();
@@ -108,13 +112,8 @@ public class UserService {
         return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
     }
 
-    public User getUser(String email) {
+    private User getUser(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
-    }
-
-    public User getUserByNickname(String nickname) {
-        return userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
@@ -146,8 +145,10 @@ public class UserService {
         int currentExperience = user.getExperience();
         int nextLevelExp = expTable[currentLevel];
         double percentage = (double) currentExperience / nextLevelExp * 100;
-        String visitingBenefit = "경험치 2배";
-        int maxSearch = 10;
+
+        AreaCode areaCode = visitCountEventService.getAreaCode(areaAndVisitArea[0]);
+
+        VisitCountEventDto benefit = visitCountEventService.getBenefit(request.getEmail(), areaCode);
 
         return new MainPageResponse(
                 user.getNickname(),
@@ -157,7 +158,7 @@ public class UserService {
                 percentage,
                 areaAndVisitArea[0],
                 areaAndVisitArea[1],
-                visitingBenefit,
+                benefit.getVisitBenefit(),
                 user.getShoes(),
                 user.getMaxSearch(),
                 user.getPossibleSearch(),
