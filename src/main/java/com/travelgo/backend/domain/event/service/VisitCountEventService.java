@@ -44,11 +44,11 @@ public class VisitCountEventService {
         if (type.equals("TG")) {
             resetBenefit(user);
             user.rewardTgx(ratio);
-            visitBenefit = type + ratio + "배";
+            visitBenefit = type + " " + ratio + "배";
         } else if (type.equals("EXP")) {
             resetBenefit(user);
             user.rewardExpX(ratio);
-            visitBenefit = type + ratio + "배";
+            visitBenefit = type + " " + ratio + "배";
         } else {
             resetBenefit(user);
             visitBenefit = "혜택 X";
