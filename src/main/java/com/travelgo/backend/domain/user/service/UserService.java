@@ -55,8 +55,7 @@ public class UserService {
     //수정된 로그인 서비스
     @Transactional
     public void login(String email) {
-        User user = getUser(email);
-
+//        User user = getUser(email);
         // 로그인 성공 시 아무 작업도 하지 않음
     }
 
@@ -125,6 +124,7 @@ public class UserService {
 //        return AgreeDto.of(user.getUserAgree());
     }
 
+    @Transactional
     public MainPageResponse getMainPageResponse(MainPageRequest request) {
         User user = getUser(request.getEmail());
 
@@ -171,21 +171,21 @@ public class UserService {
         );
     }
 
-    private UserResponse createResponse(User user) {
-        return UserResponse.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .nickname(user.getNickname())
-                .email(user.getEmail())
-                .phoneNumber(user.getPhoneNumber())
-                .detectionRange(user.getDetectionRange())
-                .experience(user.getExperience())
-                .workCount(user.getWorkCount())
-                .level(user.getLevel())
-                .quest(user.getQuest())
-                .tg(user.getTg())
-                .shoes(user.getShoes())
-                .bag(user.getBag())
-                .build();
-    }
+//    private UserResponse createResponse(User user) {
+//        return UserResponse.builder()
+//                .userId(user.getUserId())
+//                .username(user.getUsername())
+//                .nickname(user.getNickname())
+//                .email(user.getEmail())
+//                .phoneNumber(user.getPhoneNumber())
+//                .detectionRange(user.getDetectionRange())
+//                .experience(user.getExperience())
+//                .workCount(user.getWorkCount())
+//                .level(user.getLevel())
+//                .quest(user.getQuest())
+//                .tg(user.getTg())
+//                .shoes(user.getShoes())
+//                .bag(user.getBag())
+//                .build();
+//    }
 }
