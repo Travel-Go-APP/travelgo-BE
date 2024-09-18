@@ -1,15 +1,15 @@
 package com.travelgo.backend.domain.event.service;
 
-import com.travelgo.backend.domain.event.repository.BenefitBulkRepository;
-import com.travelgo.backend.domain.util.entity.DataApiExplorer;
 import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.event.dto.Period;
 import com.travelgo.backend.domain.event.dto.VisitCountEventDto;
 import com.travelgo.backend.domain.event.dto.VisitPercent;
 import com.travelgo.backend.domain.event.entity.VisitCountBenefit;
+import com.travelgo.backend.domain.event.repository.BenefitBulkRepository;
 import com.travelgo.backend.domain.event.repository.VisitCountBenefitRepository;
 import com.travelgo.backend.domain.user.entity.User;
-import com.travelgo.backend.domain.user.service.UserService;
+import com.travelgo.backend.domain.user.repository.UserRepository;
+import com.travelgo.backend.domain.util.entity.DataApiExplorer;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -29,29 +29,32 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class VisitCountEventService {
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final BenefitBulkRepository benefitBulkRepository;
     private final VisitCountBenefitRepository benefitRepository;
 
     @Transactional
     public VisitCountEventDto getBenefit(String email, AreaCode area) {
-        User user = userService.getUser(email);
+        User user = getUser(email);
         VisitCountBenefit benefit = benefitRepository.findByAreaCode(area);
-        int ranking = benefit.getRanking();
         String type = benefit.getBenefitType();
         double ratio = benefit.getBenefitRatio();
+        String visitBenefit;
 
         if (type.equals("TG")) {
             resetBenefit(user);
             user.rewardTgx(ratio);
+            visitBenefit = type + " " + ratio + "배";
         } else if (type.equals("EXP")) {
             resetBenefit(user);
             user.rewardExpX(ratio);
+            visitBenefit = type + " " + ratio + "배";
         } else {
             resetBenefit(user);
+            visitBenefit = "혜택 X";
         }
 
-        return new VisitCountEventDto(ranking, type, ratio);
+        return new VisitCountEventDto(visitBenefit);
     }
 
     public void resetBenefit(User user) {
@@ -144,6 +147,10 @@ public class VisitCountEventService {
         benefitBulkRepository.saveAll(benefits);
     }
 
+    private User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    }
 
     // 방문자 수 계산을 위한 메소드
     private void calculateVisitCounts(JSONArray array, Map<AreaCode, Double> visitCounts) {
@@ -164,24 +171,24 @@ public class VisitCountEventService {
     }
 
     // 지역 이름에 해당하는 AreaCode를 반환하는 메소드
-    private AreaCode getAreaCode(String areaNm) {
+    public AreaCode getAreaCode(String areaNm) {
         return switch (areaNm) {
-            case "서울특별시" -> AreaCode.서울;
-            case "인천광역시" -> AreaCode.인천;
-            case "대전광역시" -> AreaCode.대전;
-            case "대구광역시" -> AreaCode.대구;
-            case "광주광역시" -> AreaCode.광주;
-            case "부산광역시" -> AreaCode.부산;
-            case "울산광역시" -> AreaCode.울산;
+            case "서울특별시", "서울" -> AreaCode.서울;
+            case "인천광역시", "인천" -> AreaCode.인천;
+            case "대전광역시", "대전" -> AreaCode.대전;
+            case "대구광역시", "대구" -> AreaCode.대구;
+            case "광주광역시", "광주" -> AreaCode.광주;
+            case "부산광역시", "부산" -> AreaCode.부산;
+            case "울산광역시", "울산" -> AreaCode.울산;
             case "세종특별자치시" -> AreaCode.세종특별자치시;
-            case "경기도" -> AreaCode.경기도;
+            case "경기도", "경기" -> AreaCode.경기도;
             case "강원특별자치도" -> AreaCode.강원특별자치도;
-            case "충청북도" -> AreaCode.충청북도;
-            case "충청남도" -> AreaCode.충청남도;
-            case "경상북도" -> AreaCode.경상북도;
-            case "경상남도" -> AreaCode.경상남도;
-            case "전북특별자치도", "전라북도" -> AreaCode.전북특별자치도;
-            case "전라남도" -> AreaCode.전라남도;
+            case "충청북도", "충북" -> AreaCode.충청북도;
+            case "충청남도", "충남" -> AreaCode.충청남도;
+            case "경상북도", "경북" -> AreaCode.경상북도;
+            case "경상남도", "경남" -> AreaCode.경상남도;
+            case "전북특별자치도", "전라북도", "전븍" -> AreaCode.전북특별자치도;
+            case "전라남도", "전남" -> AreaCode.전라남도;
             case "제주특별자치도" -> AreaCode.제주도;
             default -> null;
         };

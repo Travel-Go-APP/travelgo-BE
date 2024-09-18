@@ -19,7 +19,7 @@ public class MainPageResponse {
     private double percentage;
     private String area; // "경기" 역지오코딩으로 호출
     private String visitArea; //"평택시"
-    private String visitingBenefit = "경험치 2배"; // 역지오코딩으로 불러온 값에 매핑할건데 임시 하드 코딩 처리
+    private String visitBenefit; //지역 이벤트 혜택
     private Shoes shoes;
     private int maxSearch; // 일일 최대 조사하기 횟수 10회
     private int possibleSearch;
@@ -29,7 +29,4 @@ public class MainPageResponse {
     private double tgX;
     private int tg;
     private int workCount;
-
-
-
 }

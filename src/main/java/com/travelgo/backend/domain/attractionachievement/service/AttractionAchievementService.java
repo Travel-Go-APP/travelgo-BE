@@ -4,8 +4,10 @@ import com.travelgo.backend.domain.attraction.model.AreaCode;
 import com.travelgo.backend.domain.attraction.repository.AttractionRepository;
 import com.travelgo.backend.domain.attractionachievement.dto.AttractionAllInfo;
 import com.travelgo.backend.domain.user.entity.User;
-import com.travelgo.backend.domain.user.service.UserService;
+import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.visit.repository.VisitRepository;
+import com.travelgo.backend.global.exception.CustomException;
+import com.travelgo.backend.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,10 @@ public class AttractionAchievementService {
 
     private final VisitRepository visitRepository;
     private final AttractionRepository attractionRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     public Map<String, Object> getAttractionAchievement(String email) {
-        User user = userService.getUser(email);
+        User user = getUser(email);
 
         // AttractionAllInfo 생성
         Long total = attractionRepository.count();
@@ -53,6 +55,11 @@ public class AttractionAchievementService {
         achievementInfo.put("areaVisitCount", areaVisitCount);
 
         return achievementInfo;
+    }
+
+    private User getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
 }
