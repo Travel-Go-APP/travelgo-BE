@@ -18,12 +18,23 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "유저", description = "유저 API")
 @RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
+
+    @Operation(summary = "일일 퀘스트", description = "유저 일일 퀘스트 달성")
+    @PostMapping("/mission")
+    public ResponseEntity<Map<String, Object>> mission_achieve(@RequestParam(name = "email") String email,
+                                                               @RequestParam(name = "latitude") Double latitude,
+                                                               @RequestParam(name = "longitude") Double longitude) {
+        Map<String, Object> response = userService.missionAchieve(email, latitude, longitude);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @Operation(summary = "회원가입", description = "회원가입 후 닉네임과 기본 값들 설정")
     @PostMapping("/signup")

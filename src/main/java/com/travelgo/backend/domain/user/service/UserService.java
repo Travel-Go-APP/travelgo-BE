@@ -16,6 +16,7 @@ import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.repository.UserAgreeRepository;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
+import com.travelgo.backend.domain.userItems.service.UserItemsService;
 import com.travelgo.backend.domain.util.entity.filter.BadWordFiltering;
 import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import com.travelgo.backend.domain.visit.repository.VisitRepository;
@@ -29,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -37,6 +40,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final UserItemsService userItemsService;
     private final UserRepository userRepository;
     private final UserAgreeRepository userAgreeRepository;
     private final VisitCountEventService visitCountEventService;
@@ -151,6 +155,33 @@ public class UserService {
         user.saveAgree(agreeDto);
         userAgreeRepository.save(user.getUserAgree());
 //        return AgreeDto.of(user.getUserAgree());
+    }
+
+    @Transactional
+    public Map<String, Object> missionAchieve(String email, Double latitude, Double longitude) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (user.getQuest() == 0) {
+            // 1,000 경험치 추가
+            int experience = 1000;
+            user.addExperience(experience);
+            response.put("experience", user.getExperience());
+
+            // 아이템 지급 (기존 add 메서드를 호출)
+            Map<String, Object> itemResponse = userItemsService.add(email, latitude, longitude);
+            response.putAll(itemResponse);
+
+            // 퀘스트 상태를 1로 업데이트
+            user.setQuest(1);
+            userRepository.save(user);
+        }else{
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        return response;  // 보상과 아이템 정보를 함께 반환
     }
 
     @Transactional
