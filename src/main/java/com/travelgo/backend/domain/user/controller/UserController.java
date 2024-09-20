@@ -108,5 +108,4 @@ public class UserController {
         MainPageResponse response = userService.getMainPageResponse(request);
         return ResponseEntity.ok(response);
     }
-
 }
