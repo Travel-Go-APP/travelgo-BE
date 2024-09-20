@@ -7,4 +7,6 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     boolean existsByAttraction_AttractionIdAndUser_Email(Long attractionId, String email);
 
     void deleteByAttraction_AttractionIdAndUser_Email(Long attractionId, String email);
+
+    void deleteByUser_UserId(Long userId);
 }

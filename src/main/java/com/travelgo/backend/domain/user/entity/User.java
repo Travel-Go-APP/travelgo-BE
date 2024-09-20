@@ -121,7 +121,9 @@ public class User extends BaseTimeEntity {
     }
 
     public void addExperience(int exp) {
-        this.experience += exp;
+        int adjustedExp = (int) (exp * this.experienceX); //배율 설정
+
+        this.experience += adjustedExp;
         checkLevelUp();
     }
 
@@ -138,11 +140,12 @@ public class User extends BaseTimeEntity {
     }
 
     public void addTg(int amount) {
+        int adjustedAmount = (int) (amount * this.tgX); //배율 설정
         if (this.tg + amount < 0) {
             // 현재 가진 TG보다 더 큰 금액을 차감하려 할 경우, TG를 0으로 설정
             this.tg = 0;
         } else {
-            this.tg += amount;
+            this.tg += adjustedAmount;
         }
     }
 

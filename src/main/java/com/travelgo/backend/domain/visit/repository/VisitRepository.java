@@ -18,4 +18,6 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     Long countByUser(User user);
 
     Long countByUserAndAttraction_Area(User user, AreaCode areaCode);
+
+    void deleteByUser_UserId(Long userId);
 }
