@@ -2,8 +2,10 @@ package com.travelgo.backend.domain.user.service;
 
 
 import com.travelgo.backend.domain.attraction.model.AreaCode;
+import com.travelgo.backend.domain.attraction.repository.LikesRepository;
 import com.travelgo.backend.domain.event.dto.VisitCountEventDto;
 import com.travelgo.backend.domain.event.service.VisitCountEventService;
+import com.travelgo.backend.domain.review.repository.ReviewRepository;
 import com.travelgo.backend.domain.user.dto.AgreeDto;
 import com.travelgo.backend.domain.user.dto.Request.MainPageRequest;
 import com.travelgo.backend.domain.user.dto.Request.UserRequest;
@@ -13,10 +15,14 @@ import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.repository.UserAgreeRepository;
 import com.travelgo.backend.domain.user.repository.UserRepository;
+import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
 import com.travelgo.backend.domain.util.entity.filter.BadWordFiltering;
 import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
+import com.travelgo.backend.domain.visit.repository.VisitRepository;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +41,15 @@ public class UserService {
     private final UserAgreeRepository userAgreeRepository;
     private final VisitCountEventService visitCountEventService;
     private final GeoCodingService geoCodingService;
+
+    private final LikesRepository likesRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserItemsRepository userItemsRepository;
+    private final VisitRepository visitRepository;
+
+    @PersistenceContext
+    private final EntityManager entityManager;
+
 
     BadWordFiltering badWordFiltering = new BadWordFiltering();
 
@@ -104,12 +119,26 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse.DeleteUser deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+    public UserResponse.DeleteUser deleteUser(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+
+        Long userId = user.getUserId();
+
+        // 관련된 테이블의 데이터 삭제
+        likesRepository.deleteByUser_UserId(userId);
+        reviewRepository.deleteByUser_UserId(userId);
+        userItemsRepository.deleteByUser_UserId(userId);
+        visitRepository.deleteByUser_UserId(userId);
+
+        // 사용자 삭제
         userRepository.delete(user);
 
-        return new UserResponse.DeleteUser(user.getEmail() + "유저가 삭제 되었습니다.");
+        // Optional: Flush 호출
+        entityManager.flush();
+
+        return new UserResponse.DeleteUser(user.getEmail() + " 유저가 삭제 되었습니다.");
     }
+
 
     private User getUser(String email) {
         return userRepository.findByEmail(email)
@@ -170,22 +199,4 @@ public class UserService {
                 user.getWorkCount()
         );
     }
-
-//    private UserResponse createResponse(User user) {
-//        return UserResponse.builder()
-//                .userId(user.getUserId())
-//                .username(user.getUsername())
-//                .nickname(user.getNickname())
-//                .email(user.getEmail())
-//                .phoneNumber(user.getPhoneNumber())
-//                .detectionRange(user.getDetectionRange())
-//                .experience(user.getExperience())
-//                .workCount(user.getWorkCount())
-//                .level(user.getLevel())
-//                .quest(user.getQuest())
-//                .tg(user.getTg())
-//                .shoes(user.getShoes())
-//                .bag(user.getBag())
-//                .build();
-//    }
 }

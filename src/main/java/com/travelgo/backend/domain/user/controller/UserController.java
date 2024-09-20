@@ -34,9 +34,9 @@ public class UserController {
 
     //1개짜리 이메일만 있으면 됨
     @Operation(summary = "유저삭제", description = "유저 삭제")
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<UserResponse.DeleteUser> deleteUser(@PathVariable(name = "userId") Long userId) {
-        UserResponse.DeleteUser response = userService.deleteUser(userId);
+    @DeleteMapping("/user-delete")
+    public ResponseEntity<UserResponse.DeleteUser> deleteUser(@RequestParam(name = "email") String email) {
+        UserResponse.DeleteUser response = userService.deleteUser(email);
         return new ResponseEntity<>(response, HttpStatus.valueOf(200));
     }
 

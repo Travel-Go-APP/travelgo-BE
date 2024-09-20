@@ -16,4 +16,6 @@ public interface UserItemsRepository extends JpaRepository<UserItems, Long> {
     boolean existsByUserAndItem(User user, Item selectedItem);
 
     Optional<UserItems> findByUserAndItem(User user, Item item);
+
+    void deleteByUser_UserId(Long userId);
 }
