@@ -1,11 +1,8 @@
 package com.travelgo.backend.domain.userItems.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelgo.backend.domain.area.entity.Area;
-import com.travelgo.backend.domain.item.dto.response.ItemResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
-import com.travelgo.backend.domain.item.service.ItemService;
 import com.travelgo.backend.domain.user.entity.User;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.userItems.entity.UserItems;
@@ -68,6 +65,10 @@ public class UserItemsService {
                     response.putAll(reward);
                 }
                 response.put("itemId", randomItem.getItemId());
+                response.put("itemName", randomItem.getItemName());
+                response.put("itemSummary", randomItem.getSummary());
+                response.put("itemDescription", randomItem.getDescription());
+                response.put("itemRank", randomItem.getItemRank());
                 response.put("itemPiece", currentPieces);
             } else {
                 userItems = UserItems.builder()
@@ -78,6 +79,10 @@ public class UserItemsService {
                 currentPieces = userItems.getPiece();
 
                 response.put("itemId", randomItem.getItemId());
+                response.put("itemName", randomItem.getItemName());
+                response.put("itemSummary", randomItem.getSummary());
+                response.put("itemDescription", randomItem.getDescription());
+                response.put("itemRank", randomItem.getItemRank());
                 response.put("itemPiece", currentPieces);
             }
         } else {
@@ -97,6 +102,10 @@ public class UserItemsService {
                     response.putAll(reward);
                 }
                 response.put("itemId", randomItem.getItemId());
+                response.put("itemName", randomItem.getItemName());
+                response.put("itemSummary", randomItem.getSummary());
+                response.put("itemDescription", randomItem.getDescription());
+                response.put("itemRank", randomItem.getItemRank());
                 response.put("itemPiece", currentPieces);
             } else {
                 userItems = UserItems.builder()
@@ -107,6 +116,10 @@ public class UserItemsService {
                 currentPieces = userItems.getPiece();
 
                 response.put("itemId", randomItem.getItemId());
+                response.put("itemName", randomItem.getItemName());
+                response.put("itemSummary", randomItem.getSummary());
+                response.put("itemDescription", randomItem.getDescription());
+                response.put("itemRank", randomItem.getItemRank());
                 response.put("itemPiece", currentPieces);
             }
         }
@@ -151,7 +164,7 @@ public class UserItemsService {
         }
     }
 
-    private Map<String, Integer> rewardUser(User user) {
+    public Map<String, Integer> rewardUser(User user) {
         Map<String, Integer> reward = new HashMap<>();
         int rewardType = rand.nextInt(2);
         if (rewardType == 0) {
@@ -189,13 +202,15 @@ public class UserItemsService {
         ITEM_RANK_TOTAL_COUNT.put("4", 4); // 전설 아이템 총 4개 Special
         ITEM_RANK_TOTAL_COUNT.put("5", 34);   // 지역 아이템 총 68개 Local
     }
-
     public Map<Long, Integer> getItemIdsByUserEmail(String email) {
         List<UserItems> userItemsList = userItemsRepository.findAllByUser_Email(email);
         return userItemsList.stream()
+                .sorted(Comparator.comparing(userItems -> userItems.getItem().getItemId()))  // 아이템 ID로 정렬
                 .collect(Collectors.toMap(
                         userItems -> userItems.getItem().getItemId(),
-                        UserItems::getPiece
+                        UserItems::getPiece,
+                        (existing, replacement) -> existing,  // 중복 키 처리
+                        LinkedHashMap::new  // 정렬된 순서 유지
                 ));
     }
 
@@ -203,6 +218,7 @@ public class UserItemsService {
         List<UserItems> userItemsList = userItemsRepository.findAllByUser_Email(email);
         List<Long> itemIds = userItemsList.stream()
                 .map(userItems -> userItems.getItem().getItemId())
+                .sorted()
                 .collect(Collectors.toList());
 
         int totalItemCount = getTotalItemCount();

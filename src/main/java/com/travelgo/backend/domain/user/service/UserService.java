@@ -55,8 +55,8 @@ public class UserService {
     //수정된 로그인 서비스
     @Transactional
     public void login(String email) {
-//        User user = getUser(email);
-        // 로그인 성공 시 아무 작업도 하지 않음
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
     }
 
 
