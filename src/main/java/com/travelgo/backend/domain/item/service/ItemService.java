@@ -157,10 +157,10 @@ public class ItemService {
 
         switch (gachaLevel){
             case 1:
-                if(user.getTg() < 2000){
+                if(user.getTg() < 3000){
                     throw new CustomException(ErrorCode.BAD_REQUEST);
                 }else{
-                    user.addTg(-2000);
+                    user.addTg(-3000);
                 }
 
                 itemProbability = 0.4;
@@ -186,18 +186,16 @@ public class ItemService {
                 maxExp = 110;
                 break;
             case 3:
-                if(user.getTg() < 7000){
+                if(user.getTg() < 9999){
                     throw new CustomException(ErrorCode.BAD_REQUEST);
                 }else{
-                    user.addTg(-7000);
+                    user.addTg(-9999);
                 }
-//'0','0','1','4','10','0','0','2','0','8680','1','0','1','string','2024-08-09 00:09','2024-08-30 12:11','string','','','초급','맨발','0',NULL
-
                 itemProbability = 0.6;
                 moneyProbability = 0.2;
                 expProbability = 0.2;
-                minMoney = 4000;
-                maxMoney = 15000;
+                minMoney = 6000;
+                maxMoney = 18000;
                 minExp = 80;
                 maxExp = 200;
                 break;
