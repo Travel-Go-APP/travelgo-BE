@@ -40,6 +40,12 @@ public class SearchController {
         }
     }
 
+    @Operation(summary = "조사하기 감소", description = "조사하기 사용으로 인한 횟수 감소")
+    @PostMapping("/SearchCountDecrease")
+    public void SearchCountDecrease(@RequestParam(name = "email") String email){
+        searchService.decreaseSearchCount(email);
+    }
+
     @Operation(summary = "조사하기(이벤트-상호작용)", description = "이벤트 통합 처리 포인트")
     @PostMapping("/event")
     public UserSearchResponse handleEvent(@RequestParam(name = "email") String email) {
