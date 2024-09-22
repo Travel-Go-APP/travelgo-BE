@@ -21,9 +21,9 @@ public class SchedulingConfig {
         this.userRepository = userRepository;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
-    public void resetUserStatus(){
+    public void resetUserStatus() {
         List<User> users = userRepository.findAll();
         for(User user : users){
             user.setPossibleSearch(10);

@@ -36,7 +36,6 @@ public class RankService {
     @Scheduled(cron = "0 0 0 * * ?")  // 스케쥴러 매일 자정
     @Transactional
     public void updateRanks() {
-
         rankRepository.deleteAll();
         rankRepository.flush(); // 트랜잭션 즉시 커밋
 
@@ -48,7 +47,7 @@ public class RankService {
                 .map(user -> {
                     int itemCount = (int) user.getUserItems().stream().filter(UserItems::isCompleted).count();  // 수집한 아이템 개수
                     int visitCount = visitRepository.countByUser(user).intValue();  // 방문한 명소 개수
-                    int totalScore = user.getLevel() + itemCount + (visitCount / 3);  // 총점 계산
+                    int totalScore = ( user.getLevel() + itemCount + visitCount) / 3;  // 총점 계산
 
                     return new Rank(null, user.getEmail(), user.getNickname(), user.getLevel(), itemCount, visitCount, totalScore);
                 })

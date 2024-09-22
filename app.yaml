@@ -9,3 +9,7 @@
 #  disk_size_gb: 10
 runtime: java17
 instance_class: F2
+
+automatic_scaling:
+  min_instances: 1  # 최소 1개의 인스턴스를 항상 유지
+  max_instances: 10 # 최대 인스턴스 수, 트래픽에 따라 조정 가능

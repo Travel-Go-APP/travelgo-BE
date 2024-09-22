@@ -8,6 +8,7 @@ import com.travelgo.backend.domain.item.dto.response.ShopResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
 import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.userItems.service.UserItemsService;
 import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
@@ -158,7 +159,7 @@ public class ItemService {
                 if (user.getTg() < 3000) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
                 } else {
-                    user.addTg(-3000);
+                    user.addTg(-3000); // TG 차감
                 }
                 itemProbability = 0.4;
                 moneyProbability = 0.3;
@@ -172,7 +173,7 @@ public class ItemService {
                 if (user.getTg() < 5000) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
                 } else {
-                    user.addTg(-5000);
+                    user.addTg(-5000); // TG 차감
                 }
                 itemProbability = 0.5;
                 moneyProbability = 0.25;
@@ -186,7 +187,7 @@ public class ItemService {
                 if (user.getTg() < 9999) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
                 } else {
-                    user.addTg(-9999);
+                    user.addTg(-9999); // TG 차감
                 }
                 itemProbability = 0.6;
                 moneyProbability = 0.2;
@@ -208,19 +209,53 @@ public class ItemService {
             Map<String, Object> itemResponse = userItemsService.add(email, latitude, longitude);
             response = new ShopResponse(
                     "item",
+                    user.getTg(),   // 현재 TG
                     (String) itemResponse.get("itemName"),
                     (String) itemResponse.get("itemSummary"),
                     (String) itemResponse.get("itemDescription"),
                     (Integer) itemResponse.get("itemPiece")
             );
+
+            if (itemResponse.containsKey("tgChange")) {
+                response.setTgChange((Integer) itemResponse.get("tgChange"));
+            }
+            if (itemResponse.containsKey("exp")) {
+                response.setExpChange((Integer) itemResponse.get("exp"));
+                response.setCurrentExperience((Integer) itemResponse.get("experience"));
+                response.setLevel((Integer) itemResponse.get("level"));
+                response.setNextLevelExp((Integer) itemResponse.get("nextLevelExp"));
+                response.setExperiencePercent((Double) itemResponse.get("percentage"));
+            }
+
         } else if (roll < itemProbability + moneyProbability) {
             int money = rand.nextInt(maxMoney - minMoney + 1) + minMoney;
             user.addTg(money);
-            response = new ShopResponse("tg", user.getTg(), user.getExperience(), money, 0);
+            response = new ShopResponse(
+                    "tg",
+                    user.getTg(),   // 현재 TG
+                    user.getExperience(),
+                    money,
+                    0
+            );
         } else {
             int experience = rand.nextInt(maxExp - minExp + 1) + minExp;
             user.addExperience(experience);
-            response = new ShopResponse("exp", user.getTg(), user.getExperience(), 0, experience);
+
+            // 경험치 계산
+            int[] expTable = UserExp.getExpTable();
+            int nextLevelExp = expTable[user.getLevel()];
+            double percentage = (double) user.getExperience() / nextLevelExp * 100;
+
+            response = new ShopResponse(
+                    "exp",
+                    user.getTg(),   // 현재 TG
+                    user.getExperience(),
+                    0,              // 금액 변화 없음
+                    experience,     // 경험치 증가
+                    user.getLevel(),
+                    nextLevelExp,
+                    percentage
+            );
         }
 
         userRepository.save(user);
