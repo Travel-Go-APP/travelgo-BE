@@ -22,10 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -146,7 +143,7 @@ public class ItemService {
     }
 
     @Transactional
-    public ShopResponse buyShop(String email, Integer gachaLevel, Double latitude, Double longitude){
+    public ShopResponse buyShop(String email, Integer gachaLevel, Double latitude, Double longitude) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
@@ -155,26 +152,26 @@ public class ItemService {
         double expProbability;
         int minMoney, maxMoney, minExp, maxExp;
 
-        switch (gachaLevel){
+        // 각 gachaLevel에 따라 확률과 보상 범위를 설정
+        switch (gachaLevel) {
             case 1:
-                if(user.getTg() < 3000){
+                if (user.getTg() < 3000) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
-                }else{
+                } else {
                     user.addTg(-3000);
                 }
-
                 itemProbability = 0.4;
                 moneyProbability = 0.3;
                 expProbability = 0.3;
-                minMoney = 1000;
-                maxMoney = 3000;
+                minMoney = 2000;
+                maxMoney = 5000;
                 minExp = 30;
                 maxExp = 80;
                 break;
             case 2:
-                if(user.getTg() < 5000){
+                if (user.getTg() < 5000) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
-                }else{
+                } else {
                     user.addTg(-5000);
                 }
                 itemProbability = 0.5;
@@ -186,9 +183,9 @@ public class ItemService {
                 maxExp = 110;
                 break;
             case 3:
-                if(user.getTg() < 9999){
+                if (user.getTg() < 9999) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
-                }else{
+                } else {
                     user.addTg(-9999);
                 }
                 itemProbability = 0.6;
@@ -202,19 +199,25 @@ public class ItemService {
             default:
                 throw new CustomException(ErrorCode.BAD_REQUEST);
         }
-        ShopResponse response;
 
+        ShopResponse response;
         double roll = rand.nextDouble();
-        if(roll < itemProbability){
-            Item item = getRandomItem();
-            Long itemId = item.getItemId();
-            userItemsService.add(email, latitude, longitude);
-            response = new ShopResponse(item);
-        }else if(roll < itemProbability + moneyProbability){
-            int money = rand.nextInt(maxMoney -minMoney + 1) + minMoney;
+
+        if (roll < itemProbability) {
+            // 아이템 획득 로직 추가 (UserItemsService 이용)
+            Map<String, Object> itemResponse = userItemsService.add(email, latitude, longitude);
+            response = new ShopResponse(
+                    "item",
+                    (String) itemResponse.get("itemName"),
+                    (String) itemResponse.get("itemSummary"),
+                    (String) itemResponse.get("itemDescription"),
+                    (Integer) itemResponse.get("itemPiece")
+            );
+        } else if (roll < itemProbability + moneyProbability) {
+            int money = rand.nextInt(maxMoney - minMoney + 1) + minMoney;
             user.addTg(money);
             response = new ShopResponse("tg", user.getTg(), user.getExperience(), money, 0);
-        }else{
+        } else {
             int experience = rand.nextInt(maxExp - minExp + 1) + minExp;
             user.addExperience(experience);
             response = new ShopResponse("exp", user.getTg(), user.getExperience(), 0, experience);

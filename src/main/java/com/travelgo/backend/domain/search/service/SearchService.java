@@ -82,6 +82,7 @@ public class SearchService {
         return 0;  // 예외 처리 필요 시 조정 가능
     }
 
+    @Transactional
     public void decreaseSearchCount(String email){
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
