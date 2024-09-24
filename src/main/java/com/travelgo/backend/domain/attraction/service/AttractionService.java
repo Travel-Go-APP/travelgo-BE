@@ -48,7 +48,7 @@ public class AttractionService {
     // 세부 관광정보로 명소 저장
     @Transactional
     public List<AttractionDetailResponse> detailInit(String jsonData) {
-        Attraction attractionInfo = null;
+        Attraction attractionInfo;
         List<Attraction> attractionList = new ArrayList<>();
 
         try {
@@ -85,7 +85,6 @@ public class AttractionService {
                     save(attractionInfo);
                 } else {
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
-                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
                 }
             }
             checkEmpty(attractionList);
@@ -117,7 +116,6 @@ public class AttractionService {
                     contentIdList.add(Long.parseLong((String) getObject.get("contentid")));
                 } else {
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
-                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
                 }
             }
             checkEmpty(contentIdList);
@@ -178,7 +176,6 @@ public class AttractionService {
                     contentIdList.add(Long.parseLong((String) getObject.get("contentid")));
                 } else {
                     log.info("{}" + "관광지가 이미 존재합니다.", getObject.get("title"));
-                    throw new CustomException(ErrorCode.DUPLICATED_ATTRACTION);
                 }
             }
             checkEmpty(contentIdList);
