@@ -21,7 +21,7 @@ public class SchedulingConfig {
         this.userRepository = userRepository;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")// 서울 시간 자정에 실행
     @Transactional
     public void resetUserStatus() {
         List<User> users = userRepository.findAll();

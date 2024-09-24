@@ -210,10 +210,12 @@ public class ItemService {
             response = new ShopResponse(
                     "item",
                     user.getTg(),   // 현재 TG
+                    (Long) itemResponse.get("itemId"),
                     (String) itemResponse.get("itemName"),
                     (String) itemResponse.get("itemSummary"),
                     (String) itemResponse.get("itemDescription"),
-                    (Integer) itemResponse.get("itemPiece")
+                    (Integer) itemResponse.get("itemPiece"),
+                    (Integer) itemResponse.get("itemRank")
             );
 
             if (itemResponse.containsKey("tgChange")) {

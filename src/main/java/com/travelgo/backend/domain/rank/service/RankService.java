@@ -33,7 +33,7 @@ public class RankService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Scheduled(cron = "0 0 0 * * ?")  // 스케쥴러 매일 자정
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul") // 서울 시간 자정에 실행
     @Transactional
     public void updateRanks() {
         rankRepository.deleteAll();

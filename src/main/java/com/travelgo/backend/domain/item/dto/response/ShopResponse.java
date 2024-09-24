@@ -5,10 +5,12 @@ import lombok.Getter;
 @Getter
 public class ShopResponse {
     private String productType;
+    private Long itemId;
     private String itemName;
     private String itemSummary;
     private String itemDescription;
     private Integer itemPiece;
+    private Integer itemRank;
     private Integer tg;
     private Integer tgChange;
     private Integer moneyChange;
@@ -20,13 +22,15 @@ public class ShopResponse {
     private Double experiencePercent;
 
     // 아이템 획득
-    public ShopResponse(String productType,Integer currentTg, String itemName, String itemSummary, String itemDescription, Integer itemPiece) {
+    public ShopResponse(String productType, Integer currentTg,Long itemId, String itemName, String itemSummary, String itemDescription, Integer itemPiece, Integer itemRank) {
         this.productType = productType;
         this.currentTg = currentTg;
+        this.itemId = itemId;
         this.itemName = itemName;
         this.itemSummary = itemSummary;
         this.itemDescription = itemDescription;
         this.itemPiece = itemPiece;
+        this.itemRank = itemRank;
     }
 
     // 돈 리스폰스
