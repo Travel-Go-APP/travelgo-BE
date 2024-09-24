@@ -26,11 +26,8 @@ public class SearchController {
     private final UserRepository userRepository;
 
     @Operation(summary = "조사하기 회복", description = "TG를 지불하고 조사하기 회복")
-    @PostMapping("/search-count-recover")
+    @PostMapping("/SearchCountRecover")
     public ResponseEntity<Map<String, Object>> SearchCountRecover(@RequestParam(name = "email") String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
-
         Map<String, Object> result = searchService.recoverSearchCount(email);
 
         if(result.get("status").equals("성공")){
@@ -41,7 +38,7 @@ public class SearchController {
     }
 
     @Operation(summary = "조사하기 감소", description = "조사하기 사용으로 인한 횟수 감소")
-    @PostMapping("/search-count-decrease")
+    @PostMapping("/SearchCountDecrease")
     public void SearchCountDecrease(@RequestParam(name = "email") String email){
         searchService.decreaseSearchCount(email);
     }
