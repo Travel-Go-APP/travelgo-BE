@@ -61,59 +61,56 @@ public class AttractionController {
 
     @Operation(summary = "공공 데이터 포털 세부 정보 api 정보 저장", description = "세부 관광지 정보를 db에 저장한다.")
     @PostMapping("/save/detail")
-    public ResponseEntity<?> saveDetailApi(@RequestParam(name = "numOfRows", defaultValue = "10") int numOfRows,
-                                           @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
-                                           @RequestParam(name = "attractionId") Long attractionId) {
+    public ResponseEntity<List<AttractionDetailResponse>> saveDetailApi(@RequestParam(name = "numOfRows", defaultValue = "10") int numOfRows,
+                                                                        @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+                                                                        @RequestParam(name = "attractionId") Long attractionId) {
         String result = InfoApiExplorer.getDetailInfo(numOfRows, pageNo, attractionId);
-        attractionService.detailInit(result);
 
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
-
+        return new ResponseEntity<>(attractionService.detailInit(result), HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 지역별 api 정보 저장", description = "지역별 관광지 정보를 db에 저장한다.")
     @PostMapping("/save/area")
-    public ResponseEntity<?> saveAreaApi(@RequestParam(name = "numOfRows", defaultValue = "10") int numOfRows,
-                                         @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
-                                         @RequestParam(name = "areaCode") AreaCode areaCode) {
+    public ResponseEntity<List<Long>> saveAreaApi(@RequestParam(name = "numOfRows", defaultValue = "10") int numOfRows,
+                                                  @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+                                                  @RequestParam(name = "areaCode") AreaCode areaCode) {
         String result = InfoApiExplorer.getAreaInfo(numOfRows, pageNo, areaCode);
         List<Long> contentIdList = attractionService.areaInit(result);
 
         for (Long id : contentIdList)
             saveDetailApi(numOfRows, pageNo, id);
 
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
-
+        return new ResponseEntity<>(contentIdList, HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 위치기반 api 정보 저장", description = "현재 위치에서 반경 radius 안에 있는 관광지를 db에 저장한다.")
     @PostMapping("/save/range")
-    public ResponseEntity<?> saveRangeApi(@RequestParam(name = "numOfRows", defaultValue = "10") int numOfRows,
-                                          @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
-                                          @RequestParam(name = "longitude") double longitude,
-                                          @RequestParam(name = "latitude") double latitude,
-                                          @RequestParam(name = "radius") int radius) {
+    public ResponseEntity<List<Long>> saveRangeApi(@RequestParam(name = "numOfRows", defaultValue = "10") int numOfRows,
+                                                   @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+                                                   @RequestParam(name = "latitude") double latitude,
+                                                   @RequestParam(name = "longitude") double longitude,
+                                                   @RequestParam(name = "radius") int radius) {
         String result = InfoApiExplorer.getRangeInfo(numOfRows, pageNo, longitude, latitude, radius);
         List<Long> contentIdList = attractionService.rangeInit(result);
 
         for (Long id : contentIdList)
             saveDetailApi(numOfRows, pageNo, id);
 
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(contentIdList, HttpStatusCode.valueOf(200));
     }
 
     @Operation(summary = "공공 데이터 포털 키워드 api 정보 저장", description = "키워드로 검색된 관광지를 db에 저장한다.")
     @PostMapping("/save/keyword")
-    public ResponseEntity<?> saveKeywordApi(@RequestParam(name = "numOfRows", defaultValue = "1") int numOfRows,
-                                            @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
-                                            @RequestParam(name = "keyword") String keyword) {
+    public ResponseEntity<List<Long>> saveKeywordApi(@RequestParam(name = "numOfRows", defaultValue = "1") int numOfRows,
+                                                     @RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+                                                     @RequestParam(name = "keyword") String keyword) {
         String result = InfoApiExplorer.getKeywordInfo(numOfRows, pageNo, keyword);
         List<Long> contentIdList = attractionService.keywordInit(result);
 
         for (Long id : contentIdList)
             saveDetailApi(numOfRows, pageNo, id);
 
-        return ResponseEntity.ok(HttpStatusCode.valueOf(200));
+        return new ResponseEntity<>(contentIdList, HttpStatusCode.valueOf(200));
     }
 
     /**

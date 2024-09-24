@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "유저&아이템", description = "유저 획득 아이템 API")
-@RequestMapping("/api/userItems")
+@RequestMapping("/api/user-items")
 public class UserItemsController {
 
     @Autowired
