@@ -140,12 +140,19 @@ public class User extends BaseTimeEntity {
     }
 
     public void addTg(int amount) {
-        int adjustedAmount = (int) (amount * this.tgX); //배율 설정
-        if (this.tg + amount < 0) {
-            // 현재 가진 TG보다 더 큰 금액을 차감하려 할 경우, TG를 0으로 설정
-            this.tg = 0;
+        int adjustedAmount;
+
+        if (amount > 0) {
+            adjustedAmount = (int) (amount * this.tgX); // 배율 적용 후 계산
         } else {
-            this.tg += adjustedAmount;
+            adjustedAmount = amount; // 차감할 때는 배율 적용하지 않음
+        }
+
+        // TG가 음수로 떨어지지 않도록 처리
+        if (this.tg + adjustedAmount < 0) {
+            this.tg = 0; // TG가 음수로 떨어지면 0으로 설정
+        } else {
+            this.tg += adjustedAmount; // TG 추가 또는 차감
         }
     }
 

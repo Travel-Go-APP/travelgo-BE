@@ -4,6 +4,7 @@ import com.travelgo.backend.domain.area.entity.Area;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
 import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.userItems.entity.UserItems;
 import com.travelgo.backend.domain.userItems.dto.response.UserItemsResponse;
@@ -61,7 +62,7 @@ public class UserItemsService {
                 userItemsRepository.save(userItems);
                 currentPieces = userItems.getPiece();
                 if (userItems.isCompleted()) {
-                    Map<String, Integer> reward = rewardUser(user);
+                    Map<String, Object> reward = rewardUser(user);
                     response.putAll(reward);
                 }
                 response.put("itemId", randomItem.getItemId());
@@ -98,7 +99,7 @@ public class UserItemsService {
                 userItemsRepository.save(userItems);
                 currentPieces = userItems.getPiece();
                 if (userItems.isCompleted()) {
-                    Map<String, Integer> reward = rewardUser(user);
+                    Map<String, Object> reward = rewardUser(user);
                     response.putAll(reward);
                 }
                 response.put("itemId", randomItem.getItemId());
@@ -164,17 +165,29 @@ public class UserItemsService {
         }
     }
 
-    public Map<String, Integer> rewardUser(User user) {
-        Map<String, Integer> reward = new HashMap<>();
+    public Map<String, Object> rewardUser(User user) {
+        Map<String, Object> reward = new HashMap<>();
         int rewardType = rand.nextInt(2);
         if (rewardType == 0) {
             int tgReward = rand.nextInt(1000) + 500;
             user.addTg(tgReward);
-            reward.put("tg", tgReward);
+            reward.put("tgChange", tgReward);
+            reward.put("tg", user.getTg());
         } else {
             int expReward = rand.nextInt(50) + 20;
+            int[] expTable = UserExp.getExpTable();
+
             user.addExperience(expReward);
+
+            int nextLevelExp = expTable[user.getLevel()];
+            double percentage = (double) user.getExperience() / nextLevelExp * 100;
+
             reward.put("exp", expReward);
+            reward.put("level", user.getLevel());
+            reward.put("experience", user.getExperience());
+            reward.put("nextLevelExp", nextLevelExp);
+            reward.put("percentage", percentage);
+
         }
         userRepository.save(user);
         return reward;  // 반환값을 null이 아닌 reward로 수정

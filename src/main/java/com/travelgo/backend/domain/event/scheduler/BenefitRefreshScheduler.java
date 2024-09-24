@@ -28,8 +28,9 @@ public class BenefitRefreshScheduler {
 
     //    @Scheduled(cron = "0 0 0 */14 * ?") // 2주마다 자정에 실행
 //    @Scheduled(cron = "*/10 * * * * ?") // 매 10초마다 실행
-    @Scheduled(cron = "0 0 0 1 * ?") // 매달 1일 자정에 실행
+    @Scheduled(cron = "0 0 0 1 * ?", zone = "Asia/Seoul") // 매달 1일 자정에 실행
     public void updateBenefit() throws ParseException {
+        System.out.println("Benefit 동작: ");
         // 새로운 데이터를 가져오는 로직
         List<VisitCountBenefit> benefit = visitCountEventService.getVisitCountData(NUM_OF_ROWS, PAGE_NO, new Period());
 

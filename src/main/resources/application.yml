@@ -44,3 +44,8 @@ springdoc:
   model-and-view-allowed: true
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
+
+
+automatic_scaling:
+  min_instances: 1  # 최소 1개의 인스턴스를 항상 유지
+  max_instances: 10 # 최대 인스턴스 수는 필요에 따라 조정

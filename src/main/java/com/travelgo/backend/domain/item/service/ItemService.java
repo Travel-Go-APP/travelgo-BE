@@ -8,6 +8,7 @@ import com.travelgo.backend.domain.item.dto.response.ShopResponse;
 import com.travelgo.backend.domain.item.entity.Item;
 import com.travelgo.backend.domain.item.repository.ItemRepository;
 import com.travelgo.backend.domain.user.entity.User;
+import com.travelgo.backend.domain.user.entity.UserExp;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.userItems.service.UserItemsService;
 import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
@@ -22,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -146,7 +144,7 @@ public class ItemService {
     }
 
     @Transactional
-    public ShopResponse buyShop(String email, Integer gachaLevel, Double latitude, Double longitude){
+    public ShopResponse buyShop(String email, Integer gachaLevel, Double latitude, Double longitude) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
@@ -155,27 +153,27 @@ public class ItemService {
         double expProbability;
         int minMoney, maxMoney, minExp, maxExp;
 
-        switch (gachaLevel){
+        // 각 gachaLevel에 따라 확률과 보상 범위를 설정
+        switch (gachaLevel) {
             case 1:
-                if(user.getTg() < 2000){
+                if (user.getTg() < 3000) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
-                }else{
-                    user.addTg(-2000);
+                } else {
+                    user.addTg(-3000); // TG 차감
                 }
-
                 itemProbability = 0.4;
                 moneyProbability = 0.3;
                 expProbability = 0.3;
-                minMoney = 1000;
-                maxMoney = 3000;
+                minMoney = 2000;
+                maxMoney = 5000;
                 minExp = 30;
                 maxExp = 80;
                 break;
             case 2:
-                if(user.getTg() < 5000){
+                if (user.getTg() < 5000) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
-                }else{
-                    user.addTg(-5000);
+                } else {
+                    user.addTg(-5000); // TG 차감
                 }
                 itemProbability = 0.5;
                 moneyProbability = 0.25;
@@ -186,40 +184,80 @@ public class ItemService {
                 maxExp = 110;
                 break;
             case 3:
-                if(user.getTg() < 7000){
+                if (user.getTg() < 9999) {
                     throw new CustomException(ErrorCode.BAD_REQUEST);
-                }else{
-                    user.addTg(-7000);
+                } else {
+                    user.addTg(-9999); // TG 차감
                 }
-//'0','0','1','4','10','0','0','2','0','8680','1','0','1','string','2024-08-09 00:09','2024-08-30 12:11','string','','','초급','맨발','0',NULL
-
                 itemProbability = 0.6;
                 moneyProbability = 0.2;
                 expProbability = 0.2;
-                minMoney = 4000;
-                maxMoney = 15000;
+                minMoney = 6000;
+                maxMoney = 18000;
                 minExp = 80;
                 maxExp = 200;
                 break;
             default:
                 throw new CustomException(ErrorCode.BAD_REQUEST);
         }
-        ShopResponse response;
 
+        ShopResponse response;
         double roll = rand.nextDouble();
-        if(roll < itemProbability){
-            Item item = getRandomItem();
-            Long itemId = item.getItemId();
-            userItemsService.add(email, latitude, longitude);
-            response = new ShopResponse(item);
-        }else if(roll < itemProbability + moneyProbability){
-            int money = rand.nextInt(maxMoney -minMoney + 1) + minMoney;
+
+        if (roll < itemProbability) {
+            // 아이템 획득 로직 추가 (UserItemsService 이용)
+            Map<String, Object> itemResponse = userItemsService.add(email, latitude, longitude);
+            response = new ShopResponse(
+                    "item",
+                    user.getTg(),   // 현재 TG
+                    (Long) itemResponse.get("itemId"),
+                    (String) itemResponse.get("itemName"),
+                    (String) itemResponse.get("itemSummary"),
+                    (String) itemResponse.get("itemDescription"),
+                    (Integer) itemResponse.get("itemPiece"),
+                    (Integer) itemResponse.get("itemRank")
+            );
+
+            if (itemResponse.containsKey("tgChange")) {
+                response.setTgChange((Integer) itemResponse.get("tgChange"));
+            }
+            if (itemResponse.containsKey("exp")) {
+                response.setExpChange((Integer) itemResponse.get("exp"));
+                response.setCurrentExperience((Integer) itemResponse.get("experience"));
+                response.setLevel((Integer) itemResponse.get("level"));
+                response.setNextLevelExp((Integer) itemResponse.get("nextLevelExp"));
+                response.setExperiencePercent((Double) itemResponse.get("percentage"));
+            }
+
+        } else if (roll < itemProbability + moneyProbability) {
+            int money = rand.nextInt(maxMoney - minMoney + 1) + minMoney;
             user.addTg(money);
-            response = new ShopResponse("tg", user.getTg(), user.getExperience(), money, 0);
-        }else{
+            response = new ShopResponse(
+                    "tg",
+                    user.getTg(),   // 현재 TG
+                    user.getExperience(),
+                    money,
+                    0
+            );
+        } else {
             int experience = rand.nextInt(maxExp - minExp + 1) + minExp;
             user.addExperience(experience);
-            response = new ShopResponse("exp", user.getTg(), user.getExperience(), 0, experience);
+
+            // 경험치 계산
+            int[] expTable = UserExp.getExpTable();
+            int nextLevelExp = expTable[user.getLevel()];
+            double percentage = (double) user.getExperience() / nextLevelExp * 100;
+
+            response = new ShopResponse(
+                    "exp",
+                    user.getTg(),   // 현재 TG
+                    user.getExperience(),
+                    0,              // 금액 변화 없음
+                    experience,     // 경험치 증가
+                    user.getLevel(),
+                    nextLevelExp,
+                    percentage
+            );
         }
 
         userRepository.save(user);

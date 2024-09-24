@@ -119,7 +119,7 @@ public class UserService {
         int nextLevelExp = expTable[user.getLevel()];
         double percentage = (double) currentExperience / nextLevelExp * 100;
 
-        return new UserResponse.UpdateExp(user.getEmail(), currentExperience, nextLevelExp, percentage, levelUp);
+        return new UserResponse.UpdateExp(user.getEmail(), user.getLevel(), currentExperience, nextLevelExp, percentage, levelUp);
     }
 
     @Transactional
@@ -163,12 +163,21 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         Map<String, Object> response = new HashMap<>();
+        int[] expTable = UserExp.getExpTable();
 
         if (user.getQuest() == 0) {
             // 1,000 경험치 추가
             int experience = 1000;
+            int nextLevelExp = expTable[user.getLevel()];
+
             user.addExperience(experience);
+
+            double percentage = (double) user.getExperience() / nextLevelExp * 100;
+
+            response.put("level", user.getLevel());
             response.put("experience", user.getExperience());
+            response.put("nextLevelExp", nextLevelExp);
+            response.put("percentage", percentage);
 
             // 아이템 지급 (기존 add 메서드를 호출)
             Map<String, Object> itemResponse = userItemsService.add(email, latitude, longitude);

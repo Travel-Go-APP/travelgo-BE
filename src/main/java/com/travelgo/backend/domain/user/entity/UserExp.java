@@ -7,21 +7,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserExp {
 
-    private static final int MAX_LEVEL = 10;
+    private static final int maxLevel = 100;
+    private static final int startingExp = 500;
+    private static final double growthRate = 1.07;
 
     public static int[] getExpTable(){
-        int[] expTable = new int[MAX_LEVEL];
-        expTable[0] = 0; // 1레벨
-        expTable[1] = 125; // 2레벨
-        expTable[2] = 175; // ...
-        expTable[3] = 200;
-        expTable[4] = 250;
+        int[] expTable = new int[maxLevel];
 
-        expTable[5] = 320;
-        expTable[6] = 400;
-        expTable[7] = 500;
-        expTable[8] = 620;
-        expTable[9] = 999999;
+        for(int level = 0; level <maxLevel; level++){
+            expTable[level] = (int) Math.round(startingExp * Math.pow(growthRate, level));
+        }
 
         return expTable;
     }

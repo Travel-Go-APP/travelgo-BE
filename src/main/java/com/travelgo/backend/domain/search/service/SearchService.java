@@ -82,6 +82,18 @@ public class SearchService {
         return 0;  // 예외 처리 필요 시 조정 가능
     }
 
+    @Transactional
+    public void decreaseSearchCount(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        if(user.getPossibleSearch()==0){
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }else{
+            user.decreasePossibleSearch(1);
+        }
+    }
+
     public UserSearchResponse handleSelectedEvent(User user, int selectedEvent) {
         Integer tgChange = null;
         Integer expChange = null;
@@ -223,26 +235,11 @@ public class SearchService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
-        List<String> results = List.of("TG", "꽝", "EXP", "일일한도");
-        String result = results.get(rand.nextInt(results.size()));
-
-        Integer tgChange = null;
-        Integer expChange = null;
-        Integer possibleSearchChange = null;
-
-        if ("TG".equals(result)) {
-            tgChange = rand.nextInt(1000);
-            user.addTg(tgChange);
-        } else if ("EXP".equals(result)) {
-            expChange = rand.nextInt(100);
-            user.addExperience(expChange);
-        } else if ("일일한도".equals(result)) {
-            possibleSearchChange = 1;
-            user.recoverPossibleSearch(possibleSearchChange);
-        }
+        Integer tgChange = rand.nextInt(1000);
+        user.addTg(tgChange);
 
         userRepository.save(user);
-        return new UserSearchResponse(user, eventCategory, tgChange, expChange, possibleSearchChange);
+        return new UserSearchResponse(user, eventCategory, tgChange, null, null);
     }
 
     // 이벤트 확률 클래스

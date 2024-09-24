@@ -63,6 +63,7 @@ public class UserResponse {
     @AllArgsConstructor
     public static class UpdateExp {
         private String email;
+        private int level;
         private int experience;
         private int nextLevelExp;
         private double percentage;
