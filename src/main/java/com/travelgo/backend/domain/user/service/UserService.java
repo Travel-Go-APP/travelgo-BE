@@ -233,7 +233,7 @@ public class UserService {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         String date = base.format(dateFormatter);
 
-        String result = WeatherApiExplorer.getWeatherInfo(300, 1, date, "0200", (int) request.getLatitude(), (int) request.getLongitude());
+        String result = WeatherApiExplorer.getWeatherInfo(300, 1, request.getDate(), "0200", (int) request.getLatitude(), (int) request.getLongitude());
         WeatherDto weatherDto = weatherService.weatherInit(result);
 
         return new MainPageResponse(
