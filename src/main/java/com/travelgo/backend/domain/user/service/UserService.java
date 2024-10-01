@@ -17,9 +17,12 @@ import com.travelgo.backend.domain.user.repository.UserAgreeRepository;
 import com.travelgo.backend.domain.user.repository.UserRepository;
 import com.travelgo.backend.domain.userItems.repository.UserItemsRepository;
 import com.travelgo.backend.domain.userItems.service.UserItemsService;
+import com.travelgo.backend.domain.util.entity.WeatherApiExplorer;
 import com.travelgo.backend.domain.util.entity.filter.BadWordFiltering;
 import com.travelgo.backend.domain.util.entity.geo.service.GeoCodingService;
 import com.travelgo.backend.domain.visit.repository.VisitRepository;
+import com.travelgo.backend.domain.weather.dto.WeatherDto;
+import com.travelgo.backend.domain.weather.service.WeatherService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import jakarta.persistence.EntityManager;
@@ -30,6 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,6 +51,7 @@ public class UserService {
     private final UserAgreeRepository userAgreeRepository;
     private final VisitCountEventService visitCountEventService;
     private final GeoCodingService geoCodingService;
+    private final WeatherService weatherService;
 
     private final LikesRepository likesRepository;
     private final ReviewRepository reviewRepository;
@@ -186,7 +193,7 @@ public class UserService {
             // 퀘스트 상태를 1로 업데이트
             user.setQuest(1);
             userRepository.save(user);
-        }else{
+        } else {
             throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
@@ -194,7 +201,7 @@ public class UserService {
     }
 
     @Transactional
-    public MainPageResponse getMainPageResponse(MainPageRequest request) {
+    public MainPageResponse getMainPageResponse(MainPageRequest request) throws IOException {
         User user = getUser(request.getEmail());
 
         String[] areaAndVisitArea;
@@ -219,6 +226,16 @@ public class UserService {
 
         VisitCountEventDto benefit = visitCountEventService.getBenefit(request.getEmail(), areaCode);
 
+        // 현재 날짜와 시간 가져오기
+        LocalDateTime base = LocalDateTime.now().minusDays(1);;
+
+        // 날짜 형식 지정
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String date = base.format(dateFormatter);
+
+        String result = WeatherApiExplorer.getWeatherInfo(300, 1, date, "0200", (int) request.getLatitude(), (int) request.getLongitude());
+        WeatherDto weatherDto = weatherService.weatherInit(result);
+
         return new MainPageResponse(
                 user.getNickname(),
                 user.getLevel(),
@@ -236,7 +253,8 @@ public class UserService {
                 user.getExperienceX(),
                 user.getTgX(),
                 user.getTg(),
-                user.getWorkCount()
+                user.getWorkCount(),
+                weatherDto
         );
     }
 }

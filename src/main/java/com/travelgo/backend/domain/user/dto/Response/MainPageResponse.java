@@ -1,6 +1,7 @@
 package com.travelgo.backend.domain.user.dto.Response;
 
 import com.travelgo.backend.domain.user.model.Shoes;
+import com.travelgo.backend.domain.weather.dto.WeatherDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,4 +30,5 @@ public class MainPageResponse {
     private double tgX;
     private int tg;
     private int workCount;
+    private WeatherDto weatherDto;
 }
