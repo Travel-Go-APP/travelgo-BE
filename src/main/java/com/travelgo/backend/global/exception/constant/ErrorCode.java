@@ -16,6 +16,7 @@ public enum ErrorCode {
     NOT_FOUND_AREA(HttpStatus.NOT_FOUND, "지역를 찾을 수 없습니다."),
     NOT_FOUND_ORDER(HttpStatus.NOT_FOUND, "주문을 찾을 수 없습니다."),
     NOT_FOUND_ATTRACTION(HttpStatus.NOT_FOUND, "명소를 찾을 수 없습니다."),
+    NOT_FOUND_WEATHER(HttpStatus.NOT_FOUND, "날씨를 찾을 수 없습니다."),
     NOT_COMMON_ATTRACTION(HttpStatus.NOT_FOUND, "등록한 명소가 아닙니다."),
     NOT_CUSTOM_ATTRACTION(HttpStatus.NOT_FOUND, "커스텀 명소가 아닙니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
