@@ -7,6 +7,9 @@ import com.travelgo.backend.domain.user.dto.Response.MainPageResponse;
 import com.travelgo.backend.domain.user.dto.Response.UserResponse;
 import com.travelgo.backend.domain.user.exception.UserNotFoundException;
 import com.travelgo.backend.domain.user.service.UserService;
+import com.travelgo.backend.domain.util.entity.WeatherApiExplorer;
+import com.travelgo.backend.domain.weather.dto.WeatherDto;
+import com.travelgo.backend.domain.weather.service.WeatherService;
 import com.travelgo.backend.global.exception.CustomException;
 import com.travelgo.backend.global.exception.constant.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +21,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @RestController
@@ -26,6 +32,7 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
+    private final WeatherService weatherService;
 
     @Operation(summary = "일일 퀘스트", description = "유저 일일 퀘스트 달성")
     @PostMapping("/mission")
@@ -104,8 +111,24 @@ public class UserController {
 
     @Operation(summary = "메인 페이지 정보 가져오기", description = "유저 메인 페이지 정보 조회")
     @PostMapping("/get-main")
-    public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request) {
+    public ResponseEntity<MainPageResponse> mainPageInfo(@RequestBody MainPageRequest request) throws IOException {
         MainPageResponse response = userService.getMainPageResponse(request);
         return ResponseEntity.ok(response);
     }
+
+//    @Operation(summary = "날씨 가져오기", description = "날씨")
+//    @PostMapping("/weather")
+//    public ResponseEntity<?> weatherInfo(@RequestParam(name = "nx") double nx, @RequestParam(name = "ny") double ny) throws IOException {
+//        // 현재 날짜와 시간 가져오기
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        LocalDateTime ago = now.minusDays(1);
+//
+//        // 날짜 형식 지정
+//        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+//        String date = ago.format(dateFormatter);
+//
+//        String result = WeatherApiExplorer.getWeatherInfo(300, 1, date, "0200", (int) nx, (int) ny);
+//        return new ResponseEntity<>(weatherService.weatherInit(result), HttpStatusCode.valueOf(200));
+//    }
 }
