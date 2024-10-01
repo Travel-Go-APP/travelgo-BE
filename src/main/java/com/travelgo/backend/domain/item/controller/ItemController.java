@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -76,5 +77,14 @@ public class ItemController {
                                                 @RequestParam(name = "longitude") Double longitude){
         ShopResponse response = itemService.buyShop(email, gachaLevel, latitude, longitude);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "특정 유저에게 특정 아이템 지급", description = "특정 유저에게 지정된 조각 수만큼 아이템을 추가")
+    @PostMapping("/admin/add-item")
+    public ResponseEntity<Map<String, Object>> addItemToUser(@RequestParam(name = "email") String email,
+                                                             @RequestParam(name = "itemId") Long itemId,
+                                                             @RequestParam(name = "pieceCount") int pieceCount) {
+        Map<String, Object> response = itemService.addItemToUser(email, itemId, pieceCount);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

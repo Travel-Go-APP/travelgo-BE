@@ -9,6 +9,7 @@ import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserItems extends BaseTimeEntity {
 
@@ -29,11 +30,11 @@ public class UserItems extends BaseTimeEntity {
     private boolean isCompleted; // 아이템 완성 여부
 
     @Builder
-    public UserItems(User user, Item item){
+    public UserItems(User user, Item item, int piece, boolean isCompleted) {
         this.user = user;
         this.item = item;
-        this.piece = 1;
-        this.isCompleted = false;
+        this.piece = piece;
+        this.isCompleted = isCompleted;
     }
 
     public Area getArea(){
@@ -52,4 +53,5 @@ public class UserItems extends BaseTimeEntity {
     public int getPiece() {
         return this.piece;  // 현재 조각 수를 반환
     }
+
 }

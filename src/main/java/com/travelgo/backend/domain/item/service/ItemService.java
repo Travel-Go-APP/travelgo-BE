@@ -268,4 +268,53 @@ public class ItemService {
         List<Item> items = itemRepository.findByArea(Area.valueOf("일반"));
         return items.get(rand.nextInt(items.size()));
     }
+
+    @Transactional
+    public Map<String, Object> addItemToUser(String email, Long itemId, int pieceCount) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ITEM));
+
+        // 응답 데이터 생성
+        Map<String, Object> response = new HashMap<>();
+
+        // 유저가 해당 아이템을 가지고 있는지 확인
+        UserItems userItem = userItemsRepository.findByUserAndItem(user, item)
+                .orElse(null);
+
+        int finalPieceCount;
+        boolean isCompleted;
+
+        if (userItem != null) {
+            int currentPieces = userItem.getPiece();
+            finalPieceCount = Math.min(currentPieces + pieceCount, 10);
+            userItem.setPiece(finalPieceCount);
+
+            isCompleted = finalPieceCount >= 10;
+            userItem.setCompleted(isCompleted);
+
+            userItemsRepository.save(userItem);
+        } else {
+            finalPieceCount = Math.min(pieceCount, 10);
+            isCompleted = pieceCount >= 10;
+
+            UserItems newUserItem = UserItems.builder()
+                    .user(user)
+                    .item(item)
+                    .piece(finalPieceCount)
+                    .isCompleted(isCompleted)
+                    .build();
+            userItemsRepository.save(newUserItem);
+        }
+
+        // 응답 데이터 구성
+        response.put("email", email);
+        response.put("itemPiece", finalPieceCount);  // int로 반환
+        response.put("is_completed", isCompleted ? 1 : 0);  // boolean을 int로 변환
+
+        return response;
+    }
+
 }
