@@ -116,19 +116,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-//    @Operation(summary = "날씨 가져오기", description = "날씨")
-//    @PostMapping("/weather")
-//    public ResponseEntity<?> weatherInfo(@RequestParam(name = "nx") double nx, @RequestParam(name = "ny") double ny) throws IOException {
-//        // 현재 날짜와 시간 가져오기
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        LocalDateTime ago = now.minusDays(1);
-//
-//        // 날짜 형식 지정
-//        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-//        String date = ago.format(dateFormatter);
-//
-//        String result = WeatherApiExplorer.getWeatherInfo(300, 1, date, "0200", (int) nx, (int) ny);
-//        return new ResponseEntity<>(weatherService.weatherInit(result), HttpStatusCode.valueOf(200));
-//    }
+    @Operation(summary = "날씨 가져오기", description = "날씨")
+    @PostMapping("/weather")
+    public ResponseEntity<?> weatherInfo(@RequestParam(name = "latitude") double latitude, @RequestParam(name = "longitude") double longitude) throws IOException {
+        String result = WeatherApiExplorer.getWeatherInfo(latitude, longitude);
+        return new ResponseEntity<>(weatherService.weatherInit(result), HttpStatusCode.valueOf(200));
+    }
 }

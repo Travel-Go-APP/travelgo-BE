@@ -34,8 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -226,14 +224,8 @@ public class UserService {
 
         VisitCountEventDto benefit = visitCountEventService.getBenefit(request.getEmail(), areaCode);
 
-        // 현재 날짜와 시간 가져오기
-        LocalDateTime base = LocalDateTime.now().minusDays(1);;
+        String result = WeatherApiExplorer.getWeatherInfo(request.getLatitude(), request.getLongitude());
 
-        // 날짜 형식 지정
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String date = base.format(dateFormatter);
-
-        String result = WeatherApiExplorer.getWeatherInfo(300, 1, request.getDate(), "0200", (int) request.getLatitude(), (int) request.getLongitude());
         WeatherDto weatherDto = weatherService.weatherInit(result);
 
         return new MainPageResponse(
