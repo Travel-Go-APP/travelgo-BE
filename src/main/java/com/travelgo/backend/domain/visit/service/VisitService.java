@@ -29,6 +29,13 @@ public class VisitService {
 
     @Transactional
     public VisitResponse saveAttractionAchievement(VisitRequest request) {
+        if (visitRepository.existsVisitByAttraction_AttractionIdAndAndUser(
+                request.getAttractionId(),
+                getUser(request.getEmail())
+        )
+        ) {
+            throw new CustomException(ErrorCode.DUPLICATED_VISIT);
+        }
         Visit visit = createAttracitonAchievement(request);
 
         //조사하기시 명소 저장할때 조사하기 카운트 감소시키기

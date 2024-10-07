@@ -31,6 +31,7 @@ public enum ErrorCode {
 
     DUPLICATED_USER(HttpStatus.CREATED, "이미 존재하는 회원입니다."),
     DUPLICATED_ITEM(HttpStatus.CREATED, "이미 존재하는 아이템입니다."),
+    DUPLICATED_VISIT(HttpStatus.CREATED, "이미 존재하는 방문 기록입니다."),
     DUPLICATED_ATTRACTION(HttpStatus.CREATED, "이미 존재하는 명소입니다."),
 
     EMPTY_VALUE(HttpStatus.NOT_FOUND, "데이터가 비어있습니다."),
