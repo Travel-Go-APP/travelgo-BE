@@ -65,6 +65,7 @@ public class UserItemsService {
                     Map<String, Object> reward = rewardUser(user);
                     response.putAll(reward);
                 }
+                System.out.println("=================== currentItemPiece1 = "+currentPieces);
                 response.put("itemId", randomItem.getItemId());
                 response.put("itemName", randomItem.getItemName());
                 response.put("itemSummary", randomItem.getSummary());
@@ -75,9 +76,11 @@ public class UserItemsService {
                 userItems = UserItems.builder()
                         .user(user)
                         .item(randomItem)
+                        .piece(1)
                         .build();
                 userItemsRepository.save(userItems);
                 currentPieces = userItems.getPiece();
+                System.out.println("=================== currentItemPiece2 = "+currentPieces);
 
                 response.put("itemId", randomItem.getItemId());
                 response.put("itemName", randomItem.getItemName());
@@ -108,13 +111,18 @@ public class UserItemsService {
                 response.put("itemDescription", randomItem.getDescription());
                 response.put("itemRank", randomItem.getItemRank());
                 response.put("itemPiece", currentPieces);
+
+                System.out.println("=================== currentItemPiece3 = "+currentPieces);
+
             } else {
                 userItems = UserItems.builder()
                         .user(user)
                         .item(randomItem)
+                        .piece(1)
                         .build();
                 userItemsRepository.save(userItems);
                 currentPieces = userItems.getPiece();
+                System.out.println("=================== currentItemPiece4 = "+currentPieces);
 
                 response.put("itemId", randomItem.getItemId());
                 response.put("itemName", randomItem.getItemName());
