@@ -111,7 +111,7 @@ public class User extends BaseTimeEntity {
         this.workCount = 0;
         this.level = 1;
         this.quest = 0;
-        this.tg = 0;
+        this.tg = 30000;
         this.shoes = Shoes.맨발;
         this.bag = Bag.초급;
         this.maxSearch = 10;
